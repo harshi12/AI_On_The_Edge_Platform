@@ -8,7 +8,8 @@ class RabbitMQ:
 		self.server_IP = str(server_IP)
 
 	def send(self,message):
-		connection = pika.BlockingConnection(pika.ConnectionParameters(host = 'localhost')) #self.server_IP))
+		credentials = pika.PlainCredentials("rajat","123")
+		connection = pika.BlockingConnection(pika.ConnectionParameters("192.168.43.173", 5672, '/', credentials))
 		channel = connection.channel()
 
 		channel.queue_declare(queue='queue_gateway_ServiceManager')
@@ -20,7 +21,9 @@ class RabbitMQ:
 		connection.close()
 
 	def receive(self):
-		connection = pika.BlockingConnection(pika.ConnectionParameters(host = 'localhost'))#self.server_IP))
+		# connection = pika.BlockingConnection(pika.ConnectionParameters(host = self.server_IP))
+		credentials = pika.PlainCredentials("rajat","123")
+		connection = pika.BlockingConnection(pika.ConnectionParameters("192.168.43.173", 5672, '/', credentials))
 		channel = connection.channel()
 
 		channel.queue_declare(queue = 'queue_gateway_ServiceManager')
