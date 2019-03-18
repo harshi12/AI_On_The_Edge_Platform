@@ -2,5 +2,11 @@
 
 from queue_req_resp import RabbitMQ
 
-obj = RabbitMQ("192.168.43.173")#rabbit@Rajat-MacBook_Pro")
-obj.receive()
+# initial_obj = RabbitMQ(1)
+
+obj = RabbitMQ()#rabbit@Rajat-MacBook_Pro")
+
+def callback(ch, method, properties, body):
+	print("data received: %r"%body)
+
+obj.receive(callback, "", "AD_Input")
