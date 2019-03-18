@@ -1,0 +1,14 @@
+Import queue_req_resp in your code
+
+Create a rabbitmq object as first step and use it to call receive and send functions
+
+Have a receive function with the following definition:
+  receive(self, callback, exchange, routing_key)
+  callback is the function defining what you want to do with the data received
+  routing_key is the name of queue from which you will read data
+  Keep exchange as empty string for now -> exchange = ""
+  Between Service Manager and VM/Docker Manager: SM_Docker
+  Between Service Manager and Scheduler: SM_Schedule
+  Between Service Manager and Application Developer: AD_Input
+  
+Receive function is a blocking call. Use threading if required
