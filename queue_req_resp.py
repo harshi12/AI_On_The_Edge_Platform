@@ -11,6 +11,8 @@ class RabbitMQ:
 		self.create_queue("", "AD_SM")
 		self.create_ServiceQueues("SM","Docker")
 		self.create_ServiceQueues("SM", "Scheduler")
+		self.create_queue("", "Model1_Input")
+		self.create_queue("", "Model1_Output")
 
 	def create_queue(self, exchange_name, queue_name):
 		channel, conn = self.create_connection()
@@ -35,10 +37,18 @@ class RabbitMQ:
 		print(" [x] Sent",message)
 		conn.close()
 
+
+	def receive_nonblock(self, exchange_name, queue_name):
+		channel, conn = self.create_connection()	
+		self.create_queue(exchange_name, queue_name)
+		method_frame, header_frame, body = channel.basic_get(queue_name, True)
+		# body = channel.basic_get(queue_name, True) #callback, queue = queue_name, no_ack = True)
+		print("In queue:", type(body))
+		return body
+
 	def receive(self, callback, exchange_name, queue_name):
 		channel, conn = self.create_connection()	
 		self.create_queue(exchange_name, queue_name)
-
 		channel.basic_consume(callback, queue = queue_name, no_ack = True)
 
 		print(' [*] Waiting for messages. To exit press CTRL+C')
