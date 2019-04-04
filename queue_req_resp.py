@@ -5,9 +5,9 @@ import json
 
 class RabbitMQ:
 	def __init__(self):
-		self.server_IP = "192.168.43.173"
+		self.server_IP = "localhost"
 		self.server_Port = 5672
-		self.credentials = pika.PlainCredentials("rajat","123")	
+		self.credentials = pika.PlainCredentials("harshita","123")	
 		self.create_queue("", "AD_SM")
 		self.create_ServiceQueues("SM","Docker")
 		self.create_ServiceQueues("SM", "Scheduler")
@@ -42,6 +42,11 @@ class RabbitMQ:
 		channel, conn = self.create_connection()	
 		self.create_queue(exchange_name, queue_name)
 		method_frame, header_frame, body = channel.basic_get(queue_name, True)
+
+		if body == None:
+			while body == None:
+				method_frame, header_frame, body = channel.basic_get(queue_name, True)
+
 		# body = channel.basic_get(queue_name, True) #callback, queue = queue_name, no_ack = True)
 		print("In queue:", type(body))
 		return body

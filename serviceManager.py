@@ -1,6 +1,7 @@
 from queue_req_resp import RabbitMQ
 from threading import Thread
 import requests
+import threading
 import ast
 # from _thread    
 import json
@@ -43,7 +44,7 @@ class serviceManager:
         return data
 
     def receive_DM_input(self,exchange, key):
-        print("In docker receiver queue")
+        # print("In docker receiver queue")
         RMQ.receive(self.process_DM_Input, exchange, key)
 
     def process_DM_Input(self, ch, method, properties, body):
@@ -58,17 +59,18 @@ class serviceManager:
         model_port_map[model_name] = ack_response["IP:Port"]
 
     def sendtoScheduler(self, ch, method, properties, body):
-        print("data from AD %r"%body)
+        print("Data from Application Developer : %r"%body)
         RMQ.send('', "SM_Scheduler",body)
+        print("Request sent to scheduler")
 
     def receive_AD_input(self, exchange, key):
-        print("In thread AD_input")
+        # print("In thread AD_input")
         RMQ.receive(self.sendtoScheduler, exchange, key)
 
     def receive_scheduler_input(self, exchange, key):
-        print("receive_scheduler_input")
+        # print("receive_scheduler_input")
         while True:
-            print("here")
+            # print("here")
             RMQ.receive(self.process_scheduler_input, exchange, key)
 
     def get_thread_id(self): 
@@ -135,53 +137,62 @@ class serviceManager:
                 RMQ.send("", "Model1_Output", json_response.text)
 
     def process_scheduler_input(self, ch, method, properties, body):
+        global thread_stop_flag
+        global live_threads
+        global model_IPS
         print("1")
         data = json.loads(body)
         print(body)
-        model_name = data["model"]
+        model_name = str(data["model"])
+        print("Received Model Name: ", model_name)
 
         if data["request_type"] == 'deploy':
-            message = {"Request_type" : "Deploy", "Link" : data["model"], "No_Hosts" : 1, "IPs" : ["192.168.43.103"]}
-            global model_IPS
+            message = {"Request_type" : "Deploy", "Link" : data["model"], "No_Hosts" : 1, "IPs" : ["192.168.43.137"]}
             model_port_index[model_name] = 0
             model_IPS = message["IPs"]
             message = json.dumps(message)   
             RMQ.send("","SM_Docker", message)
 
         elif data["request_type"] == 'kill':
-            message = {"Request_type" : "Kill", "Link" : data["model"], "No_Hosts" : 1, "IPs" : ["192.168.43.103"]}
+            message = {"Request_type" : "Kill", "Link" : model_name}
             thread_id = live_threads[model_name]
             thread_stop_flag[thread_id] = 1
+            RMQ.send("","SM_Docker",message)
             
         elif data["request_type"]    == "inference_batch":
             print("Inference Batch Request")
             final_batch_test_data = {}
+            # sleep(5)
             batch_test_data = self.receive_InputStream_input("", "Model1_Input")
 
             final_batch_test_data["signature_name"] = "model"
             final_batch_test_data["instances"] = batch_test_data['data']
 
-            print("Testing Data:")
-            print(final_batch_test_data)
+            # print("Testing Data:")
+            # print(final_batch_test_data)
 
             final_batch_test_data = json.dumps(final_batch_test_data)
 
-            # model_name = data["model"]
+            model_name = data["model"]
             model_ip_ports = model_port_map[model_name]
             
             service_ip_port = ""
                 
-            print("Acquiring Lock in main")
-            self.lock.acquire()
-            try:
-                i = model_port_index[model_name]
-                service_ip_port = model_ip_ports[i]
-                i = (i+1) % len(model_ip_ports)
-                model_port_index[model_name] = i
-            finally:
-                self.lock.release()
-                print("Lock released in main")
-
+            # print("Acquiring Lock in main")
+            # self.lock.acquire()
+            # try:
+            #     i = model_port_index[model_name]
+            #     service_ip_port = model_ip_ports[i]
+            #     i = (i+1) % len(model_ip_ports)
+            #     model_port_index[model_name] = i
+            # finally:
+            #     self.lock.release()
+            #     print("Lock released in main")
+        
+            i = model_port_index[model_name]
+            service_ip_port = model_ip_ports[i]
+            i = (i+1) % len(model_ip_ports)
+            model_port_index[model_name] = i
             print("Prediction model sent to", service_ip_port)
 
             # print("Prediction model sent to", model_ip_ports[i])
@@ -206,15 +217,15 @@ class serviceManager:
             RMQ.send("", "Model1_Output", json_response.text)
 
         elif data["request_type"] == "inference_live":
-            global thread_stop_flag
-            global live_threads
-
+            # pass
+            model_name = data["model"]
             print("In inference live")
             final_batch_test_data = {}
             # model_name = data["model"]
 
-            t5 = Thread(target = self.inference_LiveData, args = (model_name))
+            t5 = Thread(target = self.inference_LiveData, args = (model_name,))
             t5.start()
+
             thread_stop_flag[t5] = 0 #0 - thread is running, 1 - kill the thread
             live_threads[model_name] = t5
             
@@ -223,4 +234,5 @@ class serviceManager:
 
 if __name__ == '__main__':
     obj = serviceManager()
+
 
