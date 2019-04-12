@@ -65,15 +65,17 @@ Types of JSON requests:
 	"Value": [
     {
 			"App_id": 234,
-			"Model_Link": "/AD_ID/App_ID/Model",
-			"App_Link": "/AD_ID/App_ID/App",
+			"Model_Link": "/AD_ID/App_ID/Models",
+			"App_Link": "/AD_ID/App_ID/AppLogic",
+			"Service_Link": "/AD_ID/App_ID/Services",
 			"Config_Link": "/AD_ID/App_ID/Config"
 		},
 		{
-			"App_id": 245,
-			"Model_Link": "192.168.12.11:7354/Model_Folder_Repo_Path",
-			"App_Link": "192.168.12.11:7354/App_Folder_Repo_Path",
-			"Config_Link": "192.168.12.11:7354/Config_Folder_Repo_Path"
+			"App_id": 244,
+			"Model_Link": "/AD_ID/App_ID/Models",
+			"App_Link": "/AD_ID/App_ID/AppLogic",
+			"Service_Link": "/AD_ID/App_ID/Services",
+			"Config_Link": "/AD_ID/App_ID/Config"
 		}
 	]
 }
