@@ -7,6 +7,7 @@ class Registry:
 
     def __init__(self):
         Storage_info = {}
+        Model_inst_info = {}
         Service_inst_info = {}
         App_inst_info = {}
 
@@ -33,13 +34,13 @@ class Registry:
                 self.Storage_info[App_Id]['Service_Link'] = Service_Link
                 self.Storage_info[App_Id]['Config_Link'] = Config_Link
 
-        elif(DS_Name=='Service_inst_info'):
+        elif(DS_Name=='Model_inst_info'):
             for i in range(len(DS_Obj)):
                 #Record if Dict
                 Record = DS_Obj[i]
                 Model_Id = Record['Model_id']
 
-                self.Service_inst_info[Model_Id] = []
+                self.Model_inst_info[Model_Id] = []
 
                 for j in range(len(DS_Obj[i]['Hosts'])):
                     Hosts_List = DS_Obj[i]['Hosts']
@@ -48,7 +49,24 @@ class Registry:
                     Model_Status = Hosts_List[j][2]
 
                     Model_Inst = [Host_IP, Host_Port, Model_Status]
-                    self.Service_inst_info[Model_Id].append(Model_Inst)
+                    self.Model_inst_info[Model_Id].append(Model_Inst)
+
+        elif(DS_Name=='Service_inst_info'):
+            for i in range(len(DS_Obj)):
+                #Record if Dict
+                Record = DS_Obj[i]
+                Service_Id = Record['Service_id']
+
+                self.Service_inst_info[Service_Id] = []
+
+                for j in range(len(DS_Obj[i]['Hosts'])):
+                    Hosts_List = DS_Obj[i]['Hosts']
+                    Host_IP = Hosts_List[j][0]
+                    Host_Port = Hosts_List[j][1]
+                    Service_Status = Hosts_List[j][2]
+
+                    Service_Inst = [Host_IP, Host_Port, Service_Status]
+                    self.Service_inst_info[Service_Id].append(Service_Inst)
 
         elif(DS_Name=='App_inst_info'):
             for i in range(len(DS_Obj)):
@@ -71,6 +89,7 @@ class Registry:
 
     def Print_DS(self):
         print("\nStorage_info: ", self.Storage_info)
+        print("\nModel_inst_info: ", self.Model_inst_info)
         print("\nService_inst_info: ", self.Service_inst_info)
         print("\nApp_inst_info: ", self.App_inst_info)
 
@@ -102,6 +121,8 @@ def callback(ch, method, properties, body):
     print("\nUpdated Data Structures\n ")
     Registry_obj.Print_DS()
 
+
+#TEMP queues Ideally, Common queue will be used which will listen from all modules
 def Recieve_from_SM():
     msg_obj2 = RabbitMQ()
     msg_obj2.receive(callback, "", "SM_RG")
