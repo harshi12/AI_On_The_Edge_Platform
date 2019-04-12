@@ -1,0 +1,20 @@
+{
+    "gw_name" : "gw_2",
+    "gw_location" : "IIIT",
+    "gw_address" : 
+        {
+            "IP" : "",
+            "port" : ""
+        },
+    "sensors" :[
+        {
+            "type" : "A"
+        },
+        {
+            "type" : "B"
+        },
+        {
+            "type" : "C"
+        }
+    ]
+}

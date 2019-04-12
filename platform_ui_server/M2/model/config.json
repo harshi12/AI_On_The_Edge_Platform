@@ -1,0 +1,26 @@
+{
+    "model_name" : "sonar_model",
+    "no_instances" : "2",
+    "input_stream" : [
+        {
+            "IP" : "192.168.43.103",
+            "port" : "9000"
+        }
+    ],
+    "output_stream" : {
+        "IP" : "192.168.43.103",
+        "port" : "9000"
+    },
+    "schedule_info" :{
+        "service_type" : "2",
+        "parameters" : {
+            "start_time" : "1644",
+            "end_time" : "1648",
+            "upinterval" : "0",
+            "downinterval" : "0"
+        },
+        "stream_type" : "2",
+        "stream_interval" : "0000"
+    }
+}
+                     
