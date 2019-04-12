@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<platform>
+	<platformModules>
+		<module name = "DeploymentManager">
+			<IP>192.168.42.210</IP>
+			<Port>9500</Port>
+			<folderName></folderName>
+			<executableFile></executableFile>
+		</module>
+		<module name = "ServiceManager">
+			<IP>192.168.42.210</IP>
+			<Port>9501</Port>
+			<folderName></folderName>
+			<executableFile></executableFile>
+		</module>
+		<module name = "HostManager">
+			<IP>192.168.42.210</IP>
+			<Port>9502</Port>
+			<folderName></folderName>
+			<executableFile></executableFile>
+		</module>
+		<module name = "LoadBalancer">
+			<IP>192.168.42.210</IP>
+			<Port>9503</Port>
+			<folderName></folderName>
+			<executableFile></executableFile>
+		</module>
+		<module name = "Scheduler">
+			<IP>192.168.42.210</IP>
+			<Port>9504</Port>
+			<folderName></folderName>
+			<executableFile></executableFile>
+		</module>
+		<module name = "Logger">
+			<IP>192.168.42.210</IP>
+			<Port>9505</Port>
+			<folderName></folderName>
+			<executableFile></executableFile>
+		</module>
+		<module name = "Monitor">
+			<IP>192.168.42.210</IP>
+			<Port>9506</Port>
+			<folderName></folderName>
+			<executableFile></executableFile>
+		</module>
+		<module name = "RecoveryManager">
+			<IP>192.168.42.210</IP>
+			<Port>9507</Port>
+			<folderName></folderName>
+			<executableFile></executableFile>
+		</module>
+		<module name = "Database">
+			<IP>192.168.42.210</IP>
+			<Port>9508</Port>
+			<folderName></folderName>
+			<executableFile></executableFile>
+		</module>
+		<module name = "PlatformUI">
+			<IP>192.168.42.210</IP>
+			<Port>9509</Port>
+			<folderName></folderName>
+			<executableFile></executableFile>
+		</module>
+		<module name = "Registry">
+			<IP>192.168.42.210</IP>
+			<Port>9510</Port>
+			<folderName></folderName>
+			<executableFile></executableFile>
+		</module>
+		<module name = "Repository">
+			<IP>192.168.43.174</IP>
+			<Port>9511</Port>
+			<folderName>.</folderName>
+			<executableFile>RepositorySetup.sh
+					<!-- <FileName></FileName>
+					<Language>bash</Language>
+					<Description>To set up NFS Server</Description> -->
+			</executableFile>
+		</module>
+		<module name = "RabbitMQServer">
+			<IP>192.168.42.210</IP>
+			<Port>9511</Port>
+		</module>
+	</platformModules>
+	<Hosts>
+		<Host IP = "192.168.42.210">
+			<username>ravi</username>
+			<password>S2j1ar1in63</password>
+		</Host>
+		<Host IP = "192.168.42.211">
+			<username>sukku</username>
+			<password>iforgot</password>
+		</Host>
+		<Host IP = "192.168.42.212">
+			<username>bhavidhingra</username>
+			<password>bhavi</password>
+		</Host>
+		<Host IP = "192.168.43.174">
+			<username>harshita</username>
+			<password>@14799741hA</password>
+		</Host>
+		<Host IP = "192.168.42.214">
+			<username>kaushik</username>
+			<password>rama1729</password>
+		</Host>
+		<Host IP = "192.168.42.215">
+			<username>red</username>
+			<password>verma</password>
+		</Host>
+		<Host IP = "192.168.42.216">
+			<username>kratika</username>
+			<password>Qwerty987**</password>
+		</Host>
+	</Hosts>
+</platform>
