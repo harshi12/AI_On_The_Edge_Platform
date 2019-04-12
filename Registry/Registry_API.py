@@ -83,3 +83,71 @@ class Registry_API:
 
         Request_json_msg = json.dumps(Request_Msg)
         self.msg_obj.send("", Queue_name, Request_json_msg)
+
+    def Read_Storage_info(self, App_Id_list=[], Queue_name):
+
+        Request_Msg = {}
+        Request_Msg["Request_Type"] = "Read"
+        Request_Msg["DS_Name"] = "Storage_info"
+
+        Req_Value = {}
+        if len(App_Id_list) == 0:
+            Req_Value["Filter"] = []
+        else
+            Req_Value["Filter"] = App_Id_list
+
+        Request_Msg.append(Req_Value)
+
+        Request_json_msg = json.dumps(Request_Msg)
+        self.msg_obj.send("", Queue_name, Request_json_msg)
+
+    def Read_Model_Inst_Info(self, Model_Id_list=[], Queue_name):
+
+        Request_Msg = {}
+        Request_Msg["Request_Type"] = "Read"
+        Request_Msg["DS_Name"] = "Model_Inst_Info"
+
+        Req_Value = {}
+        if len(Model_Id_list) == 0:
+            Req_Value["Filter"] = []
+        else
+            Req_Value["Filter"] = Model_Id_list
+
+        Request_Msg.append(Req_Value)
+
+        Request_json_msg = json.dumps(Request_Msg)
+        self.msg_obj.send("", Queue_name, Request_json_msg)
+
+    def Read_Service_Inst_Info(self, Service_Id_list=[], Queue_name):
+
+        Request_Msg = {}
+        Request_Msg["Request_Type"] = "Read"
+        Request_Msg["DS_Name"] = "Service_Inst_Info"
+
+        Req_Value = {}
+        if len(Service_Id_list) == 0:
+            Req_Value["Filter"] = []
+        else
+            Req_Value["Filter"] = Service_Id_list
+
+        Request_Msg.append(Req_Value)
+
+        Request_json_msg = json.dumps(Request_Msg)
+        self.msg_obj.send("", Queue_name, Request_json_msg)
+
+    def Read_App_Inst_Info(self, App_Id_list=[], Queue_name):
+
+        Request_Msg = {}
+        Request_Msg["Request_Type"] = "Read"
+        Request_Msg["DS_Name"] = "App_Inst_Info"
+
+        Req_Value = {}
+        if len(App_Id_list) == 0:
+            Req_Value["Filter"] = []
+        else
+            Req_Value["Filter"] = App_Id_list
+
+        Request_Msg.append(Req_Value)
+
+        Request_json_msg = json.dumps(Request_Msg)
+        self.msg_obj.send("", Queue_name, Request_json_msg)
