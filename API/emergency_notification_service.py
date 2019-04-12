@@ -4,7 +4,7 @@ class EmergencyNotificationService:
     def __int__(self):
         pass
     
-    def emergency(self, receiver_file_path, from_sensor):
+    def emergency_action_email(self, receiver_file_path, from_sensor):
         dist = get_distance(from_sensor)
         if dist < 200:
             G = gmail()
@@ -18,3 +18,8 @@ class EmergencyNotificationService:
 
     def get_receiver_list(self, receiver_file_path):
         return []#list
+
+
+if __name__ == "__main__":
+    emergency_notification_service = EmergencyNotificationService()
+    emergency_notification_service.emergency_action_email()
