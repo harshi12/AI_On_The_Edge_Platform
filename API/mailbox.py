@@ -1,9 +1,5 @@
-# # Python code to illustrate Sending mail from  
-# # your Gmail account  
-
 import smtplib, ssl
 class gmail:
-   #https://www.google.com/settings/security/lesssecureapps
    port = 465  # For SSL
    smtp_server = "smtp.gmail.com"
 
