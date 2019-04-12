@@ -1,0 +1,87 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="container">
+    <h1>AI On Edge : GROUP 2</h1>
+    <div style="text-align: center; font-family: Calibri;color: #607d8b">
+        <div class="section">
+        <div class="row">
+            <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                <form method="POST" action="">
+                    <div class="blue-grey-text center row">
+                    <h1>Register With Us !!</h1>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col s3"></div>
+                        <div class="input-field col s6">
+                        <!-- <i class="material-icons prefix md-36">account_circle</i> -->
+                        <label class="active" for="username">Username</label>
+                        <input name="username" type="text" required class="validate" value={{request.form.username}}>
+                        </div>
+                        <div class="col s3"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col s3"></div>
+                        <div class="input-field col s6">
+                        <!-- <i class="material-icons prefix md-36">live_help</i> -->
+                        <label for="password">Password</label>
+                        <input name="password" type="password" required class="validate" value={{request.form.password}}>
+                        </div>
+                        <div class="col s3"></div>
+                    </div>
+                    <div class="row">
+                            <div class="col s3"></div>
+                            <div class="input-field col s6">
+                            <!-- <i class="material-icons prefix md-36">live_help</i> -->
+                            <label for="password">Confirm Password</label>
+                            <input name="confirm_password" type="password" required class="validate" value={{request.form.confirm_password}}>
+                            </div>
+                            <div class="col s3"></div>
+                    </div>
+
+                    <div class="row">
+                            <div class="col s3"></div>
+                            <div class="col s6">
+                            <p>
+                                <label>
+                                    <input class="with-gap" name="category" type="radio" value="user"  checked/>
+                                    <span>User of Application</span>
+                                </label>
+                            </p>
+                            <p>
+                                <label>
+                                <input class="with-gap" name="category" type="radio" value="app_dev"/>
+                                <span>Application Developer</span>
+                                </label>
+                            </p>
+                            <p>
+                                <label>
+                                <input class="with-gap" name="category" type="radio" value="nw_admin"/>
+                                <span>Network Admin</span>
+                                </label>
+                            </p>
+                            </div>
+                            <div class="col s3"></div>
+                    </div>
+
+                    <div class="row">
+                    <div class="col s3"></div>
+                    <div class="col s6">
+                        <button class="registerbtn" type="submit" name="action">Submit
+                        <!-- <i class="material-icons right">Submit</i> -->
+                        </button>
+                    </div>
+                    <div class="col s3"></div>
+                    </div>
+                </form>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}
