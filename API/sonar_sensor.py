@@ -7,7 +7,6 @@ class SonarSensor(Sensor):
 
     # sends simulated input to the Sensor Manager in the prescribed rate
     # use sockets
-    # create thread to send simulated input
     def send_simulated_input():
 
 if __name__ == "__main__":
