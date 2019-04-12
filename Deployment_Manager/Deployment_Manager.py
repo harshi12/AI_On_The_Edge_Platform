@@ -2,103 +2,93 @@ import zipfile
 import os
 from queue_req_resp import RabbitMQ
 import json
-from app.nfs_client import NFS
+from nfs_client import NFS
 import time
 
-def Deploy(Ad_Id,App_Id,Package_Absolute_Path):
+class Deployment_Manager():
 
-    # ---------- Unzip ------------- #
-    Current_Working_Direcory = os.getcwd()
+    def __init__(self, NFS_Server="192.168.31.29", Local_Password="iforgot", Local_mount_relative_path = "/nfs_mount"):
+       self.NFS_Obj = NFS(NFS_Server, Local_Password)
+       self.local_nfs_dir = os.getcwd() + Local_mount_relative_path
 
-    zip_ref = zipfile.ZipFile(Package_Absolute_Path, 'r')
-    zip_ref.extractall(Current_Working_Direcory)
-    zip_ref.close()
+    def Deploy_App(self, App_Dev_Id, App_Id, Package_Absolute_Path):
 
-    Unzip_File_Name = os.path.basename(Package_Absolute_Path)[:-4]
+        # ---------- Unzip Package ------------- #
+        Current_Working_Direcory = os.getcwd()
 
-    os.rename(Current_Working_Direcory+"/"+Unzip_File_Name,Current_Working_Direcory+"/"+str(App_Id))
+        zip_ref = zipfile.ZipFile(Package_Absolute_Path, 'r')
+        zip_ref.extractall(Current_Working_Direcory)
+        zip_ref.close()
 
-    # --------- Store in NFS -------------- #
-    local_nfs_dir = Current_Working_Direcory+"/nfs_mount"
-    print ("Connecting to NFS")
-    nfs = NFS("192.168.31.29", "iforgot")
-    nfs.mount("", local_nfs_dir)
+        Unzip_File_Name = os.path.basename(Package_Absolute_Path)[:-4]
 
-    List_Of_Directories = nfs.listdir(local_nfs_dir)
-    if str(Ad_Id) not in List_Of_Directories:
-        nfs.mkdir(local_nfs_dir+"/"+str(Ad_Id))
+        os.rename(Current_Working_Direcory+"/"+Unzip_File_Name,Current_Working_Direcory+"/"+str(App_Id))
 
-    nfs.copy(Current_Working_Direcory+"/"+str(App_Id), local_nfs_dir+"/"+str(Ad_Id)+"/")
-    print ("DisConnecting to NFS")
-    time.sleep(5)
+        # --------- Store in NFS -------------- #
+        print ("Connecting to NFS")
+        self.NFS_Obj.mount("", self.local_nfs_dir)
 
-    nfs.unmount(local_nfs_dir)
+        List_Of_Directories = self.NFS_Obj.listdir(self.local_nfs_dir)
+        if str(App_Dev_Id) not in List_Of_Directories:
+            self.NFS_Obj.mkdir(self.local_nfs_dir+"/"+str(App_Dev_Id))
 
-    # -------------- Making 3 Link ------------------- #
+        self.NFS_Obj.copy(Current_Working_Direcory+"/"+str(App_Id), self.local_nfs_dir+"/"+str(App_Dev_Id)+"/")
+        print ("DisConnecting to NFS")
+        time.sleep(5)
 
-    Model_Link = "/"+str(Ad_Id)+"/"+str(App_Id)+"/model"
-    App_Link = "/"+str(Ad_Id)+"/"+str(App_Id)+"/App"
-    Config_Link = "/"+str(Ad_Id)+"/"+str(App_Id)+"/config"
+        self.NFS_Obj.unmount(self.local_nfs_dir)
 
-    print (Model_Link)
-    print (App_Link)
-    print (Config_Link)
+        # -------------- Artefacts staorage links ------------------- #
 
-    # ------------- Store in Registry ---------------- #
+        Model_Link = "/"+str(Ad_Id)+"/"+str(App_Id)+"/Models"
+        App_Link = "/"+str(Ad_Id)+"/"+str(App_Id)+"/AppLogic"
+        Service_Link = "/"+str(Ad_Id)+"/"+str(App_Id)+"/Services"
+        Config_Link = "/"+str(Ad_Id)+"/"+str(App_Id)+"/Config"
 
+        print (Model_Link)
+        print (App_Link)
+        print (Service_Link)
+        print (Config_Link)
 
-    Registry_Message = {
-                            "Request_Type":"Write","DS_Name":"Storage_info",
-                            "Value":
-                                [
-                                    {
-                                        "App_id": App_Id,
-                                        "Model_Link": Model_Link,
-                                        "App_Link": App_Link,
-                                        "Config_Link": Config_Link
-                                    }
-                                ]
-                        }
+        # ------------- Store Artefacts staorage links in Registry ---------------- #
 
-    Registry_Message = json.dumps(Registry_Message)
-    obj_RG = RabbitMQ()
-    obj_RG.send("", "DM_RG", Registry_Message)
-
-
-    # ----------- Send to Host Manager ---------------- #
-
-    Host_Manager_Message = {
-	                        "Request_Type": "App_Submit",
-                            "AD_ID" : Ad_Id,
-                            "App_Id" : App_Id,
-                            "Model_Link": Model_Link,
-                            "App_Link": App_Link,
-                            "Config_Link": Config_Link
+        Registry_Message = {
+                                "Request_Type":"Write",
+                                "DS_Name":"Storage_info",
+                                "Value":
+                                    [
+                                        {
+                                            "App_id": App_Id,
+                                            "Model_Link": Model_Link,
+                                            "App_Link": App_Link,
+                                            "Service_Link" : Service_Link,
+                                            "Config_Link": Config_Link
+                                        }
+                                    ]
                             }
 
-    Host_Manager_Message = json.dumps(Host_Manager_Message)
-    obj_HM = RabbitMQ()
-    obj_HM.send("", "DM_HM", Host_Manager_Message)
-    # # Send_
-    # # # Response = Registry_Write()
+        Registry_Message = json.dumps(Registry_Message)
+        obj_RG = RabbitMQ()
+        obj_RG.send("", "DM_RG", Registry_Message)
 
-    # # If(Response):
-    # #     Message = {"Request": "App_Submit","Model_link":Model_Link,"App_link":App_Link,"Config_link":Config_Link}
-    # #     Message = json.dumps(str(Message))
-	# # 	obj = RabbitMQ()
-	# # 	obj.send("", "DM_HM", Message)
-    return Model_Link , App_Link , Config_Link
+        # ----------- Send request to Host Manager ---------------- #
 
-#Deploy(5,4,os.getcwd()+"/sonar_application.zip")
+        Host_Manager_Message = {
+    	                        "Request_Type": "App_Submit",
+                                "AD_ID" : Ad_Id,
+                                "App_Id" : App_Id,
+                                "Model_Link": Model_Link,
+                                "App_Link": App_Link,
+                                "Service_Link" : Service_Link,
+                                "Config_Link": Config_Link
+                                }
 
+        Host_Manager_Message = json.dumps(Host_Manager_Message)
+        obj_HM = RabbitMQ()
+        obj_HM.send("", "DM_HM", Host_Manager_Message)
 
-# obj = RabbitMQ()
-# obj.send("", "DM_RG", Registry_Message)
+        return Model_Link , App_Link , Config_Link
 
-# nfs = NFS("192.168.2.1", "S2j1ar1in63")
-# # nfs.mount('/', "~/nfs_mount")
-# # x = nfs.mkdir("~/nfs_mount/ravi")
-# List_Of_Directories = nfs.listdir("/home/ravi/nfs_mount/")
-# if
-# nfs.unmount("/home/ravi/nfs_mount")
-# nfs = NFS("192.168.2.1", "S2j1ar1in63")
+# Sample Function Call
+DM_Obj = Deployment_Manager("192.168.31.29", "iforgot", "/nfs_mount")
+DM_Obj.Deploy_App(1,2,"/Users/pranjali/Desktop/IAS.zip")
