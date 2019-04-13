@@ -6,6 +6,8 @@ import os
 *****Platform Bootstrap******
 1. Start NFS Server
 2. Start RabbitMQ Server
+3. Start Service Manager
+
 
 STEPS:
 1. mount NFS API folder on all the host machines
@@ -22,7 +24,7 @@ class Bootstrap:
 		self.moduleData = {}
 		# create a dictionary to store username password of each host machine in the platform
 		self.platformHostCredentials = {}
-		self.NFSServerIP = 0
+		self.NFSServerIP = "192.168.43.174"
 		self.RabbitMQIP = 0
 		self.RMQCredentials = {}
 
@@ -53,10 +55,11 @@ class Bootstrap:
 		password = self.platformHostCredentials[IP]['password']
 		setupFileName = self.moduleData[moduleName]['executableFile'].strip()
 		setupFilePath = (self.moduleData[moduleName]['folderName'] + '/' + setupFileName).strip()
+		setupFilePath = setupFilePath.replace(" ", "\ ")
 		return IP, Port, username, password, setupFileName, setupFilePath
 
 	def mountNFS(self, moduleName):
-		IP, Port, username, password, _ = self.getVariables(moduleName)
+		IP, Port, username, password, temp1, temp2 = self.getVariables(moduleName)
 		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'echo "+password+" | sudo -S apt-get install nfs-common\'"
 		print(cmd)
 		os.system(cmd)
@@ -65,11 +68,12 @@ class Bootstrap:
 		print(cmd)
 		os.system(cmd)
 
-		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'echo "+password+" | sudo -S mount "+self.NFSServerIP+":/mnt/Repository /home/"+username+"/Platform/\'"
+		mountPath = '/home/'+username+'/Platform'
+		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'echo "+password+" | sudo -S mount "+self.NFSServerIP+":/mnt/Repository "+mountPath+"\'"
 		print(cmd)
 		os.system(cmd)
 
-		return
+		return mountPath
 
 
 	def initDeploymentManager():
@@ -77,7 +81,21 @@ class Bootstrap:
 
 	def initServiceManager(self):
 		IP, Port, username, password, setupFileName, setupFilePath = self.getVariables('ServiceManager')
-		self.mountNFS('ServiceManager')
+		path = self.mountNFS('ServiceManager')
+		
+		setupFilePath = path +'/'+setupFilePath 
+		temp = setupFilePath.split('/')
+		print("temp", temp)
+		folderPath = ""
+		for i in temp[:-1]:
+			folderPath += i+'/'
+
+		# folderPath += '/'
+		print("folderPath", folderPath)
+		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'"+setupFilePath+" "+folderPath+"\'"
+		print(cmd)
+		os.system(cmd)		
+		print('Service Manager started on IP', IP)
 
 
 	def initHostManager():
@@ -109,9 +127,10 @@ class Bootstrap:
 
 	def initNFS(self): 
 		IP, Port, username, password, setupFileName, setupFilePath = self.getVariables('Repository')
+		print("**************************", IP)
 		temp = IP.split('.')
 		network = temp[0]+'.'+temp[1]+'.'+temp[2]+'.'+'0'
-
+		print("**************************", network)
 		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'mkdir -p /home/"+username+"/Platform\'"
 		print(cmd)
 		os.system(cmd)
@@ -120,14 +139,14 @@ class Bootstrap:
 		print(cmd)
 		os.system(cmd)
 
-		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'/home/"+username+"/"+"/Platform/"+setupFileName+" "+IP+" "+username+" "+password+" "+network+"\'"
+		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'/home/"+username+"/Platform/"+setupFileName+" "+IP+" "+username+" "+password+" "+network+"\'"
 		print(cmd)
 		os.system(cmd)
 		print("Repository setup finished on",IP,"!")
 		self.NFSServerIP = IP
 
 	def initRabbitMQServer(self):
-		IP, Port, username, password, setupFileName, setupFilePath = self.getVariables('Repository')
+		IP, Port, username, password, setupFileName, setupFilePath = self.getVariables('RabbitMQServer')
 		
 		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'mkdir -p /home/"+username+"/Platform\'"
 		print(cmd)
@@ -150,9 +169,7 @@ class Bootstrap:
 if __name__ == '__main__':
 	boot = Bootstrap('platformConfig.xml')
 	boot.parsePlatformConfig()
-	print("Module Data:",boot.moduleData)
-	print("Module Host Credentials:", boot.platformHostCredentials)
-	
-	boot.initNFS()
-	boot.initRabbitMQServer()
-	
+
+	# boot.initNFS()
+	# boot.initRabbitMQServer()
+	boot.initServiceManager()

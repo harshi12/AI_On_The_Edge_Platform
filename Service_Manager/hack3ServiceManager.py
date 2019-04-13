@@ -44,7 +44,7 @@ class serviceManager():
 		requestType = data['Request_Type']
 		global hostOccupiedPorts
 		global threadService
-		if requestType == 'Start_Service':
+		if requestType == 'Start_Model': # AI model
 			print("Received a request to start a service from Host Manager")
 			hostList = data['Hosts']
 			serviceID = data['Service_ID']
@@ -80,6 +80,12 @@ class serviceManager():
 				else:
 					hostOccupiedPorts[IP].append(new_port)
 
+		elif requestType == 'Start_App': #flask application
+			print("Start_App request")
+
+		elif requestType == 'Start_Service': # non AI services
+			print("Start_Service request")
+
 
 	def startServing(self, osCommand, serviceID, IP, port):
 		global hostOccupiedPorts
@@ -99,3 +105,23 @@ class serviceManager():
 		return
 
 SM = serviceManager()
+
+'''
+{
+"Request_Type" : "Start_Model"
+"Service_ID" : 2
+"Hosts" : ["1.2.3.4", "22.44.2.6"]
+}
+
+{
+"Request_Type" : "Start_App"
+"Service_ID" : 2
+"Hosts" : ["1.2.3.4", "22.44.2.6"]
+}
+
+{
+"Request_Type" : "Start_Service"
+"Service_ID" : 2
+"Hosts" : ["1.2.3.4", "22.44.2.6"]
+}
+'''

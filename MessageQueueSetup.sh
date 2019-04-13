@@ -8,8 +8,8 @@ sshpass -p $password ssh -o StrictHostKeyChecking=no -t $username@$IP << EOF
   
   echo "deb http://www.rabbitmq.com/debian/ testing main" >> /etc/apt/sources.list
   curl http://www.rabbitmq.com/rabbitmq-signing-key-public.asc | sudo  apt-key add -
-  echo $password | apt-get update
-  echo $password | sudo -S apt-get install rabbitmq-server
+  echo $password | sudo -S apt-get -q update
+  echo $password | sudo -S apt-get -q install rabbitmq-server
   echo $password | sudo -s chmod 777 /etc/default/rabbitmq-server
   echo $password | sudo -S echo ulimit -n 1024  > /etc/default/rabbitmq-server
   echo $password | sudo -S rabbitmq-plugins enable rabbitmq_management
