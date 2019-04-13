@@ -5,11 +5,9 @@ IP=$1
 username=$2
 network=$4
 
-echo $username
-echo $IP
 sshpass -p $password ssh -o StrictHostKeyChecking=no -t $username@$IP << EOF 
+  
   echo $password | sudo -S apt-get update
-  echo apt-get update
   echo $password | sudo -S apt-get install nfs-kernel-server
   echo $password | sudo -s chmod 777 /etc/exports
   echo $password | sudo -S mkdir /mnt/Repository 
@@ -23,3 +21,4 @@ EOF
 
 #service nfs-kernel-server stop -- to stop NFS server
 
+#echo $password | sudo -S apt-get update
