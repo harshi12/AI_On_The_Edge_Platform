@@ -9,10 +9,10 @@
 			<executableFile></executableFile>
 		</module>
 		<module name = "ServiceManager">
-			<IP>192.168.42.210</IP>
+			<IP>192.168.43.174</IP>
 			<Port>9501</Port>
-			<folderName></folderName>
-			<executableFile></executableFile>
+			<folderName>.</folderName>
+			<executableFile>hack3ServiceManager.py</executableFile>
 		</module>
 		<module name = "HostManager">
 			<IP>192.168.42.210</IP>
@@ -81,6 +81,8 @@
 		<module name = "RabbitMQServer">
 			<IP>192.168.42.210</IP>
 			<Port>9511</Port>
+			<folderName>.</folderName>
+			<executableFile>MessageQueueSetup.sh</executableFile>
 		</module>
 	</platformModules>
 	<Hosts>
