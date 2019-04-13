@@ -5,7 +5,7 @@ import json
 
 class RabbitMQ:
 	def __init__(self):
-		self.server_IP = "localhost"
+		self.server_IP = "192.168.31.10"
 		self.server_Port = 5672
 		self.credentials = pika.PlainCredentials("harshita","123")	
 		self.create_queue("", "AD_SM")
