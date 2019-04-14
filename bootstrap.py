@@ -24,9 +24,10 @@ class Bootstrap:
 		self.moduleData = {}
 		# create a dictionary to store username password of each host machine in the platform
 		self.platformHostCredentials = {}
-		self.NFSServerIP = "192.168.43.174"
-		self.RabbitMQIP = 0
+		self.NFSServerIP = "10.3.10.86"
+		self.RabbitMQIP = 0	
 		self.RMQCredentials = {}
+		self.NFSpid = 0
 
 		
 	def parsePlatformConfig(self):
@@ -57,6 +58,13 @@ class Bootstrap:
 		setupFilePath = (self.moduleData[moduleName]['folderName'] + '/' + setupFileName).strip()
 		setupFilePath = setupFilePath.replace(" ", "\ ")
 		return IP, Port, username, password, setupFileName, setupFilePath
+
+	def createPath(self, username, password, IP):
+		path = '/home/'+username+'/Platform/'
+		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'mkdir -p "+path+"\'"
+		print(cmd)
+		os.system(cmd)
+		return path
 
 	def mountNFS(self, moduleName):
 		IP, Port, username, password, temp1, temp2 = self.getVariables(moduleName)
@@ -123,7 +131,11 @@ class Bootstrap:
 		pass
 
 	def initRegistry():
-		pass
+		IP, Port, username, password, setupFileName, setupFilePath = self.getVariables('Registry')
+		path = createPath(self, username, password, IP)
+
+		
+		
 
 	def initNFS(self): 
 		IP, Port, username, password, setupFileName, setupFilePath = self.getVariables('Repository')
@@ -131,26 +143,40 @@ class Bootstrap:
 		temp = IP.split('.')
 		network = temp[0]+'.'+temp[1]+'.'+temp[2]+'.'+'0'
 		print("**************************", network)
-		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'mkdir -p /home/"+username+"/Platform\'"
-		print(cmd)
-		os.system(cmd)
 
-		cmd = "sshpass -p "+password+" scp "+setupFilePath+" "+username+"@"+IP+":/home/"+username+"/Platform/"
+		path = createPath(self, username, password, IP)
+		# path = '/home/'+username+'/Platform/'
+		# cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'mkdir -p "+path+"\'"
+		# print(cmd)
+		# os.system(cmd)
+
+		cmd = "sshpass -p "+password+" scp "+setupFilePath+" "+username+"@"+IP+":"+path
 		print(cmd)
 		os.system(cmd)
 
 		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'/home/"+username+"/Platform/"+setupFileName+" "+IP+" "+username+" "+password+" "+network+"\'"
 		print(cmd)
 		os.system(cmd)
+
+		path = username+'@'+IP+':'+path+'repoPID.txt'
+		cmd = "sshpass -p "+password+" scp "+path+"  ./"
+		print(cmd)
+		os.system(cmd)
+
+		with open('repoPID.txt') as f:
+			pid = f.read()
+			self.NFSpid = pid
+
 		print("Repository setup finished on",IP,"!")
 		self.NFSServerIP = IP
 
 	def initRabbitMQServer(self):
 		IP, Port, username, password, setupFileName, setupFilePath = self.getVariables('RabbitMQServer')
 		
-		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'mkdir -p /home/"+username+"/Platform\'"
-		print(cmd)
-		os.system(cmd)
+		path = createPath(self, username, password, IP)
+		# cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'mkdir -p /home/"+username+"/Platform\'"
+		# print(cmd)
+		# os.system(cmd)
 
 		cmd = "sshpass -p "+password+" scp "+setupFilePath+" "+username+"@"+IP+":/home/"+username+"/Platform/"
 		print(cmd)
@@ -170,6 +196,7 @@ if __name__ == '__main__':
 	boot = Bootstrap('platformConfig.xml')
 	boot.parsePlatformConfig()
 
-	# boot.initNFS()
+	boot.initNFS()
+	boot.initRegistry()
 	# boot.initRabbitMQServer()
-	boot.initServiceManager()
+	# boot.initServiceManager()
