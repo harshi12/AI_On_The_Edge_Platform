@@ -26,8 +26,10 @@ class Bootstrap:
 		self.platformHostCredentials = {}
 		self.NFSServerIP = "10.3.10.86"
 		self.RabbitMQIP = 0	
+		self.RabbitMQPort = 5672
 		self.RMQCredentials = {}
 		self.NFSpid = 0
+		self.RMQInput = ""
 
 		
 	def parsePlatformConfig(self):
@@ -66,6 +68,16 @@ class Bootstrap:
 		os.system(cmd)
 		return path
 
+	def getFolderPath(self, mountPath, setupFilePath):
+		setupFilePath = mountPath +'/'+setupFilePath 
+		temp = setupFilePath.split('/')
+		print("temp", temp)
+		folderPath = ""
+		for i in temp[:-1]:
+			folderPath += i+'/'
+
+		return folderPath
+
 	def mountNFS(self, moduleName):
 		IP, Port, username, password, temp1, temp2 = self.getVariables(moduleName)
 		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'echo "+password+" | sudo -S apt-get install nfs-common\'"
@@ -91,16 +103,16 @@ class Bootstrap:
 		IP, Port, username, password, setupFileName, setupFilePath = self.getVariables('ServiceManager')
 		path = self.mountNFS('ServiceManager')
 		
-		setupFilePath = path +'/'+setupFilePath 
-		temp = setupFilePath.split('/')
-		print("temp", temp)
-		folderPath = ""
-		for i in temp[:-1]:
-			folderPath += i+'/'
+		# setupFilePath = path +'/'+setupFilePath 
+		# temp = setupFilePath.split('/')
+		# print("temp", temp)
+		folderPath = getFolderPath(path, setupFilePath)
+		# for i in temp[:-1]:
+		# 	folderPath += i+'/'
 
-		# folderPath += '/'
 		print("folderPath", folderPath)
-		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'"+setupFilePath+" "+folderPath+"\'"
+		# RMQInput = self.RabbitMQIP+" "+self.RabbitMQPort+" "+self.RMQCredentials['username']+" "+self.RMQCredentials['password']
+		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'"+setupFilePath+" "+folderPath+" "+self.RMQInput+"\'"
 		print(cmd)
 		os.system(cmd)		
 		print('Service Manager started on IP', IP)
@@ -133,8 +145,12 @@ class Bootstrap:
 	def initRegistry():
 		IP, Port, username, password, setupFileName, setupFilePath = self.getVariables('Registry')
 		path = createPath(self, username, password, IP)
-
-		
+		path = self.mountNFS('Registry')
+		folderPath = getFolderPath(path, setupFilePath)
+		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'"+setupFilePath+" "+folderPath+" "+self.RMQInput+"\'"
+		print(cmd)
+		os.system(cmd)		
+		print('Registry started on IP', IP)
 		
 
 	def initNFS(self): 
@@ -190,6 +206,7 @@ class Bootstrap:
 		self.RabbitMQIP = IP
 		self.RMQCredentials['username'] = 'harshita'
 		self.RMQCredentials['password'] = '123'
+		self.RMQInput = IP+" "+Port+" "+harshita+" 123"
 
 
 if __name__ == '__main__':
