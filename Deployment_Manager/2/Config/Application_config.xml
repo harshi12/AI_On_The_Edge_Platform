@@ -1,0 +1,27 @@
+<Application>
+    <Services>
+        <Service name = "servicename1">
+            <DeploymentConfigFile>Distance_Alarm_Service1.xml</DeploymentConfigFile>
+            <ProductionConfigFile>Dummy_File_name</ProductionConfigFile>
+        </Service>
+        <Service name = "servicename2">
+            <DeploymentConfigFile>Distance_Alarm_Service1.xml</DeploymentConfigFile>
+            <ProductionConfigFile>Dummy_File_name</ProductionConfigFile>
+        </Service>
+        <Service name = "servicename3">
+            <DeploymentConfigFile>Distance_Alarm_Service1.xml</DeploymentConfigFile>
+            <ProductionConfigFile>Dummy_File_name</ProductionConfigFile>
+        </Service>
+    </Services>
+    <ApplicationLogic>
+        <AppLogic name = "">
+            <ConfigFile></ConfigFile>
+        </AppLogic>
+        <AppLogic name = "">
+            <ConfigFile></ConfigFile>
+        </AppLogic>
+        <AppLogic name = "">
+            <ConfigFile></ConfigFile>
+        </AppLogic>
+    </ApplicationLogic>
+</Application>

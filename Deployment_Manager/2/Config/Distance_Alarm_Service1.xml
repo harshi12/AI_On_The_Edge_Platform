@@ -1,0 +1,36 @@
+<Service name = "servicename1">
+    <Type></Type> <!-- AI/Non AI -->
+    <HostSetUp>
+        <Install>tensoflow_model_server</Install>
+        <Install>numpy</Install>
+    </HostSetUp>
+    <Dependency>
+        <ServiceName></ServiceName>
+        <ServiceFile></ServiceFile>
+    </Dependency>
+    <Critical>yes/no</Critical>
+    <Sensors>
+        <Sensor name = "">
+            <Type></Type>
+            <!-- <InterfaceFile></InterfaceFile> -->
+            <APIs>
+                <API name="send_simulated_data">
+                    <Parameters>
+                        <Parameter>
+                            <Type></Type>
+                        </Parameter>
+                    </Parameters>
+                    <ReturnType></ReturnType>
+                </API>
+            </APIs>
+        </Sensor>
+    </Sensors>
+    <OutputStreams>
+        <OutputStream name="DistanceSensor">
+            <Type>Sensor</Type>
+        </OutputStream>
+        <OutputStream name="Emergency Notification Service">
+            <Type>Service</Type>
+        </OutputStream>
+    </OutputStreams>
+</Service>
