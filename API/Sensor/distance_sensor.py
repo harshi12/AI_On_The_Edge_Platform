@@ -16,7 +16,7 @@ class DistanceSensor(Sensor):
         self.name = "DISTANCE_SENSOR"
         Sensor.__init__(self, description, "two-way", rate, dest_IP, dest_port)
 
-    # sends simulated input to the Sensor Manager in the prescribed rate
+    # sends simulated input to the Sensor Manager, in the prescribed rate,
     # using sockets
     def send_simulated_input(self):
         population = [0, 1]
