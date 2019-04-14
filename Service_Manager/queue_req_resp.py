@@ -4,10 +4,10 @@ import pika
 import json
 
 class RabbitMQ:
-	def __init__(self):
-		self.server_IP = "192.168.31.10"
-		self.server_Port = 5672
-		self.credentials = pika.PlainCredentials("harshita","123")	
+	def __init__(self, IP, username, password, Port = 5672):
+		self.server_IP = IP
+		self.server_Port = Port
+		self.credentials = pika.PlainCredentials(username, password)	
 		self.create_queue("", "AD_SM")
 		self.create_ServiceQueues("SM","Docker")
 		self.create_ServiceQueues("SM", "Scheduler")

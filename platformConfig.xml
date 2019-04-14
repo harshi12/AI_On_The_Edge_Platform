@@ -9,7 +9,7 @@
 			<executableFile></executableFile>
 		</module>
 		<module name = "ServiceManager">
-			<IP>192.168.43.174</IP>
+			<IP>192.168.31.10</IP>
 			<Port>9501</Port>
 			<folderName>Service_Manager</folderName>
 			<executableFile>startServiceManager.sh</executableFile>
@@ -69,7 +69,7 @@
 			<executableFile></executableFile>
 		</module>
 		<module name = "Repository">
-			<IP>192.168.43.174</IP>
+			<IP>192.168.42.210</IP>
 			<Port>9511</Port>
 			<folderName>.</folderName>
 			<executableFile>RepositorySetup.sh
@@ -79,38 +79,38 @@
 			</executableFile>
 		</module>
 		<module name = "RabbitMQServer">
-			<IP>192.168.43.174</IP>
+			<IP>192.168.31.10</IP>
 			<Port>9511</Port>
 			<folderName>.</folderName>
 			<executableFile>MessageQueueSetup.sh</executableFile>
 		</module>
 	</platformModules>
 	<Hosts>
-		<Host IP = "192.168.42.210">
+		<Host IP = "192.168.31.38">
 			<username>ravi</username>
 			<password>S2j1ar1in63</password>
 		</Host>
-		<Host IP = "192.168.42.211">
+		<Host IP = "192.168.31.194">
 			<username>sukku</username>
 			<password>iforgot</password>
 		</Host>
-		<Host IP = "192.168.42.212">
+		<Host IP = "192.168.31.150">
 			<username>bhavidhingra</username>
 			<password>bhavi</password>
 		</Host>
-		<Host IP = "192.168.43.174">
+		<Host IP = "192.168.42.210">
 			<username>harshita</username>
 			<password>@14799741hA</password>
 		</Host>
-		<Host IP = "192.168.42.214">
+		<Host IP = "192.168.31.124">
 			<username>kaushik</username>
 			<password>rama1729</password>
 		</Host>
-		<Host IP = "192.168.42.215">
+		<Host IP = "192.168.31.29">
 			<username>red</username>
 			<password>verma</password>
 		</Host>
-		<Host IP = "192.168.42.216">
+		<Host IP = "192.168.31.34">
 			<username>kratika</username>
 			<password>Qwerty987**</password>
 		</Host>

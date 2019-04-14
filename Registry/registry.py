@@ -1,15 +1,17 @@
 from queue_req_resp import RabbitMQ
 import json
 import threading
+import sys
 
+RMQ = 0
 
 class Registry:
 
     def __init__(self):
-        Storage_info = {}
-        Model_inst_info = {}
-        Service_inst_info = {}
-        App_inst_info = {}
+        self.Storage_info = {}
+        self.Model_inst_info = {}
+        self.Service_inst_info = {}
+        self.App_inst_info = {}
 
     def Read_DS(self, DS_Name):
         pass
@@ -55,7 +57,7 @@ class Registry:
             for i in range(len(DS_Obj)):
                 #Record if Dict
                 Record = DS_Obj[i]
-                Service_Id = Record['Service_id']
+                Service_Id = Record['Model_id']
 
                 self.Service_inst_info[Service_Id] = []
 
@@ -124,14 +126,27 @@ def callback(ch, method, properties, body):
 
 #TEMP queues Ideally, Common queue will be used which will listen from all modules
 def Recieve_from_SM():
-    msg_obj2 = RabbitMQ()
-    msg_obj2.receive(callback, "", "SM_RG")
+    # msg_obj2 = RabbitMQ()
+    RMQ.receive(callback, "", "SM_RG")
 
 def Recieve_from_DM():
-    msg_obj1 = RabbitMQ()
-    msg_obj1.receive(callback, "", "DM_RG")
+    # msg_obj1 = RabbitMQ()
+    RMQ.receive(callback, "", "DM_RG")
 
-t1 = threading.Thread(target=Recieve_from_SM)
-t1.start()
 
-Recieve_from_DM()
+if __name__ == '__main__':
+
+    # global RMQ
+
+    IP = sys.argv[1]
+    port = sys.argv[2]
+    username = sys.argv[3]
+    password = sys.argv[4]
+
+    RMQ = RabbitMQ(IP, username, password, port)
+
+    t1 = threading.Thread(target=Recieve_from_SM)
+    t1.start()
+
+    t2 = threading.Thread(target=Recieve_from_DM)
+    t2.start()

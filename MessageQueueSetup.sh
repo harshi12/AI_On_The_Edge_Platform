@@ -13,9 +13,9 @@ sshpass -p $password ssh -o StrictHostKeyChecking=no -t $username@$IP << EOF
   echo $password | sudo -s chmod 777 /etc/default/rabbitmq-server
   echo $password | sudo -S echo ulimit -n 1024  > /etc/default/rabbitmq-server
   echo $password | sudo -S rabbitmq-plugins enable rabbitmq_management
-  echo $password | sudo -S service rabbitmq-server start
+  echo $password | sudo -S service rabbitmq-server start & echo $! > RMQPID.txt
   echo $password | sudo -S rabbitmqctl add_user harshita 123
-  echo $password | sudo -S rabbitmqctl set_user_tags harshita administrato
+  echo $password | sudo -S rabbitmqctl set_user_tags harshita administrator
   echo $password | sudo -S rabbitmqctl set_permissions -p / harshita ".*" ".*" ".*"
 
 EOF
