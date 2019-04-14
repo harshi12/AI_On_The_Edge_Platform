@@ -15,7 +15,7 @@ from sqlalchemy import create_engine , update
 from app.models import Person,Application,User,Gateway,Sensor
 import numpy as np
 import os
-from app.Deployment_Manager import Deploy
+from app.Deployment_Manager import Deployment_Manager
 from db_server import *
 
 from werkzeug.utils import secure_filename
@@ -219,8 +219,8 @@ def login():
         if category == "user":
             user = Person.query.filter_by(username=username).first()
 
-            if user is None:
-                error = 'Entry not found'
+            if (user is None) or (user.person_type != 1)  :
+                error = 'Entry not found ! Enter Correct Details'
                 return render_template('login.html', error=error)
 
             password = user.password
@@ -229,8 +229,8 @@ def login():
         elif category == "app_dev":
             app_dev = Person.query.filter_by(username=username).first()
 
-            if app_dev is None:
-                error = 'Entry not found'
+            if (app_dev is None) or (app_dev.person_type != 2):
+                error = 'Entry not found ! Enter Correct Details'
                 return render_template('login.html', error=error)
 
             password = app_dev.password
@@ -238,11 +238,10 @@ def login():
             per_type = app_dev.person_type
             print("**********",password)
         else:
-            print("Network Admin")
             nw_admin = Person.query.filter_by(username=username).first()
 
-            if nw_admin is None:
-                error = 'Entry not found'
+            if (nw_admin is None) or (nw_admin.person_type!= 3):
+                error = 'Entry not found ! Enter Correct Details'
                 return render_template('login.html', error=error)
 
             password = nw_admin.password
@@ -369,9 +368,15 @@ def deploy_file(filename):
 
     App_path = APP_UPLOAD_FOLDER+filename
 
-    Model_Link , App_Link , Config_Link = Deploy(AD_id,app_id,App_path)
+    # Model_Link , App_Link , Config_Link = Deploy(AD_id,app_id,App_path)
+    
+    DM_Obj = Deployment_Manager("192.168.31.29", "iforgot", "/nfs_mount")
+    Model_Link , App_Link , Config_Link = DM_Obj.Deploy_App(AD_id,app_id,App_path)
 
-    # Application.query.filter_by(app_id=app_id).first().update({app_logic_loc : App_Link , config_file_loc : Config_Link , model_loc : Model_Link } , synchronize_session = False)
+    # Model_Link = "/2/model"
+    # App_Link = "2/app"
+    # Config_Link = "2/config"
+
     app.app_logic_loc = App_Link
     app.config_file_loc = Config_Link
     app.model_loc = Model_Link
@@ -394,18 +399,23 @@ def add_gw():
         #modelid = uploadmodel(filepath,modelname)
         # configid = uploadconfig(configpath,configname)
         #send_to_service_manager(modelid)
-        file_list=gwfile.filename.split(".")
-        print(file_list)
-        if '.' in gwfile.filename and file_list[1] == "json":
-            filename = secure_filename(gwfile.filename)
-            gwfile.save(os.path.join(app.config['GW_UPLOAD_FOLDER'], filename))
-            #return redirect(url_for('uploaded_file', filename=filename))
-            gw_parse_n_save(filename)
-            #TODO: Delete Config file ??
-            return render_template('uploaded.html')
-        else:
-            flash('Upload config in .json format')
-            return render_template('register_gw.html',title="IAS 1")
+        filename = secure_filename(gwfile.filename)
+        gwfile.save(os.path.join(app.config['GW_UPLOAD_FOLDER'], filename))
+        ##TODO : New parse for xml
+        gw_parse_n_save(filename)
+        return render_template('uploaded.html')
+        # file_list=gwfile.filename.split(".")
+        # print(file_list)
+        # if '.' in gwfile.filename and file_list[1] == "json":
+        #     filename = secure_filename(gwfile.filename)
+        #     gwfile.save(os.path.join(app.config['GW_UPLOAD_FOLDER'], filename))
+        #     #return redirect(url_for('uploaded_file', filename=filename))
+        #     gw_parse_n_save(filename)
+        #     #TODO: Delete Config file ??
+        #     return render_template('uploaded.html')
+        # else:
+        #     flash('Upload config in .json format')
+        #     return render_template('register_gw.html',title="IAS 1")
     return render_template('register_gw.html',title="IAS 1")
 
 
@@ -416,31 +426,31 @@ def gw_parse_n_save(filename):
 
     print(config_file_path)
 
-    with open(config_file_path) as f:
-        data = json.load(f)
+    # with open(config_file_path) as f:
+    #     data = json.load(f)
 
-    gw_name = data["gw_name"]
-    gw_location = data["gw_location"]
-    gw_IP = data["gw_address"]["IP"]
-    gw_port = data["gw_address"]["port"]
-    #DB
-    gw=Gateway( gw_name=gw_name , gw_location=gw_location , gw_IP = gw_IP , gw_port=gw_port)
-    db.session.add(gw)
-    db.session.commit()
+    # gw_name = data["gw_name"]
+    # gw_location = data["gw_location"]
+    # gw_IP = data["gw_address"]["IP"]
+    # gw_port = data["gw_address"]["port"]
+    # #DB
+    # gw=Gateway( gw_name=gw_name , gw_location=gw_location , gw_IP = gw_IP , gw_port=gw_port)
+    # db.session.add(gw)
+    # db.session.commit()
 
-    gw = Gateway.query.filter_by(gw_name=gw_name).first()
-    gw_id = gw.gw_id
+    # gw = Gateway.query.filter_by(gw_name=gw_name).first()
+    # gw_id = gw.gw_id
 
-    sensor_types = []
-    for s in data["sensors"]:
-        #sensor_types.append(s["type"])
-        sensor_type = s["type"]
-        #DB
-        sensor = Sensor ( sensor_type=sensor_type , connected_gw_id=gw_id)
-        db.session.add(sensor)
-    db.session.commit()
+    # sensor_types = []
+    # for s in data["sensors"]:
+    #     #sensor_types.append(s["type"])
+    #     sensor_type = s["type"]
+    #     #DB
+    #     sensor = Sensor ( sensor_type=sensor_type , connected_gw_id=gw_id)
+    #     db.session.add(sensor)
+    # db.session.commit()
 
-    print("Saved in Database")
+    # print("Saved in Database")
     return
 
 

@@ -12,18 +12,13 @@ class Person(db.Model):
 
 class Application(db.Model):
     app_id = db.Column(db.Integer, primary_key=True)
-    # app_name = db.Column(db.String(100), unique=True, nullable=False)
-    app_name = db.Column(db.String(100), nullable=False)
+    app_name = db.Column(db.String(100), unique=True, nullable=False)
     # app_desc = db.Column(db.String(2000), nullable=False)
     AD_id = db.Column(db.Integer, db.ForeignKey(Person.person_id), nullable=False)
-    # app_logic_loc = db.Column(db.String(100), unique=True, nullable=True)
-    # config_file_loc = db.Column(db.String(100), unique=True, nullable=True)
-    # model_loc = db.Column(db.String(100), unique=True, nullable=True)
-    # app_ui_server = db.Column(db.String(100), unique=True, nullable=True)
-    app_logic_loc = db.Column(db.String(100), nullable=True)
-    config_file_loc = db.Column(db.String(100), nullable=True)
-    model_loc = db.Column(db.String(100), nullable=True)
-    app_ui_server = db.Column(db.String(100), nullable=True)
+    app_logic_loc = db.Column(db.String(100), unique=False, nullable=True)
+    config_file_loc = db.Column(db.String(100), unique=False, nullable=True)
+    model_loc = db.Column(db.String(100), unique=False, nullable=True)
+    app_ui_server = db.Column(db.String(100), unique=False, nullable=True)
 
     def __repr__(self):
         return "Application('{self.app_id}', '{self.app_logic_loc}', '{self.config_file_loc}' , '{self.config_file_loc}' , '{self.app_ui_server}')"

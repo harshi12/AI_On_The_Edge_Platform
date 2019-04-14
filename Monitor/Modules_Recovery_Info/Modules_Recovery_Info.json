@@ -1,0 +1,71 @@
+{
+  "1" :
+    {
+      "Primary" :
+        {
+          "IP" : "192.168.2.9",
+          "Username" : "akanksha",
+          "Password" : "Akanksha21!",
+          "Pid" : 15329
+        },
+        "Recovery" :
+        {
+          "IP" : "192.168.2.9",
+          "Username" : "akanksha",
+          "Password" : "Akanksha21!",
+          "Pid" : 15329
+        }
+    },
+    "2" :
+      {
+        "Primary" :
+          {
+            "IP" : "192.168.2.9",
+            "Username" : "akanksha",
+            "Password" : "Akanksha21!",
+            "Pid" : 15329
+          },
+          "Recovery" :
+          {
+            "IP" : "192.168.2.9",
+            "Username" : "akanksha",
+            "Password" : "Akanksha21!",
+            "Pid" : 9113
+          }
+      },
+      "3" :
+        {
+          "Primary" :
+            {
+              "IP" : "192.168.2.9",
+              "Username" : "akanksha",
+              "Password" : "Akanksha21!",
+              "Pid" : 3648
+            },
+            "Recovery" :
+            {
+              "IP" : "192.168.2.9",
+              "Username" : "akanksha",
+              "Password" : "Akanksha21!",
+              "Pid" : 15329
+            }
+        },
+        "4" :
+          {
+            "Primary" :
+              {
+                "IP" : "192.168.2.9",
+                "Username" : "akanksha",
+                "Password" : "Akanksha21!",
+                "Pid" : 3648
+              },
+              "Recovery" :
+              {
+                "IP" : "192.168.2.9",
+                "Username" : "akanksha",
+                "Password" : "Akanksha21!",
+                "Pid" : 3648
+              }
+          }
+
+}

@@ -1,44 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: black;
-}
 
-.container {
-  padding: 16px;
-  background-color: white;
-}
+{% extends 'layout.html' %}
 
-* {
-  box-sizing: border-box;
-}
-</style>
-</head>
-<body>
+{% block body %}
 <div class="container">
 </br></br></br></br>
 
+<style>
+select {
+  display: initial;
+}
+</style>
+
+<script>
+    $('.selectpicker').selectpicker();
+    $('.selectpicker').selectpicker({
+       style: 'btn-info',
+       size: 4
+   });
+ </script>
+
 <form action="/redirect_app" method="post" id="RunAppForm" name="runappform" >
-<h1>AI On Edge : GROUP 2</h1>
-<hr>
-<h2> Run Application</h2>
+
+<h4> Run Application</h4>
 <hr><br/>
-<h4>Select Application:-</h4>
+<h6>Select Application:</h6>
 <div>
- <select name="applications" >
-    <option value="SONAR">Sonar Detection </option>
-    <!-- <option value="MNIST">MNIST Application</option> -->
+ <select name="applications" class="selectpicker" data-style="btn-inverse">
+    <option value="naval"> Naval Mine </option>
+    <option value="face">Face Recognition</option>
   </select>
+  <br><br>
   <br><br>
 </div>
 <div>
-<button id="submitButton" class="btn btn-primary " type="submit">Submit</button>
+<button id="submitButton" class="btn btn-success " type="submit">Submit</button>
 </div>
 </form>
-
-</div>
-</body>
+{% endblock %}
