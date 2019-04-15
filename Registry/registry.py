@@ -12,6 +12,8 @@ class Registry:
         self.Model_inst_info = {}
         self.Service_inst_info = {}
         self.App_inst_info = {}
+        self.Host_Creds = {}
+        self.Platform_Module_Info = {}
 
     def Read_DS(self, DS_Name, DS_Obj):
         Result = {}
@@ -21,35 +23,35 @@ class Registry:
             #Filter is a list of App_ids
             for i in range(len(Filter)):
                 App_id = Filter[i]
-                for key in Storage_info.keys():
+                for key in self.Storage_info.keys():
                     print("key and app_id: ", key, app_id)
                     if key==App_id:
-                        Result[key] = Storage_info[key]
+                        Result[key] = self.Storage_info[key]
             return Result
 
-        if(DS_Name=='Model_inst_info'):
+        elif(DS_Name=='Model_inst_info'):
             Filter = DS_Obj['Filter']['Model_id']
             #Filter is a list of App_ids
             for i in range(len(Filter)):
                 Model_id = Filter[i]
-                for key in Model_inst_info.keys():
+                for key in self.Model_inst_info.keys():
                     print("key and app_id: ", key, Model_id)
                     if key==Model_id:
-                        Result[key] = Model_inst_info[key]
+                        Result[key] = self.Model_inst_info[key]
             return Result
 
-        if(DS_Name=='Service_inst_info'):
+        elif(DS_Name=='Service_inst_info'):
             Filter = DS_Obj['Filter']['Service_id']
             #Filter is a list of App_ids
             for i in range(len(Filter)):
                 Service_id = Filter[i]
-                for key in Service_inst_info.keys():
+                for key in self.Service_inst_info.keys():
                     print("key and Filter_val: ", key, Service_id)
                     if key==Filter_val:
-                        Result[key] = Service_inst_info[key]
+                        Result[key] = self.Service_inst_info[key]
             return Result
 
-        if(DS_Name=='App_inst_info'):
+        elif(DS_Name=='App_inst_info'):
             Filter = DS_Obj['Filter']['App_id']
             #Filter is a list of App_ids
             for i in range(len(Filter)):
@@ -58,6 +60,37 @@ class Registry:
                     print("key and Filter_val: ", key, App_id)
                     if key==Filter_val:
                         Result[key] = App_inst_info[key]
+            return Result
+
+        elif(DS_Name=='Host_Creds'):
+            Filter = DS_Obj['Filter']['Host_IP']
+            #Filter is a list of App_ids
+            if len(Filter)>0:
+                for i in range(len(Filter)):
+                    Host_IP = Filter[i]
+                    for key in self.Host_Creds.keys():
+                        print("key and Filter_val: ", key, Host_IP)
+                        if key==Filter_val:
+                            Result[key] = self.Host_Creds[key]
+            else:
+                Result = self.Host_Creds
+            return Result
+
+        elif(DS_Name=='Platform_Module_Info'):
+            Filter = DS_Obj['Filter']['Module_id']
+            #Filter is a list of App_ids
+            if len(Filter)>0:
+                for i in range(len(Filter)):
+                    Module_id = Filter[i]
+                    for key in self.Platform_Module_Info.keys():
+                        print("key and Filter_val: ", key, Module_id)
+                        if key==Filter_val:
+                            Result[key] = self.Platform_Module_Info[key]
+            else:
+                Result = self.Platform_Module_Info
+            return Result
+        else:
+            print("Invalid data structure mentioned in read request\n")
             return Result
 
     def Write_DS(self, DS_Name, DS_Obj):
@@ -130,6 +163,29 @@ class Registry:
 
                      App_Inst = [Host_IP, Host_Port, App_Status]
                      self.App_inst_info[App_Id].append(App_Inst)
+
+        elif(DS_Name=="Host_Creds"):
+            for i in range(len(DS_Obj)):
+                #Record if Dict
+                Host_IP = DS_Obj['Host_IP']
+                self.Host_Creds[Host_IP] = {}
+
+                Username = DS_Obj['Username']
+                Password = DS_Obj['Password']
+                self.Host_Creds[Host_IP][Username] = Username
+                self.Host_Creds[Host_IP][Password] = Password
+
+        elif(DS_Name=="Platform_Module_Info"):
+            for i in range(len(DS_Obj)):
+                #Record if Dict
+                Module_id = DS_Obj['Module_id']
+                self.Platform_Module_Info[Module_id] = {}
+
+                Primary = DS_Obj['Primary']
+                Recovery = DS_Obj['Recovery']
+                self.Platform_Module_Info[Host_IP][Primary] = Primary
+                self.Platform_Module_Info[Host_IP][Recovery] = Recovery
+
         else :
             print("\nInvalid Data Structure Name\n")
 
@@ -138,6 +194,8 @@ class Registry:
         print("\nModel_inst_info: ", self.Model_inst_info)
         print("\nService_inst_info: ", self.Service_inst_info)
         print("\nApp_inst_info: ", self.App_inst_info)
+        print("\nPlatform_Module_Info: ", self.Platform_Module_Info)
+        print("\nHost_Creds: ", self.Host_Creds)
 
 # Read JSON from common queue , parse it and call Update_DS/Read_DS function
 def callback(ch, method, properties, body):
@@ -171,13 +229,25 @@ def callback(ch, method, properties, body):
 
 
 #TEMP queues Ideally, Common queue will be used which will listen from all modules
+def Recieve_from_DM():
+    # RMQ = RabbitMQ()
+    RMQ.receive(callback, "", "DM_RG")
+
 def Recieve_from_SM():
     # RMQ = RabbitMQ()
     RMQ.receive(callback, "", "SM_RG")
 
-def Recieve_from_DM():
+def Recieve_from_MT():
     # RMQ = RabbitMQ()
-    RMQ.receive(callback, "", "DM_RG")
+    RMQ.receive(callback, "", "MT_RG")
+
+def Recieve_from_RM():
+    # RMQ = RabbitMQ()
+    RMQ.receive(callback, "", "RM_RG")
+
+def Recieve_from_LB():
+    # RMQ = RabbitMQ()
+    RMQ.receive(callback, "", "LB_RG")
 
 
 if __name__ == '__main__':
@@ -190,6 +260,17 @@ if __name__ == '__main__':
     password = sys.argv[4]
 
     RMQ = RabbitMQ(IP, username, password, port)
+
+    #REGISTRY <--> DEPLOYMENT MANAGER
+    RMQ.create_ServiceQueues("RG", "DM")
+    #REGISTRY <--> SERVICE MANAGER
+    RMQ.create_ServiceQueues("RG", "SM")
+    #REGISTRY <--> MONITOR
+    RMQ.create_ServiceQueues("RG", "MT")
+    #REGISTRY <--> RECOVERY MANAGER
+    RMQ.create_ServiceQueues("RG", "RM")
+    #REGISTRY <--> LOAD BALANCER
+    RMQ.create_ServiceQueues("RG", "LB")
 
     t1 = threading.Thread(target=Recieve_from_SM)
     t1.start()

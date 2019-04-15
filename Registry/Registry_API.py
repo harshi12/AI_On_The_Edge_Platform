@@ -84,6 +84,50 @@ class Registry_API:
         Request_json_msg = json.dumps(Request_Msg)
         self.msg_obj.send("", Queue_name, Request_json_msg)
 
+    def Write_Host_Creds(self, Host_IP, Username, Password, Queue_name):
+
+        Request_Msg = {}
+        Request_Msg["Request_Type"] = "Write"
+        Request_Msg["DS_Name"] = "Host_Creds"
+
+        key = "Value"
+        if key not in self.Request_Msg.keys():
+            Request_Msg["Value"] = []
+
+        Req_Value = {}
+        Req_Value["Host_IP"] = Host_IP
+        Req_Value["Username"] = Username
+        Req_Value["Password"] = Password
+
+        Request_Msg.append(Req_Value)
+
+        Request_json_msg = json.dumps(Request_Msg)
+        self.msg_obj.send("", Queue_name, Request_json_msg)
+
+    def Write_Platform_Module_Info(self, Module_id, PrimaryIP, PrimaryPid, RecoveryIP, RecoveryPid, Queue_name):
+
+        Request_Msg = {}
+        Request_Msg["Request_Type"] = "Write"
+        Request_Msg["DS_Name"] = "Platform_Module_Info"
+
+        key = "Value"
+        if key not in self.Request_Msg.keys():
+            Request_Msg["Value"] = []
+
+        Req_Value = {}
+        Req_Value["Module_id"] = Module_id
+        Req_Value["Primary"] = {}
+        Req_Value["Primary"]["IP"] = PrimaryIP
+        Req_Value["Primary"]["Pid"] = PrimaryPid
+        Req_Value["Recovery"] = {}
+        Req_Value["Recovery"]["IP"] = RecoveryIP
+        Req_Value["Recovery"]["Pid"] = RecoveryPid
+
+        Request_Msg.append(Req_Value)
+
+        Request_json_msg = json.dumps(Request_Msg)
+        self.msg_obj.send("", Queue_name, Request_json_msg)
+
     def Read_Storage_info(self, App_Id_list=[], Queue_name):
 
         Request_Msg = {}
@@ -146,6 +190,40 @@ class Registry_API:
             Req_Value["Filter"] = []
         else
             Req_Value["Filter"] = App_Id_list
+
+        Request_Msg.append(Req_Value)
+
+        Request_json_msg = json.dumps(Request_Msg)
+        self.msg_obj.send("", Queue_name, Request_json_msg)
+
+    def Read_Host_Creds(self, Host_IP_list=[], Queue_name):
+
+        Request_Msg = {}
+        Request_Msg["Request_Type"] = "Read"
+        Request_Msg["DS_Name"] = "Host_Creds"
+
+        Req_Value = {}
+        if len(Host_IP_list) == 0:
+            Req_Value["Filter"] = []
+        else
+            Req_Value["Filter"] = Host_IP_list
+
+        Request_Msg.append(Req_Value)
+
+        Request_json_msg = json.dumps(Request_Msg)
+        self.msg_obj.send("", Queue_name, Request_json_msg)
+
+    def Read_Platform_Module_Info(self, Module_id_list=[], Queue_name):
+
+        Request_Msg = {}
+        Request_Msg["Request_Type"] = "Read"
+        Request_Msg["DS_Name"] = "Platform_Module_Info"
+
+        Req_Value = {}
+        if len(Module_id_list) == 0:
+            Req_Value["Filter"] = []
+        else
+            Req_Value["Filter"] = Module_id_list
 
         Request_Msg.append(Req_Value)
 
