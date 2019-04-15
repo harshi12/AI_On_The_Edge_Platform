@@ -18,73 +18,67 @@ class Registry:
     def Read_DS(self, DS_Name, DS_Obj):
         Result = {}
 
-        if(DS_Name=='Storage_info'):
-            Filter = DS_Obj['Filter']['App_id']
+        if(DS_Name=="Storage_info"):
+            Filter = DS_Obj["App_id"]
             #Filter is a list of App_ids
             for i in range(len(Filter)):
                 App_id = Filter[i]
                 for key in self.Storage_info.keys():
-                    print("key and app_id: ", key, app_id)
                     if key==App_id:
                         Result[key] = self.Storage_info[key]
             return Result
 
-        elif(DS_Name=='Model_inst_info'):
-            Filter = DS_Obj['Filter']['Model_id']
+        elif(DS_Name=="Model_inst_info"):
+            Filter = DS_Obj["Model_id"]
             #Filter is a list of App_ids
             for i in range(len(Filter)):
                 Model_id = Filter[i]
                 for key in self.Model_inst_info.keys():
-                    print("key and app_id: ", key, Model_id)
                     if key==Model_id:
                         Result[key] = self.Model_inst_info[key]
             return Result
 
-        elif(DS_Name=='Service_inst_info'):
-            Filter = DS_Obj['Filter']['Service_id']
+        elif(DS_Name=="Service_inst_info"):
+            Filter = DS_Obj["Service_id"]
             #Filter is a list of App_ids
             for i in range(len(Filter)):
                 Service_id = Filter[i]
                 for key in self.Service_inst_info.keys():
-                    print("key and Filter_val: ", key, Service_id)
-                    if key==Filter_val:
+                    if key==Service_id:
                         Result[key] = self.Service_inst_info[key]
             return Result
 
-        elif(DS_Name=='App_inst_info'):
-            Filter = DS_Obj['Filter']['App_id']
+        elif(DS_Name=="App_inst_info"):
+            Filter = DS_Obj["App_id"]
             #Filter is a list of App_ids
             for i in range(len(Filter)):
                 App_id = Filter[i]
-                for key in App_inst_info.keys():
-                    print("key and Filter_val: ", key, App_id)
-                    if key==Filter_val:
-                        Result[key] = App_inst_info[key]
+                for key in self.App_inst_info.keys():
+                    if key==App_id:
+                        Result[key] = self.App_inst_info[key]
             return Result
 
-        elif(DS_Name=='Host_Creds'):
-            Filter = DS_Obj['Filter']['Host_IP']
+        elif(DS_Name=="Host_Creds"):
+            Filter = DS_Obj["Host_IP"]
             #Filter is a list of App_ids
             if len(Filter)>0:
                 for i in range(len(Filter)):
                     Host_IP = Filter[i]
                     for key in self.Host_Creds.keys():
-                        print("key and Filter_val: ", key, Host_IP)
-                        if key==Filter_val:
+                        if key==Host_IP:
                             Result[key] = self.Host_Creds[key]
             else:
                 Result = self.Host_Creds
             return Result
 
-        elif(DS_Name=='Platform_Module_Info'):
-            Filter = DS_Obj['Filter']['Module_id']
+        elif(DS_Name=="Platform_Module_Info"):
+            Filter = DS_Obj["Module_id"]
             #Filter is a list of App_ids
             if len(Filter)>0:
                 for i in range(len(Filter)):
                     Module_id = Filter[i]
                     for key in self.Platform_Module_Info.keys():
-                        print("key and Filter_val: ", key, Module_id)
-                        if key==Filter_val:
+                        if key==Module_id:
                             Result[key] = self.Platform_Module_Info[key]
             else:
                 Result = self.Platform_Module_Info
@@ -95,34 +89,34 @@ class Registry:
 
     def Write_DS(self, DS_Name, DS_Obj):
 
-        if(DS_Name=='Storage_info'):
+        if(DS_Name=="Storage_info"):
             for i in range(len(DS_Obj)):
                 #Record is a Dict
                 Record = DS_Obj[i]
-                App_Id = Record['App_id']
+                App_Id = Record["App_id"]
 
                 self.Storage_info[App_Id] = {}
 
-                Model_Link = Record['Model_Link']
-                App_Link = Record['App_Link']
-                Service_Link = Record['Service_Link']
-                Config_Link = Record['Config_Link']
+                Model_Link = Record["Model_Link"]
+                App_Link = Record["App_Link"]
+                Service_Link = Record["Service_Link"]
+                Config_Link = Record["Config_Link"]
 
-                self.Storage_info[App_Id]['Model_Link'] = Model_Link
-                self.Storage_info[App_Id]['App_Link'] = App_Link
-                self.Storage_info[App_Id]['Service_Link'] = Service_Link
-                self.Storage_info[App_Id]['Config_Link'] = Config_Link
+                self.Storage_info[App_Id]["Model_Link"] = Model_Link
+                self.Storage_info[App_Id]["App_Link"] = App_Link
+                self.Storage_info[App_Id]["Service_Link"] = Service_Link
+                self.Storage_info[App_Id]["Config_Link"] = Config_Link
 
-        elif(DS_Name=='Model_inst_info'):
+        elif(DS_Name=="Model_inst_info"):
             for i in range(len(DS_Obj)):
                 #Record if Dict
                 Record = DS_Obj[i]
-                Model_Id = Record['Model_id']
+                Model_Id = Record["Model_id"]
 
                 self.Model_inst_info[Model_Id] = []
 
-                for j in range(len(DS_Obj[i]['Hosts'])):
-                    Hosts_List = DS_Obj[i]['Hosts']
+                for j in range(len(DS_Obj[i]["Hosts"])):
+                    Hosts_List = DS_Obj[i]["Hosts"]
                     Host_IP = Hosts_List[j][0]
                     Host_Port = Hosts_List[j][1]
                     Model_Status = Hosts_List[j][2]
@@ -130,16 +124,16 @@ class Registry:
                     Model_Inst = [Host_IP, Host_Port, Model_Status]
                     self.Model_inst_info[Model_Id].append(Model_Inst)
 
-        elif(DS_Name=='Service_inst_info'):
+        elif(DS_Name=="Service_inst_info"):
             for i in range(len(DS_Obj)):
                 #Record if Dict
                 Record = DS_Obj[i]
-                Service_Id = Record['Service_id']
+                Service_Id = Record["Service_id"]
 
                 self.Service_inst_info[Service_Id] = []
 
-                for j in range(len(DS_Obj[i]['Hosts'])):
-                    Hosts_List = DS_Obj[i]['Hosts']
+                for j in range(len(DS_Obj[i]["Hosts"])):
+                    Hosts_List = DS_Obj[i]["Hosts"]
                     Host_IP = Hosts_List[j][0]
                     Host_Port = Hosts_List[j][1]
                     Service_Status = Hosts_List[j][2]
@@ -147,16 +141,16 @@ class Registry:
                     Service_Inst = [Host_IP, Host_Port, Service_Status]
                     self.Service_inst_info[Service_Id].append(Service_Inst)
 
-        elif(DS_Name=='App_inst_info'):
+        elif(DS_Name=="App_inst_info"):
             for i in range(len(DS_Obj)):
                  #Record if Dict
                  Record = DS_Obj[i]
-                 App_Id = Record['App_id']
+                 App_Id = Record["App_id"]
 
                  self.App_inst_info[App_Id] = []
 
-                 for j in range(len(DS_Obj[i]['Hosts'])):
-                     Hosts_List = DS_Obj[i]['Hosts']
+                 for j in range(len(DS_Obj[i]["Hosts"])):
+                     Hosts_List = DS_Obj[i]["Hosts"]
                      Host_IP = Hosts_List[j][0]
                      Host_Port = Hosts_List[j][1]
                      App_Status = Hosts_List[j][2]
@@ -167,24 +161,25 @@ class Registry:
         elif(DS_Name=="Host_Creds"):
             for i in range(len(DS_Obj)):
                 #Record if Dict
-                Host_IP = DS_Obj['Host_IP']
+                Host_IP = DS_Obj[i]["Host_IP"]
                 self.Host_Creds[Host_IP] = {}
 
-                Username = DS_Obj['Username']
-                Password = DS_Obj['Password']
-                self.Host_Creds[Host_IP][Username] = Username
-                self.Host_Creds[Host_IP][Password] = Password
+                Username = DS_Obj[i]["Username"]
+                Password = DS_Obj[i]["Password"]
+                self.Host_Creds[Host_IP]["Username"] = Username
+                self.Host_Creds[Host_IP]["Password"] = Password
 
         elif(DS_Name=="Platform_Module_Info"):
             for i in range(len(DS_Obj)):
                 #Record if Dict
-                Module_id = DS_Obj['Module_id']
+                Module_id = DS_Obj[i]["Module_id"]
                 self.Platform_Module_Info[Module_id] = {}
 
-                Primary = DS_Obj['Primary']
-                Recovery = DS_Obj['Recovery']
-                self.Platform_Module_Info[Host_IP][Primary] = Primary
-                self.Platform_Module_Info[Host_IP][Recovery] = Recovery
+                Primary = DS_Obj[i]["Primary"]
+                Recovery = DS_Obj[i]["Recovery"]
+
+                self.Platform_Module_Info[Module_id]["Primary"] = Primary
+                self.Platform_Module_Info[Module_id]["Recovery"] = Recovery
 
         else :
             print("\nInvalid Data Structure Name\n")
@@ -200,8 +195,6 @@ class Registry:
 # Read JSON from common queue , parse it and call Update_DS/Read_DS function
 def callback(ch, method, properties, body):
 
-    Registry_obj = Registry()
-
     global port
     print ("Receiving from Common queue")
     #body = body.decode("utf-8")
@@ -211,44 +204,49 @@ def callback(ch, method, properties, body):
     Receiving_Message = json.loads(body)
     print("\nReceiving_Message: ", Receiving_Message)
 
-    Request_type = Receiving_Message['Request_Type']
-    DS_Name = Receiving_Message['DS_Name']
+    Request_type = Receiving_Message["Request_Type"]
+    DS_Name = Receiving_Message["DS_Name"]
 
-    if(Request_type=='Read'):
-        DS_Obj = Receiving_Message['Filter']
+    if(Request_type=="Read"):
+        DS_Obj = Receiving_Message["Filter"]
         DS_Value = Registry_obj.Read_DS(DS_Name, DS_Obj)
         print("Read content: ", DS_Value)
         #create JSON and send on temp queue
 
-    if(Request_type=='Write'):
-        DS_Obj = Receiving_Message['Value']
+    if(Request_type=="Write"):
+        DS_Obj = Receiving_Message["Value"]
         Registry_obj.Write_DS(DS_Name, DS_Obj)
 
-    print("\nUpdated Data Structures\n ")
-    Registry_obj.Print_DS()
+        print("\nUpdated Data Structures\n ")
+        Registry_obj.Print_DS()
 
 
 #TEMP queues Ideally, Common queue will be used which will listen from all modules
 def Recieve_from_DM():
     # RMQ = RabbitMQ()
-    RMQ.receive(callback, "", "DM_RG")
+    RMQ.receive(callback, "", "RG_DM")
 
 def Recieve_from_SM():
     # RMQ = RabbitMQ()
-    RMQ.receive(callback, "", "SM_RG")
+    RMQ.receive(callback, "", "RG_SM")
 
 def Recieve_from_MT():
     # RMQ = RabbitMQ()
-    RMQ.receive(callback, "", "MT_RG")
+    RMQ.receive(callback, "", "RG_MT")
 
 def Recieve_from_RM():
     # RMQ = RabbitMQ()
-    RMQ.receive(callback, "", "RM_RG")
+    RMQ.receive(callback, "", "RG_RM")
 
 def Recieve_from_LB():
     # RMQ = RabbitMQ()
-    RMQ.receive(callback, "", "LB_RG")
+    RMQ.receive(callback, "", "RG_LB")
 
+def Recieve_from_BS():
+    # RMQ = RabbitMQ()
+    RMQ.receive(callback, "", "RG_BS")
+
+Registry_obj = Registry()
 
 if __name__ == '__main__':
 
@@ -271,9 +269,23 @@ if __name__ == '__main__':
     RMQ.create_ServiceQueues("RG", "RM")
     #REGISTRY <--> LOAD BALANCER
     RMQ.create_ServiceQueues("RG", "LB")
+    #REGISTRY <--> BOOTSTRAPPER
+    RMQ.create_ServiceQueues("RG", "BS")
 
     t1 = threading.Thread(target=Recieve_from_SM)
     t1.start()
 
     t2 = threading.Thread(target=Recieve_from_DM)
     t2.start()
+
+    t3 = threading.Thread(target=Recieve_from_MT)
+    t3.start()
+
+    t4 = threading.Thread(target=Recieve_from_RM)
+    t4.start()
+
+    t5 = threading.Thread(target=Recieve_from_LB)
+    t5.start()
+
+    t6 = threading.Thread(target=Recieve_from_BS)
+    t6.start()
