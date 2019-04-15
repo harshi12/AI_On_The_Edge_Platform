@@ -115,3 +115,56 @@ Types of JSON requests:
 	"DS_Name": "Storage_info",
   "Filter" : {"App_id" : [432,543]}
 }
+
+9. Write in Host_Creds data structure to register new host in platform (List of all hosts of platform with credentials)
+{
+	"Request_Type": "Write",
+	"DS_Name": "Host_Creds",
+	"Value" :
+	[
+		{
+			"Host_IP" : "192.168.23.34",
+			"Username" : "pranjali",
+			"Password" : "Accio@934"
+		},
+		{
+			"Host_IP" : "192.168.23.35",
+			"Username" : "kratika",
+			"Password" : "Qwerty987**"
+		}
+	]
+}
+
+10. Read from Host_Creds data structure to get host credentials (List of all hosts of platform with credentials)
+Keep filter field empty if credentials of all hosts are needed
+{
+	"Request_Type": "Write",
+	"DS_Name": "Host_Creds",
+	"Filter" : {"Host_IP" : ["192.168.23.34","192.168.23.35"]}
+}
+
+11. Write in Platform_Module_Info data structure to add platform module details (List of all platform modules with Primary IP, Pid and Recovery IP, Pid)
+{
+	"Request_Type": "Write",
+	"DS_Name": "Platform_Module_Info",
+	"Value" :
+	[
+		{
+			"Module_id" : 1,
+			"Primary" : {"IP" : "192.168.23.34", "Pid" : 15329},
+			"Recovery" : {"IP" : "192.168.23.35", "Pid" : 15330}
+		},
+		{
+		"Module_id" : 2,
+		"Primary" : {"IP" : "192.168.23.34", "Pid" : 15334},
+		"Recovery" : {"IP" : "192.168.23.35", "Pid" : 15335}
+		}
+	]
+}
+
+12. Read from Platform_Module_Info data structure to get platform module details (List of all platform modules with Primary IP, Pid and Recovery IP, Pid)
+{
+	"Request_Type": "Read",
+	"DS_Name": "Platform_Module_Info",
+	"Filter" : {"Module_id" : [1,2]}
+}
