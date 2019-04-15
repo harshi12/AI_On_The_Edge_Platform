@@ -50,7 +50,7 @@ class Registry:
             return Result
 
         if(DS_Name=='App_inst_info'):
-            Filter = DS_Obj['Filter']['Service_id']
+            Filter = DS_Obj['Filter']['App_id']
             #Filter is a list of App_ids
             for i in range(len(Filter)):
                 App_id = Filter[i]
