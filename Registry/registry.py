@@ -13,8 +13,52 @@ class Registry:
         self.Service_inst_info = {}
         self.App_inst_info = {}
 
-    def Read_DS(self, DS_Name):
-        pass
+    def Read_DS(self, DS_Name, DS_Obj):
+        Result = {}
+
+        if(DS_Name=='Storage_info'):
+            Filter = DS_Obj['Filter']['App_id']
+            #Filter is a list of App_ids
+            for i in range(len(Filter)):
+                App_id = Filter[i]
+                for key in Storage_info.keys():
+                    print("key and app_id: ", key, app_id)
+                    if key==App_id:
+                        Result[key] = Storage_info[key]
+            return Result
+
+        if(DS_Name=='Model_inst_info'):
+            Filter = DS_Obj['Filter']['Model_id']
+            #Filter is a list of App_ids
+            for i in range(len(Filter)):
+                Model_id = Filter[i]
+                for key in Model_inst_info.keys():
+                    print("key and app_id: ", key, Model_id)
+                    if key==Model_id:
+                        Result[key] = Model_inst_info[key]
+            return Result
+
+        if(DS_Name=='Service_inst_info'):
+            Filter = DS_Obj['Filter']['Service_id']
+            #Filter is a list of App_ids
+            for i in range(len(Filter)):
+                Service_id = Filter[i]
+                for key in Service_inst_info.keys():
+                    print("key and Filter_val: ", key, Service_id)
+                    if key==Filter_val:
+                        Result[key] = Service_inst_info[key]
+            return Result
+
+        if(DS_Name=='App_inst_info'):
+            Filter = DS_Obj['Filter']['Service_id']
+            #Filter is a list of App_ids
+            for i in range(len(Filter)):
+                App_id = Filter[i]
+                for key in App_inst_info.keys():
+                    print("key and Filter_val: ", key, App_id)
+                    if key==Filter_val:
+                        Result[key] = App_inst_info[key]
+            return Result
 
     def Write_DS(self, DS_Name, DS_Obj):
 
@@ -57,7 +101,7 @@ class Registry:
             for i in range(len(DS_Obj)):
                 #Record if Dict
                 Record = DS_Obj[i]
-                Service_Id = Record['Model_id']
+                Service_Id = Record['Service_id']
 
                 self.Service_inst_info[Service_Id] = []
 
@@ -113,7 +157,9 @@ def callback(ch, method, properties, body):
     DS_Name = Receiving_Message['DS_Name']
 
     if(Request_type=='Read'):
-        DS_Value = Registry_obj.Read_DS(DS_Name)
+        DS_Obj = Receiving_Message['Filter']
+        DS_Value = Registry_obj.Read_DS(DS_Name, DS_Obj)
+        print("Read content: ", DS_Value)
         #create JSON and send on temp queue
 
     if(Request_type=='Write'):
@@ -126,11 +172,11 @@ def callback(ch, method, properties, body):
 
 #TEMP queues Ideally, Common queue will be used which will listen from all modules
 def Recieve_from_SM():
-    # msg_obj2 = RabbitMQ()
+    # RMQ = RabbitMQ()
     RMQ.receive(callback, "", "SM_RG")
 
 def Recieve_from_DM():
-    # msg_obj1 = RabbitMQ()
+    # RMQ = RabbitMQ()
     RMQ.receive(callback, "", "DM_RG")
 
 
