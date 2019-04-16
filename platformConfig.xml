@@ -3,46 +3,46 @@
 <platform>
 	<platformModules>
 		<module name = "DeploymentManager">
-			<IP>192.168.42.210</IP>
+			<IP>10.3.10.86</IP>
 			<Port>9500</Port>
-			<folderName></folderName>
-			<executableFile></executableFile>
+			<folderName>Deployment_Manager</folderName>
+			<executableFile>startDeploymentManager.sh</executableFile>
 		</module>
 		<module name = "ServiceManager">
-			<IP>192.168.31.10</IP>
+			<IP>10.3.10.86</IP>
 			<Port>9501</Port>
 			<folderName>Service_Manager</folderName>
 			<executableFile>startServiceManager.sh</executableFile>
 		</module>
 		<module name = "HostManager">
-			<IP>192.168.42.210</IP>
+			<IP>10.3.10.86</IP>
 			<Port>9502</Port>
-			<folderName></folderName>
-			<executableFile></executableFile>
+			<folderName>Host_Manager</folderName>
+			<executableFile>startHostManager.sh</executableFile>
 		</module>
 		<module name = "LoadBalancer">
-			<IP>192.168.42.210</IP>
+			<IP>10.3.10.86</IP>
 			<Port>9503</Port>
 			<folderName></folderName>
 			<executableFile></executableFile>
 		</module>
 		<module name = "Scheduler">
-			<IP>192.168.42.210</IP>
+			<IP>10.3.10.86</IP>
 			<Port>9504</Port>
-			<folderName></folderName>
-			<executableFile></executableFile>
+			<folderName>scheduler</folderName>
+			<executableFile>startScheduler.sh</executableFile>
 		</module>
 		<module name = "Logger">
-			<IP>192.168.42.210</IP>
+			<IP>10.3.10.86</IP>
 			<Port>9505</Port>
 			<folderName></folderName>
 			<executableFile></executableFile>
 		</module>
 		<module name = "Monitor">
-			<IP>192.168.42.210</IP>
+			<IP>10.3.10.86</IP>
 			<Port>9506</Port>
-			<folderName></folderName>
-			<executableFile></executableFile>
+			<folderName>Monitor</folderName>
+			<executableFile>startMonitor.sh</executableFile>
 		</module>
 		<module name = "RecoveryManager">
 			<IP>192.168.42.210</IP>
@@ -52,35 +52,36 @@
 		</module>
 		<module name = "Database">
 			<IP>192.168.42.210</IP>
+			<RecoveryIP></RecoveryIP>
 			<Port>9508</Port>
 			<folderName></folderName>
 			<executableFile></executableFile>
 		</module>
 		<module name = "PlatformUI">
 			<IP>192.168.42.210</IP>
+			<RecoveryIP></RecoveryIP>
 			<Port>9509</Port>
 			<folderName></folderName>
 			<executableFile></executableFile>
 		</module>
 		<module name = "Registry">
-			<IP>192.168.42.210</IP>
+			<IP>10.3.10.86</IP>
+			<RecoveryIP></RecoveryIP>
 			<Port>9510</Port>
-			<folderName></folderName>
-			<executableFile></executableFile>
+			<folderName>Registry</folderName>
+			<executableFile>startRegistry.sh</executableFile>
 		</module>
 		<module name = "Repository">
-			<IP>192.168.42.210</IP>
+			<IP>10.3.10.86</IP>
+			<RecoveryIP></RecoveryIP>
 			<Port>9511</Port>
 			<folderName>.</folderName>
-			<executableFile>RepositorySetup.sh
-					<!-- <FileName></FileName>
-					<Language>bash</Language>
-					<Description>To set up NFS Server</Description> -->
-			</executableFile>
+			<executableFile>RepositorySetup.sh</executableFile>
 		</module>
 		<module name = "RabbitMQServer">
-			<IP>192.168.31.10</IP>
-			<Port>9511</Port>
+			<IP>10.3.10.86</IP>
+			<RecoveryIP></RecoveryIP>
+			<Port>5672</Port>
 			<folderName>.</folderName>
 			<executableFile>MessageQueueSetup.sh</executableFile>
 		</module>
@@ -98,9 +99,13 @@
 			<username>bhavidhingra</username>
 			<password>bhavi</password>
 		</Host>
-		<Host IP = "192.168.42.210">
+		<Host IP = "10.3.10.86">
 			<username>harshita</username>
 			<password>@14799741hA</password>
+		</Host>
+		<Host IP = "192.168.31.244">
+			<username>akanksha</username>
+			<password>Akanksha21!</password>
 		</Host>
 		<Host IP = "192.168.31.124">
 			<username>kaushik</username>

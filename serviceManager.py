@@ -47,7 +47,7 @@ class serviceManager:
         # print("In docker receiver queue")
         RMQ.receive(self.process_DM_Input, exchange, key)
 
-    def process_DM_Input(self, ch, method, properties, body):
+    def process_DM_Input(self, ch, method, properties, body):  
         global model_port_map
         data = json.loads(body)
         data = ast.literal_eval(data)
