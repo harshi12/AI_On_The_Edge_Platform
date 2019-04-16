@@ -43,19 +43,17 @@
           $('a#graph').bind('click', function() {
             $.getJSON('/load_graph',
                 function(receivedData) {
-                  console.log(myBarChart);
                   if(myBarChart != undefined)
                   {
                     myBarChart.destroy();
                   }
-                  temp = receivedData["values"];
-                  temp = temp[0];
+                  temp = receivedData["list"];
                   var opt = {
                     responsive: true,
                     scales: {
                       xAxes: [{
                         ticks: {
-                            min: 10
+                            min: 2
                         }
                       }],
                       yAxes: [{
