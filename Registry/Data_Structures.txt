@@ -1,0 +1,96 @@
+# Read requests will return below data structures
+
+1. Host_Creds :
+
+{
+  "192.168.23.34" :
+    {
+      "Username" : "pranjali",
+      "Password" : "Accio@934"
+    },
+  "192.168.23.35" :
+    {
+      "Username" : "kratika",
+      "Password" : "Qwerty987**"
+    }
+}
+
+2. Platform_Module_Info :
+
+{
+  "1" :
+  {
+    "Primary" : {"IP" : "192.168.23.34", "Pid" : "15329"},
+    "Recovery" : {"IP" : "192.168.23.35", "Pid" : "15330"}
+  },
+
+  "2" :
+  {
+    "Primary" : {"IP" : "192.168.23.34", "Pid" : "15334"},
+    "Recovery" : {"IP" : "192.168.23.35", "Pid" : "15335"}
+  }
+}
+
+3. Storage_info :
+
+{
+  "234" :
+  {
+    "Model_Link": "/AD_ID/App_ID/Models",
+    "App_Link": "/AD_ID/App_ID/AppLogic",
+    "Service_Link": "/AD_ID/App_ID/Services",
+    "Config_Link": "/AD_ID/App_ID/Config"
+  },
+  "244" :
+  {
+    "Model_Link": "/AD_ID/App_ID/Models",
+    "App_Link": "/AD_ID/App_ID/AppLogic",
+    "Service_Link": "/AD_ID/App_ID/Services",
+    "Config_Link": "/AD_ID/App_ID/Config"
+  }
+}
+
+4. Model_inst_info :
+
+{
+  "432" :
+  [
+    ["192.168.10.23", "6253", "Up", "15234"],
+    ["192.163.10.23", "6255", "Down", "15235"]
+  ],
+  "482" :
+  [
+    ["192.168.10.27", "6298", "Up", "15234"],
+    ["192.163.10.25", "6267", "Down", "15235"]
+  ]
+}
+
+5. Service_inst_info :
+
+{
+  "432" :
+  [
+    ["192.168.10.23", "6253", "Up", "15234"],
+    ["192.163.10.23", "6255", "Down", "15235"]
+  ],
+  "482" :
+  [
+    ["192.168.10.27", "6298", "Up", "15234"],
+    ["192.163.10.25", "6267", "Down", "15235"]
+  ]
+}
+
+6. App_inst_info :
+
+{
+  "432" :
+  [
+    ["192.168.10.23", "6253", "Up", "15234"],
+    ["192.163.10.23", "6255", "Down", "15235"]
+  ],
+  "482" :
+  [
+    ["192.168.10.27", "6298", "Up", "15234"],
+    ["192.163.10.25", "6267", "Down", "15235"]
+  ]
+}
