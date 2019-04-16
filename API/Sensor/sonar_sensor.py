@@ -4,6 +4,7 @@ import datetime
 import numpy as np
 import pandas as pd
 import sys
+
 from timer import *
 
 class SonarSensor(Sensor):
@@ -19,7 +20,7 @@ class SonarSensor(Sensor):
     # sends simulated input to the Sensor Manager, in the prescribed rate
     # using sockets
     def send_simulated_input(self):
-        sonar_data = self.name + f"${self.dataset[self.index][:-1]}"
+        sonar_data = self.name + f"${self.rate}${self.dataset[self.index][:-1]}"
         self.index = (self.index + 1) % self.length
 
         self.send_data(sonar_data)

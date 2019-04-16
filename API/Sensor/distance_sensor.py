@@ -29,7 +29,7 @@ class DistanceSensor(Sensor):
         else:
             distance = random.randint(0, 201)
 
-        distance_data = self.name + f"${distance}"
+        distance_data = self.name + f"${self.rate}${distance}"
 
         self.send_data(distance_data)
 

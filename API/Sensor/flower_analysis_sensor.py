@@ -19,7 +19,7 @@ class FlowerAnalysisSensor(Sensor):
     # sends simulated input to the Sensor Manager, in the prescribed rate,
     # using sockets
     def send_simulated_input(self):
-        flower_data = self.name + f"${self.dataset[self.index][:-1]}"
+        flower_data = self.name + f"${self.rate}${self.dataset[self.index][:-1]}"
         self.index = (self.index + 1) % self.length
 
         self.send_data(flower_data)
