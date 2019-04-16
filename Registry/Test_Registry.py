@@ -46,24 +46,24 @@ Registry_obj.Write_Platform_Module_Info("2", "192.168.23.34", "15334", "192.168.
 
 # REQUEST TYPE 7
 print("REQUEST TYPE 7")
-Registry_obj.Read_Storage_info(["432", "482"], "RG_DM")
+Registry_obj.Read_Storage_info(["432", "482"], "RG_DM", "DM_RG")
 
 # REQUEST TYPE 8
 print("REQUEST TYPE 8")
-Registry_obj.Read_App_Inst_Info(["432", "482"], "RG_LB")
+Registry_obj.Read_App_Inst_Info(["432", "482"], "RG_LB", "LB_RG")
 
 # REQUEST TYPE 9
 print("REQUEST TYPE 9")
-Registry_obj.Read_Service_Inst_Info(["432", "482"], "RG_LB")
+Registry_obj.Read_Service_Inst_Info(["432", "482"], "RG_LB", "LB_RG")
 
 # REQUEST TYPE 10
 print("REQUEST TYPE 10")
-Registry_obj.Read_Model_Inst_Info(["432", "482"], "RG_MT")
+Registry_obj.Read_Model_Inst_Info(["432", "482"], "RG_MT", "MT_RG")
 
 # REQUEST TYPE 11
 print("REQUEST TYPE 11")
-Registry_obj.Read_Host_Creds(["192.168.23.34", "192.168.23.35"], "RG_LB")
+Registry_obj.Read_Host_Creds(["192.168.23.34", "192.168.23.35"], "RG_LB", "LB_RG")
 
 # REQUEST TYPE 12
 print("REQUEST TYPE 12")
-Registry_obj.Read_Platform_Module_Info(["1", "2"], "RG_RM")
+Registry_obj.Read_Platform_Module_Info(["1", "2"], "RG_RM", "RM_RG")

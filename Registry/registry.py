@@ -52,41 +52,53 @@ class Registry:
         if(DS_Name=="Storage_info"):
             Filter = DS_Obj["App_id"]
             #Filter is a list of App_ids
-            for i in range(len(Filter)):
-                App_id = Filter[i]
-                for key in self.Storage_info.keys():
-                    if key==App_id:
-                        Result[key] = self.Storage_info[key]
+            if len(Filter)>0:
+                for i in range(len(Filter)):
+                    App_id = Filter[i]
+                    for key in self.Storage_info.keys():
+                        if key==App_id:
+                            Result[key] = self.Storage_info[key]
+            else:
+                Result = self.Storage_info
             return Result
 
         elif(DS_Name=="Model_inst_info"):
             Filter = DS_Obj["Model_id"]
             #Filter is a list of App_ids
-            for i in range(len(Filter)):
-                Model_id = Filter[i]
-                for key in self.Model_inst_info.keys():
-                    if key==Model_id:
-                        Result[key] = self.Model_inst_info[key]
+            if len(Filter)>0:
+                for i in range(len(Filter)):
+                    Model_id = Filter[i]
+                    for key in self.Model_inst_info.keys():
+                        if key==Model_id:
+                            Result[key] = self.Model_inst_info[key]
+            else:
+                Result = self.Model_inst_info
             return Result
 
         elif(DS_Name=="Service_inst_info"):
             Filter = DS_Obj["Service_id"]
             #Filter is a list of App_ids
-            for i in range(len(Filter)):
-                Service_id = Filter[i]
-                for key in self.Service_inst_info.keys():
-                    if key==Service_id:
-                        Result[key] = self.Service_inst_info[key]
+            if len(Filter)>0:
+                for i in range(len(Filter)):
+                    Service_id = Filter[i]
+                    for key in self.Service_inst_info.keys():
+                        if key==Service_id:
+                            Result[key] = self.Service_inst_info[key]
+            else:
+                Result = Service_inst_info
             return Result
 
         elif(DS_Name=="App_inst_info"):
             Filter = DS_Obj["App_id"]
             #Filter is a list of App_ids
-            for i in range(len(Filter)):
-                App_id = Filter[i]
-                for key in self.App_inst_info.keys():
-                    if key==App_id:
-                        Result[key] = self.App_inst_info[key]
+            if len(Filter)>0:
+                for i in range(len(Filter)):
+                    App_id = Filter[i]
+                    for key in self.App_inst_info.keys():
+                        if key==App_id:
+                            Result[key] = self.App_inst_info[key]
+            else:
+                Result = self.App_inst_info
             return Result
 
         elif(DS_Name=="Host_Creds"):
@@ -240,9 +252,12 @@ def callback(ch, method, properties, body):
 
     if(Request_type=="Read"):
         DS_Obj = Receiving_Message["Filter"]
+        Sending_Queue = Receiving_Message["Queue_Name"]
         DS_Value = Registry_obj.Read_DS(DS_Name, DS_Obj)
         print("Read content: ", DS_Value)
         #create JSON and send on temp queue
+        DS_Value_json = json.dumps(DS_Value)
+        RMQ.send("", Sending_Queue, DS_Value_json)
 
     if(Request_type=="Write"):
         DS_Obj = Receiving_Message["Value"]
@@ -254,27 +269,21 @@ def callback(ch, method, properties, body):
 
 #TEMP queues Ideally, Common queue will be used which will listen from all modules
 def Recieve_from_DM():
-    # RMQ = RabbitMQ()
     RMQ.receive(callback, "", "RG_DM")
 
 def Recieve_from_SM():
-    # RMQ = RabbitMQ()
     RMQ.receive(callback, "", "RG_SM")
 
 def Recieve_from_MT():
-    # RMQ = RabbitMQ()
     RMQ.receive(callback, "", "RG_MT")
 
 def Recieve_from_RM():
-    # RMQ = RabbitMQ()
     RMQ.receive(callback, "", "RG_RM")
 
 def Recieve_from_LB():
-    # RMQ = RabbitMQ()
     RMQ.receive(callback, "", "RG_LB")
 
 def Recieve_from_BS():
-    # RMQ = RabbitMQ()
     RMQ.receive(callback, "", "RG_BS")
 
 def Backup():
