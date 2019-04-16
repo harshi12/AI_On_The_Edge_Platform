@@ -2,6 +2,7 @@ from queue_req_resp import RabbitMQ
 import json
 import threading
 import sys
+import time
 
 RMQ = 0
 
@@ -14,6 +15,36 @@ class Registry:
         self.App_inst_info = {}
         self.Host_Creds = {}
         self.Platform_Module_Info = {}
+
+    def Restore_DS(self):
+
+        with open('Storage_info.json') as json_file:
+            self.Storage_info = json.load(json_file)
+        with open('Model_inst_info.json') as json_file:
+            self.Model_inst_info = json.load(json_file)
+        with open('Service_inst_info.json') as json_file:
+            self.Service_inst_info = json.load(json_file)
+        with open('App_inst_info.json') as json_file:
+            self.App_inst_info = json.load(json_file)
+        with open('Host_Creds.json') as json_file:
+            self.Host_Creds = json.load(json_file)
+        with open('Platform_Module_Info.json') as json_file:
+            self.Platform_Module_Info = json.load(json_file)
+
+    def Store_DS(self):
+
+        with open('Storage_info.json', 'w') as json_file:
+            json.dump(self.Storage_info, json_file)
+        with open('Model_inst_info.json', 'w') as json_file:
+            json.dump(self.Model_inst_info, json_file)
+        with open('Service_inst_info.json', 'w') as json_file:
+            json.dump(self.Service_inst_info, json_file)
+        with open('App_inst_info.json', 'w') as json_file:
+            json.dump(self.App_inst_info, json_file)
+        with open('Host_Creds.json', 'w') as json_file:
+            json.dump(self.Host_Creds, json_file)
+        with open('Platform_Module_Info.json', 'w') as json_file:
+            json.dump(self.Platform_Module_Info, json_file)
 
     def Read_DS(self, DS_Name, DS_Obj):
         Result = {}
@@ -246,6 +277,13 @@ def Recieve_from_BS():
     # RMQ = RabbitMQ()
     RMQ.receive(callback, "", "RG_BS")
 
+def Backup():
+    Timer = 15
+    while 1:
+        Registry_obj.Store_DS()
+        time.sleep(Timer)
+
+
 Registry_obj = Registry()
 
 if __name__ == '__main__':
@@ -272,6 +310,8 @@ if __name__ == '__main__':
     #REGISTRY <--> BOOTSTRAPPER
     RMQ.create_ServiceQueues("RG", "BS")
 
+    Registry_obj.Restore_DS()
+
     t1 = threading.Thread(target=Recieve_from_SM)
     t1.start()
 
@@ -289,3 +329,6 @@ if __name__ == '__main__':
 
     t6 = threading.Thread(target=Recieve_from_BS)
     t6.start()
+
+    t7 = threading.Thread(target=Backup)
+    t7.start()
