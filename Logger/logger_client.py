@@ -43,10 +43,10 @@ class LoggerClient():
 
     def log(self,msg):
         time=datetime.datetime.now().strftime("%d-%m-%y %H:%M:%S")
-        msg=time+msg
+        msg="["+time+"] : "+msg
         self.logger.error(msg)
         msg+="\n"
-        self.RMQ.send("", "To_Log", self.logger.error(msg))
+        self.RMQ.send("", "To_Log", msg)
 
 ###README
 #Create RabbitMQ Object

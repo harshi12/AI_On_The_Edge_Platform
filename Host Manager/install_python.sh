@@ -1,0 +1,1 @@
+echo $1 | sudo -s apt-get python3

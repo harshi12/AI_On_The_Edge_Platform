@@ -150,14 +150,14 @@ Keep filter field empty if credentials of all hosts are needed
 	"Value" :
 	[
 		{
-			"Module_id" : 1,
-			"Primary" : {"IP" : "192.168.23.34", "Pid" : "15329"},
-			"Recovery" : {"IP" : "192.168.23.35", "Pid" : "15330"}
+			"ModuleName" : "ServiceManager",
+			"IP" : "192.168.3.65",
+			"PID" : "4512"
 		},
 		{
-		"Module_id" : 2,
-		"Primary" : {"IP" : "192.168.23.34", "Pid" : "15334"},
-		"Recovery" : {"IP" : "192.168.23.35", "Pid" : "15335"}
+			"ModuleName" : "DeploymentManager",
+			"IP" : "192.168.3.65",
+			"PID" : "4512"
 		}
 	]
 }
