@@ -34,7 +34,8 @@ class SensorManager:
             if not isinstance(sensor_input, str):
                 sensor_input = sensor_input.decode()
 
-            sensor_type, sensor_rate, sensor_data = sensor_input.split('$')
+            sensor_input = json.loads(sensor_input)
+            sensor_type, sensor_rate, sensor_data = sensor_input["sensor_type"], sensor_input["sensor_rate"], sensor_input["sensor_data"]
             if sensor_type not in self.supported_sensors:
                 print (f"Registering Sensor Type: {sensor_type} --> data: {sensor_data}")
                 self.sensor_rates[sensor_type] = sensor_rate
@@ -47,7 +48,6 @@ class SensorManager:
 
                 # TODO: write this new sensor to the sensor config file
             else:
-                #print (f"Receiving data, Sensor Type: {sensor_type} --> data: {sensor_data}")
                 with self.sensor_buffer_lock[sensor_type]:
                     self.sensor_buffer[sensor_type][0] = sensor_data
 
@@ -69,9 +69,14 @@ class SensorManager:
         with self.sensor_buffer_lock[sensor_type]:
             sensor_data = self.sensor_buffer[sensor_type][0]
 
-        input_data = str(service_id) + "$" + str(sensor_type) + "$" + str(sensor_data)
-        print ("Sending input data to service -->", input_data)
-        sock_util.send_msg(service_sock, input_data)
+        input_data_dict = {}
+        input_data_dict["service_id"] = str(service_id)
+        input_data_dict["sensor_type"] = str(sensor_type)
+        input_data_dict["content"] = str(sensor_data)
+        json_data_str = json.dumps(input_data_dict)
+
+        print ("Sending input data to service -->", json_data_str)
+        sock_util.send_msg(service_sock, json_data_str.encode())
 
 
     # service_sock: platform input stream socket
