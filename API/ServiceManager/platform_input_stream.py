@@ -23,19 +23,20 @@ class PlatformInputStream(IO_Stream):
     def handle_input_stream(self, gateway_sock):
         while True:
             input_data = sock_util.recv_msg(gateway_sock)
-            if not isinstance(input_data, str):
-                input_data = input_data.decode()
-
             if input_data is None:
                 print ("Connection with gateway lost!!")
                 break
 
+            if not isinstance(input_data, str):
+                input_data = input_data.decode()
+
             # find an appropriate service queue according to load balancer!!!
-            service_id, sensor_type, input_content = input_data.split('$')
+            input_data = json.loads(input_data)
+            service_id, sensor_type, content = input_data["service_id"], input_data["sensor_type"], input_data["content"]
             queue_name = self.description + "_" + str(service_id)
             data = {}
             data["sensor_type"] = sensor_type
-            data["body"] = input_content
+            data["content"] = content
             json_data = json.dumps(data)
             self.RBMQ.send("", queue_name, json_data)
         
@@ -62,13 +63,14 @@ class PlatformInputStream(IO_Stream):
 
 
     # request to register service for receive data of sensor_type from gateway_addrs
-    def service_register_request(self, service_id, sensor_type, input_rate, gateway_addrs):
+    def service_register_request(self, service_id, sensor_type, input_rate):
+        # get a list of gateway IP and ports from registry/... using service_id
         req = {}
         req["opcode"] = "SERVICE_REGISTER"
         req["service_id"] = service_id
         req["sensor_type"] = sensor_type
         req["input_rate"] = input_rate
-        req["gateway_addrs"] = gateway_addrs
+        req["gateway_addrs"] = ["127.0.0.1:4445"]   # temp list of gateway IP, port
         json_req = json.dumps(req)
         self.RBMQ.send("", self.SERVICE_REQ_QUEUE, json_req)
 
