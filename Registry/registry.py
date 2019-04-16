@@ -57,7 +57,7 @@ class Registry:
             for i in range(len(DS_Obj)):
                 #Record if Dict
                 Record = DS_Obj[i]
-                Service_Id = Record['Model_id']
+                Service_Id = Record['Service_id']
 
                 self.Service_inst_info[Service_Id] = []
 
@@ -136,14 +136,7 @@ def Recieve_from_DM():
 
 if __name__ == '__main__':
 
-    # global RMQ
-
-    IP = sys.argv[1]
-    port = sys.argv[2]
-    username = sys.argv[3]
-    password = sys.argv[4]
-
-    RMQ = RabbitMQ(IP, username, password, port)
+    RMQ = RabbitMQ()
 
     t1 = threading.Thread(target=Recieve_from_SM)
     t1.start()

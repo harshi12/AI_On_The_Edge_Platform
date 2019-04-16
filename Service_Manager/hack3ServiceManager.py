@@ -4,6 +4,7 @@ import requests
 import json
 import os
 import time
+import sys
 import subprocess
 import signal
 
@@ -11,10 +12,10 @@ import signal
 portBegin = 8501
 threadService = {} #MAP that will store modelID : threadID so that thread can be deleted
 hostOccupiedPorts = {} #MAP that will store hostIP : [occupied ports list]
-IP_username_password = {"192.168.31.194" : ["sukku", "iforgot"], "192.168.31.38" : ["ravi", "Patel@123"], "192.168.43.76" : ["bhavidhingra", "bhavi"], "192.168.31.10" : ["harshita", "@14799741hA"], "192.168.31.34" : ["kratika", "Qwerty987**"], "192.168.31.124" : ['hitesh', 'rama1729']}
+IP_username_password = {"192.168.31.194" : ["sukku", "iforgot"], "192.168.31.38" : ["ravi", "S2j1ar1in63"], "192.168.43.76" : ["bhavidhingra", "bhavi"], "192.168.31.10" : ["harshita", "@14799741hA"], "192.168.31.34" : ["kratika", "Qwerty987**"], "192.168.31.124" : ['hitesh', 'rama1729']}
 ################# DM Data Structures #################################
 
-RMQ = RabbitMQ()
+RMQ = None
 
 
 class serviceManager():
@@ -56,7 +57,7 @@ class serviceManager():
 				else:
 					new_port = portBegin
 
-				servicePath = "\"/home/"+str(IP_username_password[IP][0])+"/"+str(serviceID)+"/model\""
+				servicePath = "\"/home/"+str(IP_username_password[IP][0])+"/"+str(serviceID)+"/Models/sonar_model/\""
 				print("servicePath:", servicePath)
 				commandStr = "tensorflow_model_server --rest_api_port=" + str(new_port) + " --model_name=" + str(serviceID) + " --model_base_path=" + servicePath 
 				print("commandStr", commandStr)
@@ -104,7 +105,10 @@ class serviceManager():
 		#threadService[serviceID].remove() #--> remove the thread id stored in the map
 		return
 
-SM = serviceManager()
+if __name__ == '__main__':
+	RMQ = RabbitMQ()
+
+	SM = serviceManager()
 
 '''
 {
