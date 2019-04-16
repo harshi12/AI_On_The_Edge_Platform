@@ -163,8 +163,9 @@ class Registry:
                     Host_IP = Hosts_List[j][0]
                     Host_Port = Hosts_List[j][1]
                     Model_Status = Hosts_List[j][2]
+                    Model_Pid = Hosts_List[j][3]
 
-                    Model_Inst = [Host_IP, Host_Port, Model_Status]
+                    Model_Inst = [Host_IP, Host_Port, Model_Status, Model_Pid]
                     self.Model_inst_info[Model_Id].append(Model_Inst)
 
         elif(DS_Name=="Service_inst_info"):
@@ -180,8 +181,9 @@ class Registry:
                     Host_IP = Hosts_List[j][0]
                     Host_Port = Hosts_List[j][1]
                     Service_Status = Hosts_List[j][2]
+                    Service_Pid = Hosts_List[j][3]
 
-                    Service_Inst = [Host_IP, Host_Port, Service_Status]
+                    Service_Inst = [Host_IP, Host_Port, Service_Status, Service_Pid]
                     self.Service_inst_info[Service_Id].append(Service_Inst)
 
         elif(DS_Name=="App_inst_info"):
@@ -197,8 +199,9 @@ class Registry:
                      Host_IP = Hosts_List[j][0]
                      Host_Port = Hosts_List[j][1]
                      App_Status = Hosts_List[j][2]
+                     App_Pid = Hosts_List[j][3]
 
-                     App_Inst = [Host_IP, Host_Port, App_Status]
+                     App_Inst = [Host_IP, Host_Port, App_Status, App_Pid]
                      self.App_inst_info[App_Id].append(App_Inst)
 
         elif(DS_Name=="Host_Creds"):
