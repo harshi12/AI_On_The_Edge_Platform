@@ -3,8 +3,8 @@ import json
 
 class Registry_API:
 
-    def __init__(self, IP, Port, Username, Password):
-        self.msg_obj = RabbitMQ(IP, Username, Password, Port)
+    def __init__(self):
+        self.msg_obj = RabbitMQ()
 
     def Write_Storage_info(self, App_Id, Model_Link, App_Link, Service_Link, Config_Link, Sending_Queue_name):
 

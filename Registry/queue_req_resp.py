@@ -7,7 +7,7 @@ RMQFile = "RMQCredentials.txt"
 
 class RabbitMQ:
 	def __init__(self):
-		with open('RMQCredentials.txt', 'r') as f:
+		with open('/home/harshita/Sem2/IAS/AI_On_The_Edge_Platform/Registry/RMQCredentials.txt', 'r') as f:
 			data = json.load(f)
 
 		self.server_IP = data["IP"]
@@ -57,7 +57,7 @@ class RabbitMQ:
 		channel, conn = self.create_connection()	
 		self.create_queue(exchange_name, queue_name)
 
-		channel.basic_consume(callback, queue = queue_name, no_ack = True)
+		channel.basic_consume(on_message_callback = callback, queue = queue_name, auto_ack = True)
 
 		print(' [*] Waiting for messages. To exit press CTRL+C')
 		channel.start_consuming()

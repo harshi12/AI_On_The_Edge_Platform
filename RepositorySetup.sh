@@ -12,7 +12,9 @@ network=$3
   echo $password | sudo -S chmod 777 /mnt/Repository
   echo $password | sudo -S echo /mnt/Repository $network/24\(rw,sync,no_subtree_check\) > /etc/exports
   echo $password | sudo -S exportfs -a
-  echo $password | sudo -S service nfs-kernel-server start & echo $! > /mnt/Repository/repoPID.txt
+  # nohup python3 $filepath'hack3ServiceManager.py' 2>&1 & echo $! > $filepath'SMPID.txt'
+
+  nohup echo $password | sudo -S service nfs-kernel-server start 2>&1 & echo $! > /mnt/Repository/repoPID.txt
   echo $password | sudo -S ufw allow from $network/24 to any port nfs
 
 #service nfs-kernel-server stop -- to stop NFS server

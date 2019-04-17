@@ -3,46 +3,46 @@
 <platform>
 	<platformModules>
 		<module name = "DeploymentManager">
-			<IP>10.3.10.86</IP>
+			<IP>192.168.42.210</IP>
 			<Port>9500</Port>
 			<folderName>Deployment_Manager</folderName>
-			<executableFile>startDeploymentManager.sh</executableFile>
+			<executableFile>Deployment_Manager.py</executableFile>
 		</module>
 		<module name = "ServiceManager">
-			<IP>10.3.10.86</IP>
+			<IP>192.168.42.210</IP>
 			<Port>9501</Port>
 			<folderName>Service_Manager</folderName>
-			<executableFile>startServiceManager.sh</executableFile>
+			<executableFile>newServiceManager.py</executableFile>
 		</module>
 		<module name = "HostManager">
-			<IP>10.3.10.86</IP>
+			<IP>192.168.42.210</IP>
 			<Port>9502</Port>
 			<folderName>Host_Manager</folderName>
-			<executableFile>startHostManager.sh</executableFile>
+			<executableFile>Host_Manager.py</executableFile>
 		</module>
 		<module name = "LoadBalancer">
-			<IP>10.3.10.86</IP>
+			<IP>192.168.42.210</IP>
 			<Port>9503</Port>
 			<folderName></folderName>
 			<executableFile></executableFile>
 		</module>
 		<module name = "Scheduler">
-			<IP>10.3.10.86</IP>
+			<IP>192.168.42.210</IP>
 			<Port>9504</Port>
 			<folderName>scheduler</folderName>
-			<executableFile>startScheduler.sh</executableFile>
+			<executableFile>scheduler.py</executableFile>
 		</module>
 		<module name = "Logger">
-			<IP>10.3.10.86</IP>
+			<IP>192.168.42.210</IP>
 			<Port>9505</Port>
 			<folderName></folderName>
 			<executableFile></executableFile>
 		</module>
 		<module name = "Monitor">
-			<IP>10.3.10.86</IP>
+			<IP>192.168.42.210</IP>
 			<Port>9506</Port>
 			<folderName>Monitor</folderName>
-			<executableFile>startMonitor.sh</executableFile>
+			<executableFile>monitor.py</executableFile>
 		</module>
 		<module name = "RecoveryManager">
 			<IP>192.168.42.210</IP>
@@ -65,21 +65,21 @@
 			<executableFile></executableFile>
 		</module>
 		<module name = "Registry">
-			<IP>10.3.10.86</IP>
+			<IP>192.168.31.10</IP>
 			<RecoveryIP></RecoveryIP>
 			<Port>9510</Port>
 			<folderName>Registry</folderName>
-			<executableFile>startRegistry.sh</executableFile>
+			<executableFile>registry.py</executableFile>
 		</module>
 		<module name = "Repository">
-			<IP>10.3.10.86</IP>
+			<IP>192.168.31.10</IP>
 			<RecoveryIP></RecoveryIP>
 			<Port>9511</Port>
 			<folderName>.</folderName>
 			<executableFile>RepositorySetup.sh</executableFile>
 		</module>
 		<module name = "RabbitMQServer">
-			<IP>10.3.10.86</IP>
+			<IP>192.168.42.210</IP>
 			<RecoveryIP></RecoveryIP>
 			<Port>5672</Port>
 			<folderName>.</folderName>
@@ -99,7 +99,7 @@
 			<username>bhavidhingra</username>
 			<password>bhavi</password>
 		</Host>
-		<Host IP = "10.3.10.86">
+		<Host IP = "192.168.31.10">
 			<username>harshita</username>
 			<password>@14799741hA</password>
 		</Host>
