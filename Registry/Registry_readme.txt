@@ -1,34 +1,5 @@
 Types of JSON requests:
 
-1. Write in data structure Model_inst_info with Value as Model_id with list of list [ ip , port with model, up or down]
-{
-	"Request_Type": "Write",
-	"DS_Name": "Model_inst_info",
-	"Value": [{
-			"Model_id": 432,
-			"Hosts": [
-				["192.168.10.23", "6253", "Up", "15234"],
-				["192.163.10.23", "6255", "Down", "15235"]
-			]
-		},
-		{
-			"Model_id": "482",
-			"Hosts": [
-				["192.168.10.27", "6298", "Up", "15234"],
-				["192.163.10.25", "6267", "Down", "15235"]
-			]
-		}
-	]
-
-}
-
-2. Read in data structure Model_inst_info
-{
-	"Request_Type": "Read",
-	"DS_Name": "Model_inst_info",
-  "Filter" : {"Model_Id" : ["432", "634"]}
-}
-
 3. Write in data structure Service_inst_info with Value as Service_id with list of list [ ip , port with model, up or down]
 {
 	"Request_Type": "Write",
@@ -36,15 +7,15 @@ Types of JSON requests:
 	"Value": [{
 			"Service_id": "432",
 			"Hosts": [
-				["192.168.10.23", "6253", "Up", "15234"],
-				["192.163.10.23", "6255", "Down", "15235"]
+				["192.168.10.23", "6253", "Up", "15234", "model", "12"],
+				["192.163.10.23", "6255", "Down", "15235", "exe", "12"]
 			]
 		},
 		{
 			"Service_id": "482",
 			"Hosts": [
-				["192.168.10.27", "6298", "Up", "15234"],
-				["192.163.10.25", "6267", "Down", "15235"]
+				["192.168.10.27", "6298", "Up", "15234", "exe", "13"],
+				["192.163.10.25", "6267", "Down", "15235", "exe", "14"]
 			]
 		}
 	]

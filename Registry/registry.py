@@ -10,7 +10,7 @@ class Registry:
 
     def __init__(self):
         self.Storage_info = {}
-        self.Model_inst_info = {}
+        # self.Model_inst_info = {}
         self.Service_inst_info = {}
         self.App_inst_info = {}
         self.Host_Creds = {}
@@ -20,8 +20,8 @@ class Registry:
 
         with open('Storage_info.json') as json_file:
             self.Storage_info = json.load(json_file)
-        with open('Model_inst_info.json') as json_file:
-            self.Model_inst_info = json.load(json_file)
+        # with open('Model_inst_info.json') as json_file:
+        #     self.Model_inst_info = json.load(json_file)
         with open('Service_inst_info.json') as json_file:
             self.Service_inst_info = json.load(json_file)
         with open('App_inst_info.json') as json_file:
@@ -35,8 +35,8 @@ class Registry:
 
         with open('Storage_info.json', 'w') as json_file:
             json.dump(self.Storage_info, json_file)
-        with open('Model_inst_info.json', 'w') as json_file:
-            json.dump(self.Model_inst_info, json_file)
+        # with open('Model_inst_info.json', 'w') as json_file:
+        #     json.dump(self.Model_inst_info, json_file)
         with open('Service_inst_info.json', 'w') as json_file:
             json.dump(self.Service_inst_info, json_file)
         with open('App_inst_info.json', 'w') as json_file:
@@ -62,18 +62,18 @@ class Registry:
                 Result = self.Storage_info
             return Result
 
-        elif(DS_Name=="Model_inst_info"):
-            Filter = DS_Obj["Model_id"]
-            #Filter is a list of App_ids
-            if len(Filter)>0:
-                for i in range(len(Filter)):
-                    Model_id = Filter[i]
-                    for key in self.Model_inst_info.keys():
-                        if key==Model_id:
-                            Result[key] = self.Model_inst_info[key]
-            else:
-                Result = self.Model_inst_info
-            return Result
+        # elif(DS_Name=="Model_inst_info"):
+        #     Filter = DS_Obj["Model_id"]
+        #     #Filter is a list of App_ids
+        #     if len(Filter)>0:
+        #         for i in range(len(Filter)):
+        #             Model_id = Filter[i]
+        #             for key in self.Model_inst_info.keys():
+        #                 if key==Model_id:
+        #                     Result[key] = self.Model_inst_info[key]
+        #     else:
+        #         Result = self.Model_inst_info
+        #     return Result
 
         elif(DS_Name=="Service_inst_info"):
             Filter = DS_Obj["Service_id"]
@@ -150,23 +150,23 @@ class Registry:
                 self.Storage_info[App_Id]["Service_Link"] = Service_Link
                 self.Storage_info[App_Id]["Config_Link"] = Config_Link
 
-        elif(DS_Name=="Model_inst_info"):
-            for i in range(len(DS_Obj)):
-                #Record if Dict
-                Record = DS_Obj[i]
-                Model_Id = Record["Model_id"]
-
-                self.Model_inst_info[Model_Id] = []
-
-                for j in range(len(DS_Obj[i]["Hosts"])):
-                    Hosts_List = DS_Obj[i]["Hosts"]
-                    Host_IP = Hosts_List[j][0]
-                    Host_Port = Hosts_List[j][1]
-                    Model_Status = Hosts_List[j][2]
-                    Model_Pid = Hosts_List[j][3]
-
-                    Model_Inst = [Host_IP, Host_Port, Model_Status, Model_Pid]
-                    self.Model_inst_info[Model_Id].append(Model_Inst)
+        # elif(DS_Name=="Model_inst_info"):
+        #     for i in range(len(DS_Obj)):
+        #         #Record if Dict
+        #         Record = DS_Obj[i]
+        #         Model_Id = Record["Model_id"]
+        #
+        #         self.Model_inst_info[Model_Id] = []
+        #
+        #         for j in range(len(DS_Obj[i]["Hosts"])):
+        #             Hosts_List = DS_Obj[i]["Hosts"]
+        #             Host_IP = Hosts_List[j][0]
+        #             Host_Port = Hosts_List[j][1]
+        #             Model_Status = Hosts_List[j][2]
+        #             Model_Pid = Hosts_List[j][3]
+        #
+        #             Model_Inst = [Host_IP, Host_Port, Model_Status, Model_Pid]
+        #             self.Model_inst_info[Model_Id].append(Model_Inst)
 
         elif(DS_Name=="Service_inst_info"):
             for i in range(len(DS_Obj)):
@@ -182,8 +182,10 @@ class Registry:
                     Host_Port = Hosts_List[j][1]
                     Service_Status = Hosts_List[j][2]
                     Service_Pid = Hosts_List[j][3]
+                    Service_Type = Hosts_List[j][4]
+                    Instance_No = Hosts_List[j][5]
 
-                    Service_Inst = [Host_IP, Host_Port, Service_Status, Service_Pid]
+                    Service_Inst = [Host_IP, Host_Port, Service_Status, Service_Pid, Service_Type, Instance_No]
                     self.Service_inst_info[Service_Id].append(Service_Inst)
 
         elif(DS_Name=="App_inst_info"):
@@ -232,7 +234,7 @@ class Registry:
 
     def Print_DS(self):
         print("\nStorage_info: ", self.Storage_info)
-        print("\nModel_inst_info: ", self.Model_inst_info)
+        # print("\nModel_inst_info: ", self.Model_inst_info)
         print("\nService_inst_info: ", self.Service_inst_info)
         print("\nApp_inst_info: ", self.App_inst_info)
         print("\nPlatform_Module_Info: ", self.Platform_Module_Info)

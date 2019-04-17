@@ -29,25 +29,25 @@ class Registry_API:
         self.msg_obj.send("", Sending_Queue_name, Request_json_msg)
         print("Msg sent: ", Request_json_msg)
 
-    def Write_Model_Inst_Info(self, Model_Id, Host_Port_Status_List, Sending_Queue_name):
-
-        Request_Msg = {}
-        Request_Msg["Request_Type"] = "Write"
-        Request_Msg["DS_Name"] = "Model_inst_info"
-
-        key = "Value"
-        if key not in Request_Msg.keys():
-            Request_Msg["Value"] = []
-
-        Req_Value = {}
-        Req_Value["Model_id"] = Model_Id
-        Req_Value["Hosts"] = Host_Port_Status_List
-
-        Request_Msg["Value"].append(Req_Value)
-
-        Request_json_msg = json.dumps(Request_Msg)
-        self.msg_obj.send("", Sending_Queue_name, Request_json_msg)
-        print("Msg sent: ", Request_json_msg)
+    # def Write_Model_Inst_Info(self, Model_Id, Host_Port_Status_List, Sending_Queue_name):
+    #
+    #     Request_Msg = {}
+    #     Request_Msg["Request_Type"] = "Write"
+    #     Request_Msg["DS_Name"] = "Model_inst_info"
+    #
+    #     key = "Value"
+    #     if key not in Request_Msg.keys():
+    #         Request_Msg["Value"] = []
+    #
+    #     Req_Value = {}
+    #     Req_Value["Model_id"] = Model_Id
+    #     Req_Value["Hosts"] = Host_Port_Status_List
+    #
+    #     Request_Msg["Value"].append(Req_Value)
+    #
+    #     Request_json_msg = json.dumps(Request_Msg)
+    #     self.msg_obj.send("", Sending_Queue_name, Request_json_msg)
+    #     print("Msg sent: ", Request_json_msg)
 
     def Write_Service_Inst_Info(self, Service_Id, Host_Port_Status_List, Sending_Queue_name):
 
@@ -152,22 +152,22 @@ class Registry_API:
         self.msg_obj.send("", Sending_Queue, Request_json_msg)
         print("Msg sent: ", Request_json_msg)
 
-    def Read_Model_Inst_Info(self, Model_Id_list, Sending_Queue, Recieving_Queue):
-
-        Request_Msg = {}
-        Request_Msg["Request_Type"] = "Read"
-        Request_Msg["DS_Name"] = "Model_inst_info"
-        Request_Msg["Queue_Name"] = Recieving_Queue
-
-        Request_Msg["Filter"] = {}
-        if len(Model_Id_list) == 0:
-            Request_Msg["Filter"]["Model_id"] = []
-        else:
-            Request_Msg["Filter"]["Model_id"] = Model_Id_list
-
-        Request_json_msg = json.dumps(Request_Msg)
-        self.msg_obj.send("", Sending_Queue, Request_json_msg)
-        print("Msg sent: ", Request_json_msg)
+    # def Read_Model_Inst_Info(self, Model_Id_list, Sending_Queue, Recieving_Queue):
+    #
+    #     Request_Msg = {}
+    #     Request_Msg["Request_Type"] = "Read"
+    #     Request_Msg["DS_Name"] = "Model_inst_info"
+    #     Request_Msg["Queue_Name"] = Recieving_Queue
+    #
+    #     Request_Msg["Filter"] = {}
+    #     if len(Model_Id_list) == 0:
+    #         Request_Msg["Filter"]["Model_id"] = []
+    #     else:
+    #         Request_Msg["Filter"]["Model_id"] = Model_Id_list
+    #
+    #     Request_json_msg = json.dumps(Request_Msg)
+    #     self.msg_obj.send("", Sending_Queue, Request_json_msg)
+    #     print("Msg sent: ", Request_json_msg)
 
     def Read_Service_Inst_Info(self, Service_Id_list, Sending_Queue, Recieving_Queue):
 
