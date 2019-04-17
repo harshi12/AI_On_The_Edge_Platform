@@ -20,6 +20,7 @@ RMQ = RabbitMQ()
 data = ""
 @app.route('/')
 def firstpage():
+    # TODO : Replace proper queuename here
     t1 = Thread(target = receiveInput, args = ('', "quake_queue"))
     t1.start()
     return render_template('p.html',title='IAS')
