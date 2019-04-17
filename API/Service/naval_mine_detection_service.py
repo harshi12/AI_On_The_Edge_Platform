@@ -11,6 +11,7 @@ import numpy as np
 
 from queue_req_resp import *
 from ServiceManager.platform_input_stream import *
+from ServiceManager.platform_output_stream import *
 
 
 class SonarService:
@@ -50,10 +51,13 @@ class SonarService:
 
         predictions = np.array(predictions)
         if np.argmax(predictions, axis=1)[0] == 1:
-            print ("Sonar service inference: ", np.argmax(predictions, axis=1)[0] , "Rock")
+            substance = "Rock"
         else:
-            print ("Sonar service inference: ", np.argmax(predictions, axis=1)[0] , "Mine")
+            substance = "Mine"
 
+        if self.run_on_gateway == "no":
+            output_stream = PlatformOutputStream()
+            output_stream.service_output_send(self.service_id, substance)
 
 
 if __name__ == "__main__":

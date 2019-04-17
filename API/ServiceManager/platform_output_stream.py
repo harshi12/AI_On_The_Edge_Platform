@@ -43,8 +43,14 @@ class PlatformOutputStream(IO_Stream):
                 json_output_str = json.dumps(output)
                 print (f"{self.description} sending output --> {json_output_str}")
                 sock_util.send_msg(self.gateway_sockets[gw], json_output_str)
-            
-        
+
+        # OUTPUT of NAVAL_MINE_DETECTION_SERVICE
+        # Destination: UI
+        elif output["service_id"] == "sonar_svc_1":
+            json_output_str = json.dumps(output)
+            print (f"[POS] receiving output --> {json_output_str}")
+            self.RBMQ.send("", self.description + "_" + output["service_id"], json_output_str)
+
 
     # function to listen to output data from the services
     # route the data to the destinations according to configuration
