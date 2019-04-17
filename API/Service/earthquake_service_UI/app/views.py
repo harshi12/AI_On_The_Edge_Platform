@@ -18,11 +18,23 @@ from threading import Thread
 SCOPES = 'https://www.googleapis.com/auth/drive'
 RMQ = RabbitMQ()
 data = ""
+
+def receiveInput(exchange, key):
+    RMQ.receive(callback, exchange, key)
+
+def callback(ch, method, properties, body):
+    global data
+    if not isinstance(body, str):
+            body = body.decode()
+    data = body
+    print(data)
+
+t1 = Thread(target = receiveInput, args = ('', "quake_queue"))
+t1.start()
+
 @app.route('/')
 def firstpage():
     # TODO : Replace proper queuename here
-    t1 = Thread(target = receiveInput, args = ('', "quake_queue"))
-    t1.start()
     return render_template('p.html',title='IAS')
 
 @app.route('/earthquake_status')
@@ -35,13 +47,3 @@ def status():
     status = json.dumps(status)
     print(status)
     return status
-
-def receiveInput(exchange, key):
-    RMQ.receive(callback, exchange, key)
-
-def callback(ch, method, properties, body):
-    global data
-    if not isinstance(body, str):
-            body = body.decode()
-    data = body
-    print(data)
