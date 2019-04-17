@@ -1,0 +1,33 @@
+<Service name = "Iris_Model">
+	<Dependencies>
+		<Depedency>None</Depedency>
+	</Dependencies>
+	<Sensors>
+		<Sensor>Flower_Analysis_Sensor</Sensor>
+	</Sensors>
+	<GatewayLocation>SubmarineHull</GatewayLocation>
+
+	<!-- Where the ouput of this service should be redirected -->
+	<OutputDestination>
+		<Destination type = "Service">
+			<Name>Helper_Service</Name>
+		</Destination>
+	</OutputDestination>
+
+	<FolderPath>Models/Iris/</FolderPath>
+	
+	<ExecutableFileName>flower_analysis_service.py</ExecutableFileName>
+
+	<UI>
+		<FolderPath>None</FolderPath>
+		<ExecutableFileName>None</ExecutableFileName>
+	</UI>
+
+	<MinimumInstances>2</MinimumInstances>
+
+	<!-- Launch a new instance if there are 30 or more requests pending   -->
+	<UpperThreshold>50</UpperThreshold>
+
+	<!-- Kill an instance if there are less than 10 requests pending. Minimum number of instances should be maintained -->
+	<LowerThreshold>10</LowerThreshold>
+</Service>

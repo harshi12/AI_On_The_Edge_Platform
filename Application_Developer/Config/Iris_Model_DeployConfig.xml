@@ -1,0 +1,31 @@
+<Service name = "Iris_Model">
+	<SetUpEnvironment>
+		<Install>apt-get install tensorflow-model-server</Install>
+	</SetUpEnvironment>
+	
+	<Criticality>Yes</Criticality>
+	
+	<Exclusive>No</Exclusive>
+	
+	<MinimumInstances>1</MinimumInstances>
+	
+	<FolderPath>Models/Iris/</FolderPath>
+	
+	<ExecutableFileName>flower_analysis_service.py</ExecutableFileName>
+
+	<UI>
+		<FolderPath></FolderPath>
+		<ExecutableFileName></ExecutableFileName>
+	</UI>
+
+	<Scheduling>
+		<!-- TriggerInterval is in seconds -->
+		<TriggerInterval>None</TriggerInterval>
+		<!-- If StartTime is None then launch service immediately -->
+		<StartTime>None</StartTime>
+		<!-- Disabling Mechanism specified by EndTime -->
+		<EndTime>None</EndTime>
+		<UpTime>None</UpTime>
+	</Scheduling>
+
+</Service>
