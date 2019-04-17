@@ -85,7 +85,7 @@ class Registry:
                         if key==Service_id:
                             Result[key] = self.Service_inst_info[key]
             else:
-                Result = Service_inst_info
+                Result = self.Service_inst_info
             return Result
 
         elif(DS_Name=="App_inst_info"):
@@ -272,29 +272,28 @@ def callback(ch, method, properties, body):
 
 #TEMP queues Ideally, Common queue will be used which will listen from all modules
 def Recieve_from_DM():
-    RMQ.receive(callback, "", "RG_DM")
+    RMQ.receive(callback, "", "DM_RG")
 
 def Recieve_from_SM():
-    RMQ.receive(callback, "", "RG_SM")
+    RMQ.receive(callback, "", "SM_RG")
 
 def Recieve_from_MT():
-    RMQ.receive(callback, "", "RG_MT")
+    RMQ.receive(callback, "", "MT_RG")
 
 def Recieve_from_RM():
-    RMQ.receive(callback, "", "RG_RM")
+    RMQ.receive(callback, "", "RM_RG")
 
 def Recieve_from_LB():
-    RMQ.receive(callback, "", "RG_LB")
+    RMQ.receive(callback, "", "LB_RG")
 
 def Recieve_from_BS():
-    RMQ.receive(callback, "", "RG_BS")
+    RMQ.receive(callback, "", "BS_RG")
 
 def Backup():
     Timer = 15
     while 1:
         Registry_obj.Store_DS()
         time.sleep(Timer)
-
 
 Registry_obj = Registry()
 

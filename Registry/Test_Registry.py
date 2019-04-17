@@ -36,29 +36,29 @@ Registry_obj.Write_App_Inst_Info("482", Host_List2, "RG_SM")
 
 # REQUEST TYPE 5
 print("REQUEST TYPE 5")
-Registry_obj.Write_Host_Creds("192.168.23.34", "pranjali", "Accio@934", "RG_BS")
-Registry_obj.Write_Host_Creds("192.168.23.35", "kratika", "Qwerty987**", "RG_BS")
+Registry_obj.Write_Host_Creds("192.168.23.34", "pranjali", "Accio@934", "BS_RG")
+Registry_obj.Write_Host_Creds("192.168.23.35", "kratika", "Qwerty987**", "BS_RG")
 
 # REQUEST TYPE 6
 print("REQUEST TYPE 6")
-Registry_obj.Write_Platform_Module_Info("1", "192.168.23.34", "15329", "192.168.23.35", "15330", "RG_SM")
-Registry_obj.Write_Platform_Module_Info("2", "192.168.23.34", "15334", "192.168.23.35", "15335", "RG_SM")
+Registry_obj.Write_Platform_Module_Info("1", "192.168.23.34", "15329", "192.168.23.35", "15330", "SM_RG")
+Registry_obj.Write_Platform_Module_Info("2", "192.168.23.34", "15334", "192.168.23.35", "15335", "SM_RG")
 
 # REQUEST TYPE 7
 print("REQUEST TYPE 7")
-Registry_obj.Read_Storage_info(["432", "482"], "RG_DM", "DM_RG")
+Registry_obj.Read_Storage_info(["432", "482"], "DM_RG", "RG_DM")
 
 # REQUEST TYPE 8
 print("REQUEST TYPE 8")
-Registry_obj.Read_App_Inst_Info(["432", "482"], "RG_LB", "LB_RG")
+Registry_obj.Read_App_Inst_Info(["432", "482"], "LB_RG", "RG_LB")
 
 # REQUEST TYPE 9
 print("REQUEST TYPE 9")
-Registry_obj.Read_Service_Inst_Info(["432", "482"], "RG_LB", "LB_RG")
+Registry_obj.Read_Service_Inst_Info(["432", "482"], "LB_RG", "RG_LB")
 
 # REQUEST TYPE 10
 print("REQUEST TYPE 10")
-Registry_obj.Read_Model_Inst_Info(["432", "482"], "RG_MT", "MT_RG")
+Registry_obj.Read_Model_Inst_Info(["432", "482"], "MT_RG", "RG_MT")
 
 # REQUEST TYPE 11
 print("REQUEST TYPE 11")
@@ -66,4 +66,4 @@ Registry_obj.Read_Host_Creds(["192.168.23.34", "192.168.23.35"], "RG_LB", "LB_RG
 
 # REQUEST TYPE 12
 print("REQUEST TYPE 12")
-Registry_obj.Read_Platform_Module_Info(["1", "2"], "RG_RM", "RM_RG")
+Registry_obj.Read_Platform_Module_Info(["1", "2"], "RM_RG", "RG_RM")

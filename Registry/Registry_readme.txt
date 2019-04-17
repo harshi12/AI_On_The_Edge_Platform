@@ -12,7 +12,7 @@ Types of JSON requests:
 			]
 		},
 		{
-			"Model_id": 482,
+			"Model_id": "482",
 			"Hosts": [
 				["192.168.10.27", "6298", "Up", "15234"],
 				["192.163.10.25", "6267", "Down", "15235"]
@@ -34,14 +34,14 @@ Types of JSON requests:
 	"Request_Type": "Write",
 	"DS_Name": "Service_inst_info",
 	"Value": [{
-			"Service_id": 432,
+			"Service_id": "432",
 			"Hosts": [
 				["192.168.10.23", "6253", "Up", "15234"],
 				["192.163.10.23", "6255", "Down", "15235"]
 			]
 		},
 		{
-			"Service_id": 482,
+			"Service_id": "482",
 			"Hosts": [
 				["192.168.10.27", "6298", "Up", "15234"],
 				["192.163.10.25", "6267", "Down", "15235"]
@@ -63,14 +63,14 @@ Types of JSON requests:
 	"Request_Type": "Write",
 	"DS_Name": "App_inst_info",
 	"Value": [{
-			"App_id": 432,
+			"App_id": "432",
 			"Hosts": [
 				["192.168.10.23", "6253", "Up", "15234"],
 				["192.163.10.23", "6255", "Down", "15235"]
 			]
 		},
 		{
-			"App_id": 482,
+			"App_id": "482",
 			"Hosts": [
 				["192.168.10.27", "6298", "Up", "15234"],
 				["192.163.10.25", "6267", "Down", "15235"]
@@ -93,14 +93,14 @@ Types of JSON requests:
 	"DS_Name": "Storage_info",
 	"Value": [
     {
-			"App_id": 234,
+			"App_id": "234",
 			"Model_Link": "/AD_ID/App_ID/Models",
 			"App_Link": "/AD_ID/App_ID/AppLogic",
 			"Service_Link": "/AD_ID/App_ID/Services",
 			"Config_Link": "/AD_ID/App_ID/Config"
 		},
 		{
-			"App_id": 244,
+			"App_id": "244",
 			"Model_Link": "/AD_ID/App_ID/Models",
 			"App_Link": "/AD_ID/App_ID/AppLogic",
 			"Service_Link": "/AD_ID/App_ID/Services",
@@ -150,12 +150,12 @@ Keep filter field empty if credentials of all hosts are needed
 	"Value" :
 	[
 		{
-			"Module_id" : 1,
+			"Module_id" : "1",
 			"Primary" : {"IP" : "192.168.23.34", "Pid" : "15329"},
 			"Recovery" : {"IP" : "192.168.23.35", "Pid" : "15330"}
 		},
 		{
-		"Module_id" : 2,
+		"Module_id" : "2",
 		"Primary" : {"IP" : "192.168.23.34", "Pid" : "15334"},
 		"Recovery" : {"IP" : "192.168.23.35", "Pid" : "15335"}
 		}
