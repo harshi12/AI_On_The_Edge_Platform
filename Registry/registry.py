@@ -319,6 +319,9 @@ def Recieve_from_LBSI():
 def Recieve_from_BS():
     RMQ.receive(callback, "", "BS_RG")
 
+def Recieve_from_HM():
+    RMQ.receive(callback, "", "HM_RG")
+
 def Backup():
     Timer = 15
     while 1:
@@ -386,3 +389,6 @@ if __name__ == '__main__':
 
     t8 = threading.Thread(target=Backup)
     t8.start()
+
+    t11 = threading.Thread(target=Recieve_from_HM)
+    t11.start()
