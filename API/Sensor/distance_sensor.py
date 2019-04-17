@@ -1,24 +1,26 @@
 import sys
 sys.path.insert(0, '../')
 
-from sensor import *
+import argparse
 from random import choices
 import random 
 import time
 import datetime
 import _thread
 import threading 
+
 from timer import *
+from sensor import *
 
 class DistanceSensor(Sensor):
-    def __init__(self, rate = 1, dest_IP = "127.0.0.1", dest_port = 4444):
+    def __init__(self, dest_IP = "127.0.0.1", dest_port = 4444, rate = 1):
         description = "This sensor is a distance sensor and is deployed on the base of the submarine. This captures the distance of the submarine from the land below."
-        self.name = "DISTANCE_SENSOR"
-        Sensor.__init__(self, description, "two-way", rate, dest_IP, dest_port)
+        name = "DISTANCE_SENSOR"
+        Sensor.__init__(self, name, description, "two-way", rate, dest_IP, dest_port)
 
     # sends simulated input to the Sensor Manager, in the prescribed rate,
     # using sockets
-    def send_simulated_input(self):
+    def simulated_input_send(self):
         population = [0, 1]
         weights = [0.1, 0.9]
         Number_Selected = choices(population, weights)
@@ -29,9 +31,7 @@ class DistanceSensor(Sensor):
         else:
             distance = random.randint(0, 201)
 
-        distance_data = self.name + f"${self.rate}${distance}"
-
-        self.send_data(distance_data)
+        self.send_data(distance)
 
 
     # receive display alarm service's output using sockets
@@ -42,14 +42,16 @@ class DistanceSensor(Sensor):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print ("Usage: distance_sensor.py <sensor_manager_IP> <sensor_manager_port>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--sensor_manager_addrs", default="127.0.0.1:4444")
 
-    distance_sensor = DistanceSensor(dest_IP = sys.argv[1], dest_port = sys.argv[2])
+    (args, unknown) = parser.parse_known_args()
+    sensor_manager_IP, sensor_manager_port = args.sensor_manager_addrs.split(':')
+
+    distance_sensor = DistanceSensor(sensor_manager_IP, int(sensor_manager_port))
 
     # send simulated data at the prescribed rate
-    sensor_data_timer = RepeatedTimer(distance_sensor.rate, distance_sensor.send_simulated_input)
+    sensor_data_timer = RepeatedTimer(distance_sensor.rate, distance_sensor.simulated_input_send)
     sensor_data_timer.start()
 
     distance_sensor.receive_alarm_output()

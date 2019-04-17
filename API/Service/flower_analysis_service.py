@@ -25,13 +25,15 @@ class FlowerAnalysisService:
         req["signature_name"] = "predict"
         req["instances"] = []
 
-        data["body"] = data["body"][1:-1].split(', ') 
+        # content is a list received as a string e.g. "[a, b, c, d]"
+        # converting it into an actual list
+        data["content"] = data["content"][1:-1].split(', ')
 
         instance = {}
-        instance["sepal_length"] = [float(data["body"][0])]
-        instance["sepal_width"] = [float(data["body"][1])]
-        instance["petal_length"] = [float(data["body"][2])]
-        instance["petal_width"] = [float(data["body"][3])]
+        instance["sepal_length"] = [float(data["content"][0])]
+        instance["sepal_width"] = [float(data["content"][1])]
+        instance["petal_length"] = [float(data["content"][2])]
+        instance["petal_width"] = [float(data["content"][3])]
 
         req["instances"].append(instance)
 
