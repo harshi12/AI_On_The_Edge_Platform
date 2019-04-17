@@ -24,7 +24,7 @@ class EarthquakeSensor(Sensor):
     # sends simulated input to the Sensor Manager, in the prescribed rate,
     # using sockets
     def simulated_input_send(self):
-        self.send_data(self.dataset[self.index][:-1].tolist())
+        self.send_data(self.dataset[self.index][:].tolist())
         self.index = (self.index + 1) % self.length
 
 
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     (args, unknown) = parser.parse_known_args()
 
     sensor_manager_IP, sensor_manager_port = args.sensor_manager_addrs.split(':')
-
+    print(sensor_manager_IP, sensor_manager_port )
     earthquake_detect_sensor = EarthquakeSensor(sensor_manager_IP, int(sensor_manager_port))
     sensor_data_timer = RepeatedTimer(earthquake_detect_sensor.rate, earthquake_detect_sensor.simulated_input_send)
     sensor_data_timer.start()

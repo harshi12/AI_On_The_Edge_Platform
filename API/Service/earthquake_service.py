@@ -5,6 +5,7 @@ import numpy as np
 import json
 import argparse
 import pickle
+from ServiceManager.platform_input_stream import *
 
 class EarthquakeService:
     def __init__(self, service_id):
