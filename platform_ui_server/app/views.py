@@ -12,7 +12,7 @@ from threading import Thread
 from app import db,bcrypt
 from passlib.hash import sha256_crypt
 from sqlalchemy import create_engine , update
-from app.models import Person,Application,User,Gateway,Sensor
+from app.models import Person,Application,User,Gateway,Sensor,Service
 import numpy as np
 import os
 from app.Deployment_Manager import Deployment_Manager
@@ -22,7 +22,8 @@ from werkzeug.utils import secure_filename
 
 BATCH_COUNT = 10
 
-APP_UPLOAD_FOLDER = '/home/bhavidhingra/google-drive-iiith/Semester_#2/CSE563_Internals_of_Application_Servers/Hackathon/self_after_3/platform_ui_server1/Downloads/Applications/'
+# APP_UPLOAD_FOLDER = '/home/bhavidhingra/google-drive-iiith/Semester_#2/CSE563_Internals_of_Application_Servers/Hackathon/self_after_3/platform_ui_server1/Downloads/Applications/'
+APP_UPLOAD_FOLDER = '/home/sukku/Downloads/IAS/Applications/'
 
 GW_UPLOAD_FOLDER = '/home/bhavidhingra/google-drive-iiith/Semester_#2/CSE563_Internals_of_Application_Servers/Hackathon/self_after_3/platform_ui_server1/Downloads/Gateways/'
 
@@ -192,9 +193,13 @@ def register():
 
         password = password
 
-        person = Person(username=username , password=password , person_type = person_type)
-        db.session.add(person)
-        db.session.commit()
+        try:
+            person = Person(username=username , password=password , person_type = person_type)
+            db.session.add(person)
+            db.session.commit()
+        except:
+            flash('Username already exists!!', 'danger')
+            return redirect(url_for('register'))
 
         flash('You are now registered and can log in', 'success')
         return redirect(url_for('index'))
@@ -348,18 +353,24 @@ def upload_app():
             filename = secure_filename(appfile.filename)
             appfile.save(os.path.join(app.config['APP_UPLOAD_FOLDER'], filename))
             #return redirect(url_for('uploaded_file', filename=filename))
-            deploy_file(filename)
+            try:
+                deploy_file(filename)
+                return render_template('uploaded.html')
+            except:
+                flash('Application already exists.Use another Name', 'danger')
+                return render_template('add_app.html',title="IAS 1")
+            # deploy_file(filename)
             return render_template('uploaded.html')
         else:
             flash('Upload .zip file')
-            return render_template('p.html',title="IAS 1")
+            return render_template('add_app.html',title="IAS 1")
 
 def deploy_file(filename):
-    #TODO: Do Deployment
+    # Deployment
     app_name =filename
     AD_id = session['app_dev_id']
 
-    app = Application( app_name = app_name ,  AD_id = AD_id , app_logic_loc="EMPTY" , config_file_loc = "EMPTY" , model_loc = "EMPTY" , app_ui_server = "EMPTY")
+    app = Application( app_name = app_name ,  AD_id = AD_id )
     db.session.add(app)
     db.session.commit()
 
@@ -368,21 +379,27 @@ def deploy_file(filename):
 
     App_path = APP_UPLOAD_FOLDER+filename
 
-    # Model_Link , App_Link , Config_Link = Deploy(AD_id,app_id,App_path)
-    
     DM_Obj = Deployment_Manager("192.168.31.29", "iforgot", "/nfs_mount")
-    Model_Link , App_Link , Config_Link = DM_Obj.Deploy_App(AD_id,app_id,App_path)
+    #Model_Link , App_Link , Config_Link = DM_Obj.Deploy_App(AD_id,app_id,App_path)
 
-    # Model_Link = "/2/model"
-    # App_Link = "2/app"
-    # Config_Link = "2/config"
+    Models_dict , Services_dict = DM_Obj.Deploy_App(AD_id,app_id,App_path)
 
-    app.app_logic_loc = App_Link
-    app.config_file_loc = Config_Link
-    app.model_loc = Model_Link
-    db.session.add(app)
+    for model in Models_dict:
+        model_name = model
+        model_deploy_config_loc = Models_dict[model_name]['DeploymentConfigFile']
+        model_prod_config_loc = Models_dict[model_name]['ProductionConfigFile']
+        serv_obj = Service(service_name = model_name , service_type ="model" , app_id = app_id , deploy_config_loc = model_deploy_config_loc , prod_config_loc = model_prod_config_loc , service_ui = "EMPTY")
+        db.session.add(serv_obj)
+
+    for service in Services_dict:
+        service_name = service
+        service_deploy_config_loc = Services_dict[service_name]['DeploymentConfigFile']
+        service_prod_config_loc = Services_dict[service_name]['ProductionConfigFile']
+        print(service_name , service_deploy_config_loc , service_prod_config_loc)
+        serv_obj = Service(service_name = service_name , service_type ="service" , app_id = app_id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc , service_ui = "EMPTY")
+        db.session.add(serv_obj)
+
     db.session.commit()
-
     print("File uploaded")
 
 #Register Gateway

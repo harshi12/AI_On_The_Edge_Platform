@@ -3,11 +3,16 @@
 import pika
 import json
 
+RMQFile = "RMQCredentials.txt"
+
 class RabbitMQ:
 	def __init__(self):
-		self.server_IP = "192.168.31.10"
-		self.server_Port = 5672
-		self.credentials = pika.PlainCredentials("harshita","123")	
+		with open('RMQCredentials.txt', 'r') as f:
+			data = json.load(f)
+
+		self.server_IP = data["IP"]
+		self.server_Port = data["Port"]
+		self.credentials = pika.PlainCredentials(data["username"], data["password"])	
 		self.create_queue("", "AD_SM")
 		self.create_ServiceQueues("SM","Docker")
 		self.create_ServiceQueues("SM", "Scheduler")
