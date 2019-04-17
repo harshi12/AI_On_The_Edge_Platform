@@ -17,10 +17,10 @@ class Application(db.Model):
     #app_logic_loc = db.Column(db.String(100), unique=False, nullable=True)
     #app_config_loc = db.Column(db.String(150), unique=False, nullable=True)
     #model_loc = db.Column(db.String(100), unique=False, nullable=True)
-    #app_ui_server = db.Column(db.String(100), unique=False, nullable=True)
+    app_ui_server = db.Column(db.String(100), unique=False, nullable=True)
 
     def __repr__(self):
-        return "Application('{self.app_id}', '{self.app_logic_loc}', '{self.config_file_loc}' , '{self.config_file_loc}' , '{self.app_ui_server}')"
+        return "Application('{self.app_id}', '{self.app_name}', '{self.app_ui_server}')"
 
 class Service(db.Model):
     service_id = db.Column(db.Integer , primary_key=True)
@@ -29,7 +29,6 @@ class Service(db.Model):
     app_id = db.Column(db.Integer, db.ForeignKey(Application.app_id), nullable=False)
     deploy_config_loc = db.Column(db.String(150), unique=False, nullable=True)
     prod_config_loc = db.Column(db.String(150), unique=False, nullable=True)
-    service_ui = db.Column(db.String(150),unique=False,nullable=True)
 
     def __repr__(self):
         return "Services('{self.service_id}','{self.service_name}')"
@@ -37,7 +36,7 @@ class Service(db.Model):
 class User(db.Model):
     subscription_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(Person.person_id), nullable=False)
-    subscribed_model = db.Column(db.Integer , db.ForeignKey(Application.app_id) , nullable=False)
+    subscribed_app = db.Column(db.Integer , db.ForeignKey(Application.app_id) , nullable=False)
 
 
 class Gateway(db.Model):
