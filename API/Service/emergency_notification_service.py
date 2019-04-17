@@ -50,10 +50,10 @@ if __name__ == "__main__":
 
     emergency_notification_service = EmergencyNotificationService(args.service_id, args.limit)
 
-    sensor_type = "DISTANCE_SENSOR"
+    sensor_name = "DISTANCE_SENSOR"
 
     if args.run_on_gateway == "no":
         input_stream = PlatformInputStream()
 
-        input_stream.service_register_request(args.service_id, sensor_type, "default_rate")
-        input_stream.recv_input_content(args.service_id, emergency_notification_service.input_data_cb)
+        input_stream.service_register_request(args.service_id, sensor_name, "default_rate")
+        input_stream.service_recv_input_request(args.service_id, emergency_notification_service.input_data_cb)

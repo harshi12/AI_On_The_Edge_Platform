@@ -3,8 +3,8 @@ import json
 
 class Registry_API:
 
-    def __init__(self, IP, Port, Username, Password):
-        self.msg_obj = RabbitMQ(IP, Username, Password, Port)
+    def __init__(self):
+        self.msg_obj = RabbitMQ()
 
     def Write_Storage_info(self, App_Id, Model_Link, App_Link, Service_Link, Config_Link, Sending_Queue_name):
 
@@ -29,25 +29,25 @@ class Registry_API:
         self.msg_obj.send("", Sending_Queue_name, Request_json_msg)
         print("Msg sent: ", Request_json_msg)
 
-    # def Write_Model_Inst_Info(self, Model_Id, Host_Port_Status_List, Sending_Queue_name):
-    #
-    #     Request_Msg = {}
-    #     Request_Msg["Request_Type"] = "Write"
-    #     Request_Msg["DS_Name"] = "Model_inst_info"
-    #
-    #     key = "Value"
-    #     if key not in Request_Msg.keys():
-    #         Request_Msg["Value"] = []
-    #
-    #     Req_Value = {}
-    #     Req_Value["Model_id"] = Model_Id
-    #     Req_Value["Hosts"] = Host_Port_Status_List
-    #
-    #     Request_Msg["Value"].append(Req_Value)
-    #
-    #     Request_json_msg = json.dumps(Request_Msg)
-    #     self.msg_obj.send("", Sending_Queue_name, Request_json_msg)
-    #     print("Msg sent: ", Request_json_msg)
+    def Write_Service_Link_Info(self, Service_id, Service_link, Sending_Queue_name):
+
+        Request_Msg = {}
+        Request_Msg["Request_Type"] = "Write"
+        Request_Msg["DS_Name"] = "Service_link_info"
+
+        key = "Value"
+        if key not in Request_Msg.keys():
+            Request_Msg["Value"] = []
+
+        Req_Value = {}
+        Req_Value["Service_id"] = Service_id
+        Req_Value["Link"] = Service_link
+
+        Request_Msg["Value"].append(Req_Value)
+
+        Request_json_msg = json.dumps(Request_Msg)
+        self.msg_obj.send("", Sending_Queue_name, Request_json_msg)
+        print("Msg sent: ", Request_json_msg)
 
     def Write_Service_Inst_Info(self, Service_Id, Host_Port_Status_List, Sending_Queue_name):
 
@@ -110,6 +110,27 @@ class Registry_API:
         self.msg_obj.send("", Sending_Queue_name, Request_json_msg)
         print("Msg sent: ", Request_json_msg)
 
+    def Write_Gateway_Creds(self, Gateway_IP, Username, Password, Sending_Queue_name):
+
+        Request_Msg = {}
+        Request_Msg["Request_Type"] = "Write"
+        Request_Msg["DS_Name"] = "Host_Creds"
+
+        key = "Value"
+        if key not in Request_Msg.keys():
+            Request_Msg["Value"] = []
+
+        Req_Value = {}
+        Req_Value["Gateway_IP"] = Gateway_IP
+        Req_Value["Username"] = Username
+        Req_Value["Password"] = Password
+
+        Request_Msg["Value"].append(Req_Value)
+
+        Request_json_msg = json.dumps(Request_Msg)
+        self.msg_obj.send("", Sending_Queue_name, Request_json_msg)
+        print("Msg sent: ", Request_json_msg)
+
     def Write_Platform_Module_Info(self, Module_id, PrimaryIP, PrimaryPid, RecoveryIP, RecoveryPid, Sending_Queue_name):
 
         Request_Msg = {}
@@ -152,22 +173,22 @@ class Registry_API:
         self.msg_obj.send("", Sending_Queue, Request_json_msg)
         print("Msg sent: ", Request_json_msg)
 
-    # def Read_Model_Inst_Info(self, Model_Id_list, Sending_Queue, Recieving_Queue):
-    #
-    #     Request_Msg = {}
-    #     Request_Msg["Request_Type"] = "Read"
-    #     Request_Msg["DS_Name"] = "Model_inst_info"
-    #     Request_Msg["Queue_Name"] = Recieving_Queue
-    #
-    #     Request_Msg["Filter"] = {}
-    #     if len(Model_Id_list) == 0:
-    #         Request_Msg["Filter"]["Model_id"] = []
-    #     else:
-    #         Request_Msg["Filter"]["Model_id"] = Model_Id_list
-    #
-    #     Request_json_msg = json.dumps(Request_Msg)
-    #     self.msg_obj.send("", Sending_Queue, Request_json_msg)
-    #     print("Msg sent: ", Request_json_msg)
+    def Read_Service_Link_Info(self, Service_Id_list, Sending_Queue, Recieving_Queue):
+
+        Request_Msg = {}
+        Request_Msg["Request_Type"] = "Read"
+        Request_Msg["DS_Name"] = "Service_link_info"
+        Request_Msg["Queue_Name"] = Recieving_Queue
+
+        Request_Msg["Filter"] = {}
+        if len(Service_Id_list) == 0:
+            Request_Msg["Filter"]["Service_id"] = []
+        else:
+            Request_Msg["Filter"]["Service_id"] = Service_Id_list
+
+        Request_json_msg = json.dumps(Request_Msg)
+        self.msg_obj.send("", Sending_Queue, Request_json_msg)
+        print("Msg sent: ", Request_json_msg)
 
     def Read_Service_Inst_Info(self, Service_Id_list, Sending_Queue, Recieving_Queue):
 
@@ -215,6 +236,23 @@ class Registry_API:
             Request_Msg["Filter"]["Host_IP"] = []
         else:
             Request_Msg["Filter"]["Host_IP"] = Host_IP_list
+
+        Request_json_msg = json.dumps(Request_Msg)
+        self.msg_obj.send("", Sending_Queue, Request_json_msg)
+        print("Msg sent: ", Request_json_msg)
+
+    def Read_Gateway_Creds(self, Gateway_IP_list, Sending_Queue, Recieving_Queue):
+
+        Request_Msg = {}
+        Request_Msg["Request_Type"] = "Read"
+        Request_Msg["DS_Name"] = "Gateway_Creds"
+        Request_Msg["Queue_Name"] = Recieving_Queue
+
+        Request_Msg["Filter"] = {}
+        if len(Gateway_IP_list) == 0:
+            Request_Msg["Filter"]["Gateway_IP"] = []
+        else:
+            Request_Msg["Filter"]["Gateway_IP"] = Gateway_IP_list
 
         Request_json_msg = json.dumps(Request_Msg)
         self.msg_obj.send("", Sending_Queue, Request_json_msg)

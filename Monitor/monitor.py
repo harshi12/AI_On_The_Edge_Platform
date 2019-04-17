@@ -10,8 +10,8 @@ class Monitor:
 
     def __init__(self, Local_Password):
         self.Host_Info = {}
+        self.Gateway_Info = {}
         self.Module_Info = {}
-        self.Model_Info = {}
         self.Service_info = {}
         self.Local_Password = Local_Password
 
@@ -19,9 +19,9 @@ class Monitor:
         # Send Read request to registry , response will be in MTHC_RG queue
         Registry_obj.Read_Host_Creds([],  "MTHC_RG", "RG_MTHC")
 
-    def Read_Model_Info(self):
-        # Send Read request to registry , response will be in MTMI_RG queue
-        Registry_obj.Read_Model_Inst_Info([], "MTMI_RG", "RG_MTMI")
+    def Read_Gateway_Info(self):
+        # Send Read request to registry , response will be in MTHC_RG queue
+        Registry_obj.Read_Gateway_Creds([],  "MTGC_RG", "RG_MTGC")
 
     def Read_Service_Info(self):
         # Send Read request to registry , response will be in MTSI_RG queue
@@ -31,110 +31,48 @@ class Monitor:
         # Send Read request to registry , response will be in MTPI_RG queue
         Registry_obj.Read_Platform_Module_Info([], "MTPI_RG", "RG_MTPI")
 
-    def Check_Model(self):
+    def Check_Model(self, host):
 
-        #For every model running on platform, check status
-        for model in self.Model_Info.keys():
-            Down_Instances = 0
-            Write_Reg = 0
-    		#For every ip, check if the model is running
-            for host in self.Model_Info[model]:
-                IP = host[0]
-                Port = host[1]
-                Status = host[2]
+        IP = host[0]
+        Port = host[1]
+        Status = host[2]
 
-                print("nmap -p " + Port + " " + IP + " | grep open")
-                result = os.system("nmap -p " + Port + " " + IP + " | grep open")
-                print("Check Model Result:", result)
+        print("nmap -p " + Port + " " + IP + " | grep open")
+        result = os.system("nmap -p " + Port + " " + IP + " | grep open")
+        print("Check Model Result:", result)
 
-    			#If not running
-                if result != 0:
-                    if Status == "Up":
-                        Down_Instances += 1
-    					#Write in Registry
-                        host[2] = "Down"
-                        Write_Reg = 1
-                        print("Writing in Registry NOT RUNNING, STATUS UP")
-                    print(" NOT RUNNING, STATUS DOWN")
-                else:
-                    if Status == "Down":
-    					#Write Registry
-                        host[2] = "Up"
-                        Write_Reg = 1
-                        print("Writing in Registry RUNNING, STATUS DOWN")
-                    print("RUNNING, STATUS UP")
+        if result != 0:
+            return 0
+        else:
+            return 1
 
-            if Write_Reg == 1:
-                Registry_obj.Write_Model_Inst_Info(model, self.Model_Info[model], "MTMI_RG")
+    def Check_Service(self, host):
 
-            if Down_Instances > 0:
-    			#Send request to Host Manager
-                request_MT = {"Request_Type": "Model_Submit","Model_ID" : model,"Instances" : str(Down_Instances)}
-                request_MT_json = json.dumps(request_MT)
-                msg_obj = RabbitMQ()
-                msg_obj.send("", "MT_HM", request_MT_json)
-                print("Request sent to HM: ", request_MT_json)
+        IP = host[0]
+        Port = host[1]
+        Status = host[2]
+        Pid = host[3]
 
-        self.Read_Model_Info()
+        Username = self.Host_Info[IP]["Username"]
+        Password = self.Host_Info[IP]["Password"]
 
-    def Check_Service(self):
+        if os.path.exists("ServiceOutput.txt"):
+            os.remove("ServiceOutput.txt")
+        cmd="sshpass -p " + Password + " ssh -o StrictHostKeyChecking no " + Username + "@" + IP + " \"exit\""
+        cmd = "sshpass -p "+ Password + " ssh " + Username + "@" + IP + " ps -fp " + str(Pid) + " | wc -l > ServiceOutput.txt"
+        print("Check Service Command: ", cmd)
+        os.system(cmd)
 
-        #For every service running on platform, check status
-        for service in self.Service_Info.keys():
-            Down_Instances = 0
-            Write_Reg = 0
-    		#For every ip, check if the service is running
-            for host in self.Service_Info[service]:
-                IP = host[0]
-                Port = host[1]
-                Status = host[2]
-                Pid = host[3]
+        with open("ServiceOutput.txt") as f:
+            content = f.read().strip()
 
-                Username = self.Host_Info[IP]["Username"]
-                Password = self.Host_Info[IP]["Password"]
+        result = int(content)
+        print("Check Service Result: ", result)
 
-                if os.path.exists("ServiceOutput.txt"):
-                    os.remove("ServiceOutput.txt")
-                cmd="sshpass -p " + Password + " ssh -o StrictHostKeyChecking no " + Username + "@" + IP + " \"exit\""
-                cmd = "sshpass -p "+ Password + " ssh " + Username + "@" + IP + " ps -fp " + str(Pid) + " | wc -l > ServiceOutput.txt"
-                print("Check Service Command: ", cmd)
-                os.system(cmd)
-
-                with open("ServiceOutput.txt") as f:
-                    content = f.read().strip()
-
-                result = int(content)
-                print("Check Service Result: ", result)
-
-    			#If not running
-                if result == 1:
-                    if Status == "Up":
-                        Down_Instances += 1
-    					#Write in Registry
-                        host[2] = "Down"
-                        Write_Reg = 1
-                        print("Writing in Registry NOT RUNNING, STATUS UP")
-                    print(" NOT RUNNING, STATUS DOWN")
-                else:
-                    if Status == "Down":
-    					#Write Registry
-                        host[2] = "Up"
-                        Write_Reg = 1
-                        print("Writing in Registry RUNNING, STATUS DOWN")
-                    print("RUNNING, STATUS UP")
-
-            if Write_Reg == 1:
-                Registry_obj.Write_Service_Inst_Info(service, self.Service_Info[service], "MTSI_RG")
-
-            if Down_Instances > 0:
-    			#Send request to Host Manager
-                request_MT = {"Request_Type": "Service_Submit","Service_ID" : service,"Instances" : str(Down_Instances)}
-                request_MT_json = json.dumps(request_MT)
-                msg_obj = RabbitMQ()
-                msg_obj.send("", "MT_HM", request_MT_json)
-                print("Request sent to HM: ", request_MT_json)
-
-        self.Read_Service_Info()
+        if result == 1:
+            return 0
+        else:
+            return 1
 
     def Check_Platform_Host(self, Module_ID, Host_type):
 
@@ -182,14 +120,11 @@ class Monitor:
 
         self.Read_Platform_Module_Info()
 
+def callback_gc(ch, method, properties, body):
 
-def callback_hc(ch, method, properties, body):
     body = body.decode("utf-8").replace('\0', '')
-    M.Host_Info = json.loads(body)
-    print("\nReceiving Host Credentials: ", M.Host_Info)
-
-    t_mi = threading.Thread(target=M.Read_Model_Info)
-    t_mi.start()
+    M.Gateway_Info = json.loads(body)
+    print("\nReceiving Gateway Credentials: ", M.Gateway_Info)
 
     t_si = threading.Thread(target=M.Read_Service_Info)
     t_si.start()
@@ -197,17 +132,85 @@ def callback_hc(ch, method, properties, body):
     t_pi = threading.Thread(target=M.Read_Platform_Module_Info)
     t_pi.start()
 
-def callback_mi(ch, method, properties, body):
+def callback_hc(ch, method, properties, body):
     body = body.decode("utf-8").replace('\0', '')
-    M.Model_Info = json.loads(body)
-    print("\nReceiving Model Info: ", M.Model_Info)
-    M.Check_Model()
+    M.Host_Info = json.loads(body)
+    print("\nReceiving Host Credentials: ", M.Host_Info)
+
+    M.Read_Gateway_Info()
 
 def callback_si(ch, method, properties, body):
     body = body.decode("utf-8").replace('\0', '')
     M.Service_Info = json.loads(body)
     print("\nReceiving Service Info: ", M.Service_Info)
-    M.Check_Service()
+
+    for service in M.Service_Info.keys():
+
+        Instances_list = M.Service_Info[service]
+
+        request_HM_GW = {}
+        request_HM_GW["Gateway_IPs"] = []
+        request_HM_HT = {}
+
+        model_instances = 0
+        service_instances = 0
+
+        for i in range(len(Instances_list)):
+            if Instances_list[i][4] == "model":
+
+                IP = Instances_list[i][0]
+
+                model_result = M.Check_Model(Instances_list[i])
+                service_result = 1
+                if i+1 < len(Instances_list) and Instances_list[i+1][4] == "exe" and Instances_list[i+1][5] == Instances_list[i][5]:
+                    service_result = M.Check_Service(Instances_list[i+1])
+
+                if model_result==0 or service_result==0:
+                    if Instances_list[i][2] == "Up" :
+                        if IP in M.Gateway_Info.keys():
+                            request_HM_GW["Request_Type"] = "Gateway_Deploy"
+                            request_HM_GW["Gateway_IPs"].append([IP])
+                            request_HM_GW["Service_ID"] = service
+                        else:
+                            model_instances = model_instances + 1
+                        Instances_list[i][2] = "Down"
+                i = i + 1
+
+            elif Instances_list[i][4] == "exe":
+
+                service_result = M.Check_Service(Instances_list[i])
+                if service_result == 0 :
+                    if Instances_list[i][2] == "Up" :
+                        service_instances = service_instances + 1
+                        Instances_list[i][2] = "Down"
+
+        if model_instances >  0:
+            request_HM_HT["Request_Type"] = "Model_Submit"
+            request_HM_HT["Model_ID"] = service
+            request_HM_HT["Instances"] = str(model_instances)
+
+            request_HM_HT_json = json.dumps(request_HM_HT)
+            msg_obj = RabbitMQ()
+            msg_obj.send("", "MT_HM", request_HM_HT_json)
+            print("Model start on host Request sent to HM: ", request_HM_HT_json)
+
+        if service_instances >  0:
+            request_HM_HT["Request_Type"] = "Service_Submit"
+            request_HM_HT["Model_ID"] = service
+            request_HM_HT["Instances"] = str(service_instances)
+
+            request_HM_HT_json = json.dumps(request_HM_HT)
+            msg_obj = RabbitMQ()
+            msg_obj.send("", "MT_HM", request_HM_HT_json)
+            print("Service start Request sent to HM: ", request_HM_HT_json)
+
+        if len(request_HM_GW["Gateway_IPs"]) > 0:
+            request_HM_GW_json = json.dumps(request_HM_GW)
+            msg_obj = RabbitMQ()
+            msg_obj.send("", "MT_HM", request_HM_GW_json)
+            print("Model start on Gateway Request sent to HM: ", request_HM_GW_json)
+
+    M.Read_Service_Info()
 
 def callback_pi(ch, method, properties, body):
     body = body.decode("utf-8").replace('\0', '')
@@ -218,8 +221,8 @@ def callback_pi(ch, method, properties, body):
 def Recieve_from_RG_MTHC():
     msg_obj.receive(callback_hc, "", "RG_MTHC")
 
-def Recieve_from_RG_MTMI():
-    msg_obj.receive(callback_mi, "", "RG_MTMI")
+def Recieve_from_RG_MTGC():
+    msg_obj.receive(callback_gc, "", "RG_MTGC")
 
 def Recieve_from_RG_MTSI():
     msg_obj.receive(callback_si, "", "RG_MTSI")
@@ -237,7 +240,7 @@ M = Monitor(local_password)
 t2 = threading.Thread(target=Recieve_from_RG_MTHC)
 t2.start()
 
-t3 = threading.Thread(target=Recieve_from_RG_MTMI)
+t3 = threading.Thread(target=Recieve_from_RG_MTGC)
 t3.start()
 
 t4 = threading.Thread(target=Recieve_from_RG_MTSI)
@@ -247,6 +250,3 @@ t5 = threading.Thread(target=Recieve_from_RG_MTPI)
 t5.start()
 
 M.Read_Host_Info()
-
-# t1 = threading.Thread(target=main)
-# t1.start()
