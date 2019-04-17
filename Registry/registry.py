@@ -14,6 +14,7 @@ class Registry:
         self.Service_inst_info = {}
         self.App_inst_info = {}
         self.Host_Creds = {}
+        self.Gateway_Creds = {}
         self.Platform_Module_Info = {}
 
     def Restore_DS(self):
@@ -112,6 +113,19 @@ class Registry:
                             Result[key] = self.Host_Creds[key]
             else:
                 Result = self.Host_Creds
+            return Result
+
+        elif(DS_Name=="Gateway_Creds"):
+            Filter = DS_Obj["Gateway_IP"]
+            #Filter is a list of App_ids
+            if len(Filter)>0:
+                for i in range(len(Filter)):
+                    Host_IP = Filter[i]
+                    for key in self.Gateway_Creds.keys():
+                        if key==Host_IP:
+                            Result[key] = self.Gateway_Creds[key]
+            else:
+                Result = self.Gateway_Creds
             return Result
 
         elif(DS_Name=="Platform_Module_Info"):
@@ -217,6 +231,17 @@ class Registry:
                 self.Host_Creds[Host_IP]["Username"] = Username
                 self.Host_Creds[Host_IP]["Password"] = Password
 
+        elif(DS_Name=="Gateway_Creds"):
+            for i in range(len(DS_Obj)):
+                #Record if Dict
+                Host_IP = DS_Obj[i]["Gateway_IP"]
+                self.Host_Creds[Host_IP] = {}
+
+                Username = DS_Obj[i]["Username"]
+                Password = DS_Obj[i]["Password"]
+                self.Host_Creds[Host_IP]["Username"] = Username
+                self.Host_Creds[Host_IP]["Password"] = Password
+
         elif(DS_Name=="Platform_Module_Info"):
             for i in range(len(DS_Obj)):
                 #Record if Dict
@@ -283,7 +308,7 @@ def Recieve_from_MTHC():
     RMQ.receive(callback, "", "MTHC_RG")
 
 def Recieve_from_MTMI():
-    RMQ.receive(callback, "", "MTMI_RG")
+    RMQ.receive(callback, "", "MTGC_RG")
 
 def Recieve_from_MTSI():
     RMQ.receive(callback, "", "MTSI_RG")
@@ -321,8 +346,8 @@ if __name__ == '__main__':
     RMQ.create_ServiceQueues("RG", "SM")
     #REGISTRY <--> MONITOR Host Creds
     RMQ.create_ServiceQueues("RG", "MTHC")
-    #REGISTRY <--> MONITOR Model Info
-    RMQ.create_ServiceQueues("RG", "MTMI")
+    #REGISTRY <--> MONITOR Gateway Creds
+    RMQ.create_ServiceQueues("RG", "MTGC")
     #REGISTRY <--> MONITOR Service Info
     RMQ.create_ServiceQueues("RG", "MTSI")
     #REGISTRY <--> MONITOR Platform Module Info
@@ -347,7 +372,7 @@ if __name__ == '__main__':
     t3 = threading.Thread(target=Recieve_from_MTHC)
     t3.start()
 
-    t8 = threading.Thread(target=Recieve_from_MTMI)
+    t8 = threading.Thread(target=Recieve_from_MTGC)
     t8.start()
 
     t9 = threading.Thread(target=Recieve_from_MTSI)
