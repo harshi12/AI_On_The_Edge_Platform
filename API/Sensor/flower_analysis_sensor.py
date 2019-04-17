@@ -12,7 +12,7 @@ from timer import *
 from sensor import *
 
 class FlowerAnalysisSensor(Sensor):
-    def __init__(self, dest_IP = "127.0.0.1", dest_port = 4444, rate = 0.5):
+    def __init__(self, debug, dest_IP = "127.0.0.1", dest_port = 4444, rate = 0.5):
         name = "FLOWER_ANALYSIS_SENSOR"
         description = "This is an iris-flower classification sensor."
         Sensor.__init__(self, name, description, "one-way", rate, dest_IP, dest_port)
@@ -24,18 +24,19 @@ class FlowerAnalysisSensor(Sensor):
     # sends simulated input to the Sensor Manager, in the prescribed rate,
     # using sockets
     def simulated_input_send(self):
-        self.send_data(self.dataset[self.index][:-1].tolist())
+        self.send_data(self.dataset[self.index][:-1].tolist(), 5558)
         self.index = (self.index + 1) % self.length
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--sensor_manager_addrs", default="127.0.0.1:4444")
+    parser.add_argument("--debug", default="no")
 
     (args, unknown) = parser.parse_known_args()
 
     sensor_manager_IP, sensor_manager_port = args.sensor_manager_addrs.split(':')
 
-    flower_analysis_sensor = FlowerAnalysisSensor(sensor_manager_IP, int(sensor_manager_port))
+    flower_analysis_sensor = FlowerAnalysisSensor(args.debug, sensor_manager_IP, int(sensor_manager_port))
     sensor_data_timer = RepeatedTimer(flower_analysis_sensor.rate, flower_analysis_sensor.simulated_input_send)
     sensor_data_timer.start()
