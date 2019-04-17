@@ -1,15 +1,140 @@
+import sys
+sys.path.insert (0, '../')
 import zipfile
 import os
 from queue_req_resp import RabbitMQ
 import json
 from nfs_client import NFS
 import time
+import xml.etree.ElementTree as ET
+from lxml import etree
+from io import StringIO
+import xmlschema
 
 class Deployment_Manager():
 
-    def __init__(self, NFS_Server="192.168.31.29", Local_Password="iforgot", Local_mount_relative_path = "/nfs_mount"):
+    def __init__(self, NFS_Server="192.168.31.29", Local_Password="S2j1ar1in63", Local_mount_relative_path = "/nfs_mount"):
        self.NFS_Obj = NFS(NFS_Server, Local_Password)
        self.local_nfs_dir = os.getcwd() + Local_mount_relative_path
+       self.Models_Information_To_Return = None
+       self.Services_Informtion_To_Return = None
+
+    def Validate_XML(self,XML_Path,Schema_Path):
+        my_schema = xmlschema.XMLSchema(Schema_Path)
+        try:
+            my_schema.is_valid(XML_Path)
+            return True
+        except:
+            print ("Mismatch")
+            return False
+
+    # def Parse_Application_config(self,Unzip_Folder_Path):
+    #     Application_config_file_path = Unzip_Folder_Path + "/Config/Application_config.xml"
+
+
+    #     tree = ET.parse(Application_config_file_path)		
+    #     root = tree.getroot()
+    #     print (root)
+
+    #     # --------------- Service Module ------------------ #
+
+    #     service_data = {}
+
+    #     for children in root.iter('Services'):
+    #         for child in children:
+    #             attribDictionary = child.attrib
+    #             service_name = attribDictionary['name']
+    #             service_data[service_name] = {}
+
+    #             for elements in child:
+    #                 service_data[service_name][elements.tag] = elements.text
+
+    #     print (service_data)
+
+    #     # ----------- Match service name --------------- #
+
+    #     # for key in service_data.keys():
+    #     #     sub_tree = ET.parse(Unzip_Folder_Path + "/Config/"+service_data[key]["DeploymentConfigFile"])		
+    #     #     sub_root = sub_tree.getroot()
+    #     #     if (sub_root.attrib['name'] != key):
+    #     #         return False
+
+    #     # # ----------- Check for "ProductionConfigFile" (used previous for loop) --------------- #
+
+    #     # for key in service_data.keys():
+    #     #     sub_tree = ET.parse(service_data[key]["ProductionConfigFile"])		
+    #     #     sub_root = sub_tree.getroot()
+    #     #     if (sub_root.attrib['name'] != key):
+    #     #         return False
+
+    #     # --------------- ApplicationLogic module ------------------ #
+
+    #     App_logic_data = {}
+
+    #     for children in root.iter('ApplicationLogic'):
+    #         for child in children:
+    #             attribDictionary = child.attrib
+    #             App_logic_name = attribDictionary['name']
+    #             App_logic_data[App_logic_name] = {}
+
+    #             for elements in child:
+    #                 App_logic_data[App_logic_name][elements.tag] = Unzip_Folder_Path + "/Config/"+elements.text
+
+    #     # ----------- Match Config file --------------- #
+
+    #     for key in App_logic_data.keys():
+    #         sub_tree = ET.parse(App_logic_data[key]["ConfigFile"])		
+    #         sub_root = sub_tree.getroot()
+    #         if (sub_root.attrib['name'] != key):
+    #             return False
+        
+    #     return True
+
+    def Get_Models_Or_Services_Information(self, App_Dev_Id, App_Id, Unzip_Folder_Path,Info_To_Fetch): # Info_To_Fetch = "Models" or "Services"
+        Application_config_file_path = Unzip_Folder_Path + "/Config/Application_config.xml"
+
+        tree = ET.parse(Application_config_file_path)		
+        root = tree.getroot()
+
+        XML_Data = {}
+
+        for children in root.iter(Info_To_Fetch):
+            for child in children:
+                attribDictionary = child.attrib
+                name = attribDictionary['name']
+                XML_Data[name] = {}
+
+                for elements in child:
+                    XML_Data[name][elements.tag] = Unzip_Folder_Path + "/Config/" + elements.text
+
+        if Info_To_Fetch == "Models":
+            self.Models_Information_To_Return = XML_Data
+        else:
+            self.Services_Informtion_To_Return = XML_Data
+
+        Details_of_info_to_fetch = {}
+
+        for key in XML_Data.keys():
+            sub_tree = ET.parse(XML_Data[key]["DeploymentConfigFile"])		
+            sub_root = sub_tree.getroot()
+
+            Details_of_info_to_fetch[key] = {}
+
+            for elements in sub_root:
+                Details_of_info_to_fetch[key][elements.tag] = elements.text
+
+
+        Final_info_to_fetch = []
+
+        for key in Details_of_info_to_fetch.keys():
+            Info = {Info_To_Fetch[:-1]+"_Link":None, "Criticality":None , "No_Instances": None}
+            Info[Info_To_Fetch[:-1]+"_Link"] = "/" + str(App_Dev_Id) + "/" + str(App_Id) + "/"+Info_To_Fetch+"/" + str(key)
+            Info["Criticality"] = Details_of_info_to_fetch[key]["Criticality"]
+            Info["No_Instances"] = Details_of_info_to_fetch[key]["MinimumInstances"]
+            Final_info_to_fetch.append(Info)
+
+        return Final_info_to_fetch
+
 
     def Deploy_App(self, App_Dev_Id, App_Id, Package_Absolute_Path):
 
@@ -24,7 +149,16 @@ class Deployment_Manager():
 
         os.rename(Current_Working_Direcory+"/"+Unzip_File_Name,Current_Working_Direcory+"/"+str(App_Id))
 
+
+        # --------- check service name ---------- #
+
+        # if(not self.Parse_Application_config(Current_Working_Direcory+"/"+str(App_Id))):
+        #     # Send message that service is mismatch #
+        #     print ("Mismatch service name")
+        #     sys.exit(1)
+
         # --------- Store in NFS -------------- #
+
         print ("Connecting to NFS")
         self.NFS_Obj.mount("", self.local_nfs_dir)
 
@@ -34,21 +168,25 @@ class Deployment_Manager():
 
         self.NFS_Obj.copy(Current_Working_Direcory+"/"+str(App_Id), self.local_nfs_dir+"/"+str(App_Dev_Id)+"/")
         print ("DisConnecting to NFS")
-        time.sleep(5)
+        time.sleep(1)
 
         self.NFS_Obj.unmount(self.local_nfs_dir)
 
         # -------------- Artefacts staorage links ------------------- #
 
-        Model_Link = "/"+str(Ad_Id)+"/"+str(App_Id)+"/Models"
-        App_Link = "/"+str(Ad_Id)+"/"+str(App_Id)+"/AppLogic"
-        Service_Link = "/"+str(Ad_Id)+"/"+str(App_Id)+"/Services"
-        Config_Link = "/"+str(Ad_Id)+"/"+str(App_Id)+"/Config"
+        Model_Link = "/"+str(App_Dev_Id)+"/"+str(App_Id)+"/Models"
+        App_Link = "/"+str(App_Dev_Id)+"/"+str(App_Id)+"/AppLogic"
+        Service_Link = "/"+str(App_Dev_Id)+"/"+str(App_Id)+"/Services"
+        Config_Link = "/"+str(App_Dev_Id)+"/"+str(App_Id)+"/Config"
+        Models = self.Get_Models_Or_Services_Information(App_Dev_Id, App_Id, Current_Working_Direcory+"/"+str(App_Id),"Models")
+        Services = self.Get_Models_Or_Services_Information(App_Dev_Id, App_Id, Current_Working_Direcory+"/"+str(App_Id),"Services")
 
-        print (Model_Link)
-        print (App_Link)
-        print (Service_Link)
-        print (Config_Link)
+        # print (Models)
+        # print (Services)
+        # print (Model_Link)
+        # print (App_Link)
+        # print (Service_Link)
+        # print (Config_Link)
 
         # ------------- Store Artefacts staorage links in Registry ---------------- #
 
@@ -75,11 +213,11 @@ class Deployment_Manager():
 
         Host_Manager_Message = {
     	                        "Request_Type": "App_Submit",
-                                "AD_ID" : Ad_Id,
+                                "AD_ID" : App_Dev_Id,
                                 "App_Id" : App_Id,
-                                "Model_Link": Model_Link,
+                                "Models": Models,
+                                "Services" : Services,
                                 "App_Link": App_Link,
-                                "Service_Link" : Service_Link,
                                 "Config_Link": Config_Link
                                 }
 
@@ -87,8 +225,8 @@ class Deployment_Manager():
         obj_HM = RabbitMQ()
         obj_HM.send("", "DM_HM", Host_Manager_Message)
 
-        return Model_Link , App_Link , Config_Link
+        return self.Models_Information_To_Return, self.Services_Informtion_To_Return
 
 # Sample Function Call
-DM_Obj = Deployment_Manager("192.168.31.29", "iforgot", "/nfs_mount")
-DM_Obj.Deploy_App(1,2,"/Users/pranjali/Desktop/IAS.zip")
+# DM_Obj = Deployment_Manager("192.168.31.29", "S2j1ar1in63", "/nfs_server")
+# Models_Info_To_Return, Services_Info_To_Return = DM_Obj.Deploy_App(1,3,"./Application_Developer.zip")
