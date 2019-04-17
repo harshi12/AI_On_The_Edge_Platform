@@ -286,6 +286,9 @@ def Recieve_from_MTMI():
 def Recieve_from_MTSI():
     RMQ.receive(callback, "", "MTSI_RG")
 
+def Recieve_from_MTPI():
+    RMQ.receive(callback, "", "MTPI_RG")
+
 def Recieve_from_RM():
     RMQ.receive(callback, "", "RM_RG")
 
@@ -320,6 +323,8 @@ if __name__ == '__main__':
     RMQ.create_ServiceQueues("RG", "MTMI")
     #REGISTRY <--> MONITOR Service Info
     RMQ.create_ServiceQueues("RG", "MTSI")
+    #REGISTRY <--> MONITOR Platform Module Info
+    RMQ.create_ServiceQueues("RG", "MTPI")
     #REGISTRY <--> RECOVERY MANAGER
     RMQ.create_ServiceQueues("RG", "RM")
     #REGISTRY <--> LOAD BALANCER Host Creds
@@ -345,6 +350,9 @@ if __name__ == '__main__':
 
     t9 = threading.Thread(target=Recieve_from_MTSI)
     t9.start()
+
+    t10 = threading.Thread(target=Recieve_from_MTPI)
+    t10.start()
 
     t4 = threading.Thread(target=Recieve_from_RM)
     t4.start()

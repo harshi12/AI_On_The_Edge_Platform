@@ -4,12 +4,13 @@ from queue_req_resp import RabbitMQ
 from Registry_API import Registry_API
 import threading
 import time
+import sys
 
 class Monitor:
 
     def __init__(self, Local_Password):
         self.Host_Info = {}
-        #self.Module_Info = {}
+        self.Module_Info = {}
         self.Model_Info = {}
         self.Service_info = {}
         self.Local_Password = Local_Password
@@ -23,8 +24,12 @@ class Monitor:
         Registry_obj.Read_Model_Inst_Info([], "MTMI_RG", "RG_MTMI")
 
     def Read_Service_Info(self):
-        # Send Read request to registry , response will be in MTMI_RG queue
+        # Send Read request to registry , response will be in MTSI_RG queue
         Registry_obj.Read_Service_Inst_Info([], "MTSI_RG", "RG_MTSI")
+
+    def Read_Platform_Module_Info(self):
+        # Send Read request to registry , response will be in MTPI_RG queue
+        Registry_obj.Read_Platform_Module_Info([], "MTPI_RG", "RG_MTPI")
 
     def Check_Model(self):
 
@@ -131,6 +136,52 @@ class Monitor:
 
         self.Read_Service_Info()
 
+    def Check_Platform_Host(self, Module_ID, Host_type):
+
+        Ip = self.Module_Info[Module_ID][Host_type]["IP"]
+        Username = self.Module_Info[Module_ID][Host_type]["Username"]
+        Password = self.Module_Info[Module_ID][Host_type]["Password"]
+        Pid = self.Module_Info[Module_ID][Host_type]["Pid"]
+
+        if os.path.exists("PlatformOutput.txt"):
+            os.remove("PlatformOutput.txt")
+
+        cmd="sshpass -p " + Password + " ssh -o StrictHostKeyChecking no " + Username + "@" + IP + " \"exit\""
+        cmd = "sshpass -p "+ Password + " ssh " + Username + "@" + Ip + " ps -fp " + str(Pid) + " | wc -l > PlatformOutput.txt"
+        print("Command: ", cmd)
+        os.system(cmd)
+
+        with open("PlatformOutput.txt") as f:
+            content = f.read().strip()
+
+        result = int(content)
+        print("Check Platform Module Result: ", result)
+        return result
+
+    def Check_Platform_Module(self):
+        #For every platform module running, check status
+        for module in self.Module_Info.keys():
+
+            pri_result = self.Check_Platform_Host(module, "Primary")
+            print("Primary result: ", pri_result)
+
+            if pri_result == 1:
+                rec_result = self.Check_Platform_Host(module, "Recovery")
+                print("Recovery result: ", rec_result)
+
+                if rec_result == 1:
+                    print("Both hosts are down. SORRY!")
+                else:
+                    msg = {"Module_ID" : module }
+                    json_msg = json.dumps(msg)
+
+            		msg_obj.send("", "MT_RM", json_msg)
+                    print("Msg sent to Recovery Manager: ", json_msg)
+            else:
+                print("Primary host is running\n")
+
+        self.Read_Platform_Module_Info()
+
 
 def callback_hc(ch, method, properties, body):
     body = body.decode("utf-8").replace('\0', '')
@@ -142,6 +193,9 @@ def callback_hc(ch, method, properties, body):
 
     t_si = threading.Thread(target=M.Read_Service_Info)
     t_si.start()
+
+    t_pi = threading.Thread(target=M.Read_Platform_Module_Info)
+    t_pi.start()
 
 def callback_mi(ch, method, properties, body):
     body = body.decode("utf-8").replace('\0', '')
@@ -155,6 +209,12 @@ def callback_si(ch, method, properties, body):
     print("\nReceiving Service Info: ", M.Service_Info)
     M.Check_Service()
 
+def callback_pi(ch, method, properties, body):
+    body = body.decode("utf-8").replace('\0', '')
+    M.Module_Info = json.loads(body)
+    print("\nReceiving Platform  Module Info: ", M.Module_Info)
+    M.Check_Platform_Module()
+
 def Recieve_from_RG_MTHC():
     msg_obj.receive(callback_hc, "", "RG_MTHC")
 
@@ -164,10 +224,15 @@ def Recieve_from_RG_MTMI():
 def Recieve_from_RG_MTSI():
     msg_obj.receive(callback_si, "", "RG_MTSI")
 
+def Recieve_from_RG_MTPI():
+    msg_obj.receive(callback_pi, "", "RG_MTPI")
+
+
 Registry_obj = Registry_API()
 msg_obj = RabbitMQ()
 
-M = Monitor("Akanksha21!")
+local_password = sys.argv[1]
+M = Monitor(local_password)
 
 t2 = threading.Thread(target=Recieve_from_RG_MTHC)
 t2.start()
@@ -177,6 +242,9 @@ t3.start()
 
 t4 = threading.Thread(target=Recieve_from_RG_MTSI)
 t4.start()
+
+t5 = threading.Thread(target=Recieve_from_RG_MTPI)
+t5.start()
 
 M.Read_Host_Info()
 
