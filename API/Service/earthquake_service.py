@@ -5,7 +5,6 @@ import numpy as np
 import json
 import argparse
 import pickle
-from ServiceManager.platform_input_stream import *
 
 from ServiceManager.platform_input_stream import *
 from ServiceManager.platform_output_stream import *
