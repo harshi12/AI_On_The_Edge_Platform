@@ -14,7 +14,7 @@ class LoggerServer():
         """
         #RabbitMQQueue
         self.RMQ = RMQ
-        self.RMQ.create_queue("","To_Log")
+        # self.RMQ.create_queue("","To_Log")
         t1 = Thread(target = self.receiveInputLog, args = ('', "To_Log")) #thread that will monitor To_Log Queue
         t1.start()
     
@@ -34,5 +34,5 @@ class LoggerServer():
 
 
 if __name__ == "__main__":
-    RMQ = RabbitMQ("192.168.43.174","harshita",'123',5672)    
+    RMQ = RabbitMQ()    
     LS = LoggerServer(RMQ)

@@ -3,13 +3,17 @@ from queue_req_resp import RabbitMQ
 import time
 
 def test():
-    RMQ = RabbitMQ("192.168.43.174","harshita","123", int(5672))
-    LC = LoggerClient(RMQ,"test_log.log",console=True)
-    LC.start_logger()
-    for i in range(4):
+    LC2 = LoggerClient("test_log.log",console=False)
+    LC2.start_logger()
+    for i in range(1):
         time.sleep(1)
-        LC.log('This is a warning message')
-        LC.log('This is an error message')    
-    return 
+        LC2.log('This is a warning message')
+        LC2.log('This is an error message')    
+
+    LC = LoggerClient("./test_log.log",console=False)
+    LC.start_logger()
+
+    LC.log('This is a warning message')
+    LC.log('This is an error message') 
 
 test()
