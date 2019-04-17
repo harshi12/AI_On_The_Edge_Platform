@@ -9,7 +9,7 @@ class gmail:
       context = ssl.create_default_context()
       with smtplib.SMTP_SSL(self.smtp_server, self.port, context=context) as server:
          try: 
-            server.login(sender_email, passwsender_passwordord)
+            server.login(sender_email, sender_password)
             print("loggedin")
             for receiver_email in receiver_email_list:
                server.sendmail(sender_email, receiver_email, msg)
