@@ -23,8 +23,8 @@ from werkzeug.utils import secure_filename
 
 BATCH_COUNT = 10
 
-# APP_UPLOAD_FOLDER = '/home/bhavidhingra/google-drive-iiith/Semester_#2/CSE563_Internals_of_Application_Servers/Hackathon/self_after_3/platform_ui_server1/Downloads/Applications/'
-APP_UPLOAD_FOLDER = '/home/sukku/Downloads/IAS/Applications/'
+APP_UPLOAD_FOLDER = '/home/bhavidhingra/google-drive-iiith/Semester_#2/CSE563_Internals_of_Application_Servers/Hackathon/self_after_3/platform_ui_server1/Downloads/Applications/'
+# APP_UPLOAD_FOLDER = '/home/sukku/Downloads/IAS/Applications/'
 
 GW_UPLOAD_FOLDER = '/home/bhavidhingra/google-drive-iiith/Semester_#2/CSE563_Internals_of_Application_Servers/Hackathon/self_after_3/platform_ui_server1/Downloads/Gateways/'
 
