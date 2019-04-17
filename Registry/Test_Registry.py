@@ -10,20 +10,20 @@ print("REQUEST TYPE 1")
 Registry_obj.Write_Storage_info("234", "/2/34/Models", "/2/34/AppLogic", "/2/34/Services", "/2/34/Config", "RG_DM")
 Registry_obj.Write_Storage_info("244", "/2/44/Models", "/2/44/AppLogic", "/2/44/Services", "/2/44/Config", "RG_DM")
 
-# REQUEST TYPE 2
-print("REQUEST TYPE 2")
-Host_List1 = [ ["192.168.10.23", "6253", "Up"], ["192.163.10.23", "6255", "Down"] ]
-Registry_obj.Write_Model_Inst_Info("432", Host_List1, "RG_SM")
-
-Host_List2 = [ ["192.168.10.27", "6298", "Up"], ["192.163.10.25", "6267", "Down"] ]
-Registry_obj.Write_Model_Inst_Info("482", Host_List2, "RG_SM")
+# # REQUEST TYPE 2
+# print("REQUEST TYPE 2")
+# Host_List1 = [ ["192.168.10.23", "6253", "Up"], ["192.163.10.23", "6255", "Down"] ]
+# Registry_obj.Write_Model_Inst_Info("432", Host_List1, "RG_SM")
+#
+# Host_List2 = [ ["192.168.10.27", "6298", "Up"], ["192.163.10.25", "6267", "Down"] ]
+# Registry_obj.Write_Model_Inst_Info("482", Host_List2, "RG_SM")
 
 # REQUEST TYPE 3
 print("REQUEST TYPE 3")
-Host_List1 = [ ["192.168.10.23", "6253", "Up"], ["192.163.10.23", "6255", "Down"] ]
+Host_List1 = [ ["192.168.10.23", "6253", "Up", "Model", "12"], ["192.163.10.23", "6255", "Down", "exe", "12"] ]
 Registry_obj.Write_Service_Inst_Info("432", Host_List1, "RG_SM")
 
-Host_List2 = [ ["192.168.10.27", "6298", "Up"], ["192.163.10.25", "6267", "Down"] ]
+Host_List2 = [ ["192.168.10.27", "6298", "Up", "exe", "14"], ["192.163.10.25", "6267", "Down", "exe", "16"] ]
 Registry_obj.Write_Service_Inst_Info("482", Host_List2, "RG_SM")
 
 #REQUEST TYPE 4
@@ -56,9 +56,9 @@ Registry_obj.Read_App_Inst_Info(["432", "482"], "LB_RG", "RG_LB")
 print("REQUEST TYPE 9")
 Registry_obj.Read_Service_Inst_Info(["432", "482"], "LB_RG", "RG_LB")
 
-# REQUEST TYPE 10
-print("REQUEST TYPE 10")
-Registry_obj.Read_Model_Inst_Info(["432", "482"], "MT_RG", "RG_MT")
+# # REQUEST TYPE 10
+# print("REQUEST TYPE 10")
+# Registry_obj.Read_Model_Inst_Info(["432", "482"], "MT_RG", "RG_MT")
 
 # REQUEST TYPE 11
 print("REQUEST TYPE 11")
