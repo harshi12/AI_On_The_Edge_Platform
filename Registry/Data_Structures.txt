@@ -15,7 +15,22 @@
     }
 }
 
-2. Platform_Module_Info :
+2. Gateway_Creds :
+
+{
+  "192.168.23.34" :
+    {
+      "Username" : "pranjali",
+      "Password" : "Accio@934"
+    },
+  "192.168.23.35" :
+    {
+      "Username" : "kratika",
+      "Password" : "Qwerty987**"
+    }
+}
+
+3. Platform_Module_Info :
 
 {
   "1" :
@@ -31,7 +46,7 @@
   }
 }
 
-3. Storage_info :
+4. Storage_info :
 
 {
   "234" :
@@ -51,7 +66,7 @@
 }
 
 
-4. Service_inst_info :
+5. Service_inst_info :
 
 {
   "123" :
@@ -68,7 +83,7 @@
   ]
 }
 
-5. App_inst_info :
+6. App_inst_info :
 
 {
   "432" :
