@@ -277,14 +277,23 @@ def Recieve_from_DM():
 def Recieve_from_SM():
     RMQ.receive(callback, "", "SM_RG")
 
-def Recieve_from_MT():
-    RMQ.receive(callback, "", "MT_RG")
+def Recieve_from_MTHC():
+    RMQ.receive(callback, "", "MTHC_RG")
+
+def Recieve_from_MTMI():
+    RMQ.receive(callback, "", "MTMI_RG")
+
+def Recieve_from_MTSI():
+    RMQ.receive(callback, "", "MTSI_RG")
 
 def Recieve_from_RM():
     RMQ.receive(callback, "", "RM_RG")
 
-def Recieve_from_LB():
-    RMQ.receive(callback, "", "LB_RG")
+def Recieve_from_LBHC():
+    RMQ.receive(callback, "", "LBHC_RG")
+
+def Recieve_from_LBSI():
+    RMQ.receive(callback, "", "LBSI_RG")
 
 def Recieve_from_BS():
     RMQ.receive(callback, "", "BS_RG")
@@ -305,12 +314,18 @@ if __name__ == '__main__':
     RMQ.create_ServiceQueues("RG", "DM")
     #REGISTRY <--> SERVICE MANAGER
     RMQ.create_ServiceQueues("RG", "SM")
-    #REGISTRY <--> MONITOR
-    RMQ.create_ServiceQueues("RG", "MT")
+    #REGISTRY <--> MONITOR Host Creds
+    RMQ.create_ServiceQueues("RG", "MTHC")
+    #REGISTRY <--> MONITOR Model Info
+    RMQ.create_ServiceQueues("RG", "MTMI")
+    #REGISTRY <--> MONITOR Service Info
+    RMQ.create_ServiceQueues("RG", "MTSI")
     #REGISTRY <--> RECOVERY MANAGER
     RMQ.create_ServiceQueues("RG", "RM")
-    #REGISTRY <--> LOAD BALANCER
-    RMQ.create_ServiceQueues("RG", "LB")
+    #REGISTRY <--> LOAD BALANCER Host Creds
+    RMQ.create_ServiceQueues("RG", "LBHC")
+    #REGISTRY <--> LOAD BALANCER Service Inst
+    RMQ.create_ServiceQueues("RG", "LBSI")
     #REGISTRY <--> BOOTSTRAPPER
     RMQ.create_ServiceQueues("RG", "BS")
 
@@ -322,17 +337,26 @@ if __name__ == '__main__':
     t2 = threading.Thread(target=Recieve_from_DM)
     t2.start()
 
-    t3 = threading.Thread(target=Recieve_from_MT)
+    t3 = threading.Thread(target=Recieve_from_MTHC)
     t3.start()
+
+    t8 = threading.Thread(target=Recieve_from_MTMI)
+    t8.start()
+
+    t9 = threading.Thread(target=Recieve_from_MTSI)
+    t9.start()
 
     t4 = threading.Thread(target=Recieve_from_RM)
     t4.start()
 
-    t5 = threading.Thread(target=Recieve_from_LB)
+    t5 = threading.Thread(target=Recieve_from_LBHC)
     t5.start()
 
-    t6 = threading.Thread(target=Recieve_from_BS)
+    t6 = threading.Thread(target=Recieve_from_LBSI)
     t6.start()
 
-    t7 = threading.Thread(target=Backup)
+    t7 = threading.Thread(target=Recieve_from_BS)
     t7.start()
+
+    t8 = threading.Thread(target=Backup)
+    t8.start()
