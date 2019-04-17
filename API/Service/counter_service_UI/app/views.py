@@ -13,12 +13,7 @@ from googleapiclient.http import MediaFileUpload
 SCOPES = 'https://www.googleapis.com/auth/drive'
 RMQ = RabbitMQ()
 count = 0
-@app.route('/')
-def firstpage():
-	# TODO : Insert proper queuename in next line
-    t1 = Thread(target = receiveInput, args = ('', "temp")) #thread that will monitor HM_SM Queue	
-    t1.start()
-    return render_template('p.html',title='Counter Service UI')
+
 
 def receiveInput(exchange, key):
 	RMQ.receive(callback, exchange, key)
@@ -28,6 +23,14 @@ def callback(ch, method, properties, body):
 	if not isinstance(body, str):
 		body = body.decode()
 	count = int(body)
+
+t1 = Thread(target = receiveInput, args = ('', "temp")) #thread that will monitor HM_SM Queue	
+t1.start()
+
+@app.route('/')
+def firstpage():
+	# TODO : Insert proper queuename in next line
+    return render_template('p.html',title='Counter Service UI')
 
 @app.route('/counter')
 def getCount():

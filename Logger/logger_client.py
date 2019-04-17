@@ -5,14 +5,14 @@ from logging.handlers import QueueHandler, QueueListener
 import datetime
 
 class LoggerClient():
-    def __init__(self,RMQ,logfile_path,console=False):
+    def __init__(self,logfile_path,console=False):
         """
         Logger API at Client Side to store the logs locally and sent to Central Logger MQ
         Parameters - RMQ - Create a RabbitMQ Object and pass it 
                    - logfile_path - Path where to create log file
                    - console - whether to diaplay log messages on screen - Default false
         """
-        self.RMQ = RMQ
+        self.RMQ = RabbitMQ()
          #Creating queue and logger
         self.log_queue = queue.Queue(-1)   #infinite size
         self.queue_handler = QueueHandler(self.log_queue)
@@ -61,8 +61,7 @@ class LoggerClient():
 # import time
 
 # def test():
-#     RMQ = RabbitMQ("192.168.43.174","harshita","123", int(5672))
-#     LC = LoggerClient(RMQ,"test_log.log",console=True)
+#     LC = LoggerClient("./test_log.log",console=True)
 #     LC.start_logger()
 #     for i in range(4):
 #         time.sleep(1)

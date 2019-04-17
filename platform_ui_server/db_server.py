@@ -40,4 +40,6 @@ def db_server_requests_cb(ch, method, properties, body):
 def handle_db_client_requests(exchange, queue_name):
     print ("DB Server receiving requests!!")
     while True:
+        print("Queue Name: ", queue_name)
+
         RBMQ.receive(db_server_requests_cb, exchange, queue_name)

@@ -9,15 +9,19 @@ import argparse
 
 from RabbitMQ.message_queue import *
 from ServiceManager.platform_input_stream import *
+from ServiceManager.platform_output_stream import *
 
 
 class FlowerAnalysisService:
-    def __init__(self, service_id):
+    def __init__(self, service_id, run_on_gateway):
         self.service_id = service_id
+        self.run_on_gateway = run_on_gateway
 
     def input_data_cb(self, ch, method, properties, input_data):
         if not isinstance(input_data, str):
             input_data = input_data.decode()
+
+        print ("Received input: ", input_data)
 
         data = json.loads(input_data)
 
@@ -56,21 +60,29 @@ class FlowerAnalysisService:
             print ("It shouldn't reach here!!")
             sys.exit(1)
 
-        print ("FlowerAnalysisService Inference:", flower)
+        if self.run_on_gateway == "no":
+            output_stream = PlatformOutputStream()
+            output_stream.service_output_send(self.service_id, flower)
+
+        #print ("FlowerAnalysisService Inference:", flower)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--service_id", default="-1")
     parser.add_argument("--run_on_gateway", default="no")
+    parser.add_argument("--is_first_instance", default="no")
 
     (args, unknown) = parser.parse_known_args()
 
-    flower_analysis_service = FlowerAnalysisService(args.service_id)
+    flower_analysis_service = FlowerAnalysisService(args.service_id, args.run_on_gateway)
 
-    sensor_type = "FLOWER_ANALYSIS_SENSOR"
+    sensor_name = "FLOWER_ANALYSIS_SENSOR"
 
     if args.run_on_gateway == "no":
         input_stream = PlatformInputStream()
-        input_stream.service_register_request(args.service_id, sensor_type, "default_rate")
-        input_stream.recv_input_content(args.service_id, flower_analysis_service.input_data_cb)
+
+        if args.is_first_instance == "yes":
+            input_stream.service_register_request(args.service_id, sensor_name, "default_rate")
+
+        input_stream.service_recv_input_request(args.service_id, flower_analysis_service.input_data_cb)

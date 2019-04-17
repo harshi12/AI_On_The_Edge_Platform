@@ -21,26 +21,6 @@ setosa = 0
 virginica = 0
 versicolor = 0
 
-@app.route('/')
-def firstpage():
-    t1 = Thread(target = receiveInput, args = ('', "helper_test")) #thread that will monitor HM_SM Queue	
-    t1.start()
-    return render_template('p.html',title='IAS')
-
-@app.route('/load_graph')
-def load_graph():
-    '''
-        When called, this function will receive data from some stream and send it back to the caller
-    '''
-    global setosa
-    global versicolor
-    global virginica
-
-    freq_list = [setosa, versicolor, virginica]
-    freq_list = {"list" : freq_list}
-    data = json.dumps(freq_list)
-    return data
-
 def receiveInput(exchange, key):
     RMQ.receive(callback, exchange, key)
 
@@ -62,3 +42,24 @@ def callback(ch, method, properties, body):
         pass
     
     print("Setosa : ", setosa, "Versicolor : ", versicolor, "Virginica : ", virginica)
+
+t1 = Thread(target = receiveInput, args = ('', "helper_test")) #thread that will monitor HM_SM Queue	
+t1.start()
+
+@app.route('/')
+def firstpage():
+    return render_template('p.html',title='IAS')
+
+@app.route('/load_graph')
+def load_graph():
+    '''
+        When called, this function will receive data from some stream and send it back to the caller
+    '''
+    global setosa
+    global versicolor
+    global virginica
+
+    freq_list = [setosa, versicolor, virginica]
+    freq_list = {"list" : freq_list}
+    data = json.dumps(freq_list)
+    return data

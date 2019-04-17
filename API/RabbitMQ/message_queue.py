@@ -3,14 +3,25 @@
 import pika
 import json
 
+RMQFile = "RMQCredentials.txt"
+
 class RabbitMQ:
 	def __init__(self):
-		self.server_IP = "192.168.43.174"
-		self.server_Port = 5672
-		self.credentials = pika.PlainCredentials("harshita", "123")
-		#self.create_queue("", "AD_SM")
-		#self.create_ServiceQueues("SM","Docker")
-		#self.create_ServiceQueues("SM", "Scheduler")
+		# with open('RMQCredentials.txt', 'r') as f:
+		# 	data = json.load(f)
+		data = {
+					"IP" : "10.2.135.82",
+					"Port" : 5672,
+					"username" : "harshita",
+					"password" : "123"
+				}
+
+		self.server_IP = data["IP"]
+		self.server_Port = data["Port"]
+		self.credentials = pika.PlainCredentials(data["username"], data["password"])	
+		self.create_queue("", "AD_SM")
+		self.create_ServiceQueues("SM","Docker")
+		self.create_ServiceQueues("SM", "Scheduler")
 
 	def create_queue(self, exchange_name, queue_name):
 		channel, conn = self.create_connection()
@@ -52,7 +63,7 @@ class RabbitMQ:
 		channel, conn = self.create_connection()	
 		self.create_queue(exchange_name, queue_name)
 
-		channel.basic_consume(callback, queue = queue_name, no_ack = True)
+		channel.basic_consume(on_message_callback = callback, queue = queue_name, auto_ack = True)
 
 		print(' [*] Waiting for messages. To exit press CTRL+C')
 		channel.start_consuming()

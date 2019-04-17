@@ -1,32 +1,26 @@
 Types of JSON requests:
 
-1. Write in data structure Model_inst_info with Value as Model_id with list of list [ ip , port with model, up or down]
+1. Write in data structure Service_link_info with Value as Service_id with list of list [ ip , port with model, up or down]
 {
 	"Request_Type": "Write",
-	"DS_Name": "Model_inst_info",
+	"DS_Name": "Service_link_info",
 	"Value": [{
-			"Model_id": 432,
-			"Hosts": [
-				["192.168.10.23", "6253", "Up", "15234"],
-				["192.163.10.23", "6255", "Down", "15235"]
-			]
+			"Service_id": "12",
+			"Link": "/2/3/Services/Distance_Alarm_Service"
 		},
 		{
-			"Model_id": 482,
-			"Hosts": [
-				["192.168.10.27", "6298", "Up", "15234"],
-				["192.163.10.25", "6267", "Down", "15235"]
-			]
-		}
+				"Service_id": "13",
+				"Link": "/2/3/Models/Sonar"
+			}
 	]
 
 }
 
-2. Read in data structure Model_inst_info
+2. Read in data structure Service_link_info
 {
 	"Request_Type": "Read",
-	"DS_Name": "Model_inst_info",
-  "Filter" : {"Model_Id" : ["432", "634"]}
+	"DS_Name": "Service_link_info",
+  "Filter" : {"Service_Id" : ["12","13"]}
 }
 
 3. Write in data structure Service_inst_info with Value as Service_id with list of list [ ip , port with model, up or down]
@@ -34,17 +28,17 @@ Types of JSON requests:
 	"Request_Type": "Write",
 	"DS_Name": "Service_inst_info",
 	"Value": [{
-			"Service_id": 432,
+			"Service_id": "432",
 			"Hosts": [
-				["192.168.10.23", "6253", "Up", "15234"],
-				["192.163.10.23", "6255", "Down", "15235"]
+				["192.168.10.23", "6253", "Up", "15234", "model", "12"],
+				["192.163.10.23", "6255", "Down", "15235", "exe", "12"]
 			]
 		},
 		{
-			"Service_id": 482,
+			"Service_id": "482",
 			"Hosts": [
-				["192.168.10.27", "6298", "Up", "15234"],
-				["192.163.10.25", "6267", "Down", "15235"]
+				["192.168.10.27", "6298", "Up", "15234", "exe", "13"],
+				["192.163.10.25", "6267", "Down", "15235", "exe", "14"]
 			]
 		}
 	]
@@ -63,14 +57,14 @@ Types of JSON requests:
 	"Request_Type": "Write",
 	"DS_Name": "App_inst_info",
 	"Value": [{
-			"App_id": 432,
+			"App_id": "432",
 			"Hosts": [
 				["192.168.10.23", "6253", "Up", "15234"],
 				["192.163.10.23", "6255", "Down", "15235"]
 			]
 		},
 		{
-			"App_id": 482,
+			"App_id": "482",
 			"Hosts": [
 				["192.168.10.27", "6298", "Up", "15234"],
 				["192.163.10.25", "6267", "Down", "15235"]
@@ -93,14 +87,14 @@ Types of JSON requests:
 	"DS_Name": "Storage_info",
 	"Value": [
     {
-			"App_id": 234,
+			"App_id": "234",
 			"Model_Link": "/AD_ID/App_ID/Models",
 			"App_Link": "/AD_ID/App_ID/AppLogic",
 			"Service_Link": "/AD_ID/App_ID/Services",
 			"Config_Link": "/AD_ID/App_ID/Config"
 		},
 		{
-			"App_id": 244,
+			"App_id": "244",
 			"Model_Link": "/AD_ID/App_ID/Models",
 			"App_Link": "/AD_ID/App_ID/AppLogic",
 			"Service_Link": "/AD_ID/App_ID/Services",
@@ -150,14 +144,14 @@ Keep filter field empty if credentials of all hosts are needed
 	"Value" :
 	[
 		{
-			"ModuleName" : "ServiceManager",
-			"IP" : "192.168.3.65",
-			"PID" : "4512"
+			"Module_id" : "1",
+			"Primary" : {"IP" : "192.168.23.34", "Pid" : "15329"},
+			"Recovery" : {"IP" : "192.168.23.35", "Pid" : "15330"}
 		},
 		{
-			"ModuleName" : "DeploymentManager",
-			"IP" : "192.168.3.65",
-			"PID" : "4512"
+		"Module_id" : "2",
+		"Primary" : {"IP" : "192.168.23.34", "Pid" : "15334"},
+		"Recovery" : {"IP" : "192.168.23.35", "Pid" : "15335"}
 		}
 	]
 }

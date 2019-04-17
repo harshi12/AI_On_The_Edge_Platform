@@ -41,5 +41,3 @@ class NFS(object):
     def delete(self, path):
         os.system('echo yes | sudo -S rm -R ' + path)
 
-
-

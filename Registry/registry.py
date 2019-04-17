@@ -13,10 +13,11 @@ class Registry:
 
     def __init__(self):
         self.Storage_info = {}
-        self.Model_inst_info = {}
+        self.Service_link_info = {}
         self.Service_inst_info = {}
         self.App_inst_info = {}
         self.Host_Creds = {}
+        self.Gateway_Creds = {}
         self.Platform_Module_Info = {}
 
     def Restore_DS(self):
@@ -25,8 +26,8 @@ class Registry:
             self.Storage_info = json.load(json_file)
         with open(path+'Model_inst_info.json') as json_file:
             self.Model_inst_info = json.load(json_file)
-        with open(path+'Service_inst_info.json') as json_file:
-            self.Service_inst_info = json.load(json_file)
+        with open(path+'Service_link_info.json') as json_file:
+            self.Service_link_info = json.load(json_file)
         with open(path+'App_inst_info.json') as json_file:
             self.App_inst_info = json.load(json_file)
         with open(path+'Host_Creds.json') as json_file:
@@ -65,17 +66,17 @@ class Registry:
                 Result = self.Storage_info
             return Result
 
-        elif(DS_Name=="Model_inst_info"):
-            Filter = DS_Obj["Model_id"]
+        elif(DS_Name=="Service_link_info"):
+            Filter = DS_Obj["Service_id"]
             #Filter is a list of App_ids
             if len(Filter)>0:
                 for i in range(len(Filter)):
-                    Model_id = Filter[i]
-                    for key in self.Model_inst_info.keys():
-                        if key==Model_id:
-                            Result[key] = self.Model_inst_info[key]
+                    Service_id = Filter[i]
+                    for key in self.Service_link_info.keys():
+                        if key==Service_id:
+                           Result[key] = self.Service_link_infoo[key]
             else:
-                Result = self.Model_inst_info
+                Result = self.Service_link_info
             return Result
 
         elif(DS_Name=="Service_inst_info"):
@@ -88,7 +89,7 @@ class Registry:
                         if key==Service_id:
                             Result[key] = self.Service_inst_info[key]
             else:
-                Result = Service_inst_info
+                Result = self.Service_inst_info
             return Result
 
         elif(DS_Name=="App_inst_info"):
@@ -115,6 +116,19 @@ class Registry:
                             Result[key] = self.Host_Creds[key]
             else:
                 Result = self.Host_Creds
+            return Result
+
+        elif(DS_Name=="Gateway_Creds"):
+            Filter = DS_Obj["Gateway_IP"]
+            #Filter is a list of App_ids
+            if len(Filter)>0:
+                for i in range(len(Filter)):
+                    Host_IP = Filter[i]
+                    for key in self.Gateway_Creds.keys():
+                        if key==Host_IP:
+                            Result[key] = self.Gateway_Creds[key]
+            else:
+                Result = self.Gateway_Creds
             return Result
 
         elif(DS_Name=="Platform_Module_Info"):
@@ -153,23 +167,14 @@ class Registry:
                 self.Storage_info[App_Id]["Service_Link"] = Service_Link
                 self.Storage_info[App_Id]["Config_Link"] = Config_Link
 
-        elif(DS_Name=="Model_inst_info"):
+        elif(DS_Name=="Service_link_info"):
             for i in range(len(DS_Obj)):
                 #Record if Dict
                 Record = DS_Obj[i]
-                Model_Id = Record["Model_id"]
+                Service_id = Record["Service_id"]
+                Service_Link = Record["Link"]
 
-                self.Model_inst_info[Model_Id] = []
-
-                for j in range(len(DS_Obj[i]["Hosts"])):
-                    Hosts_List = DS_Obj[i]["Hosts"]
-                    Host_IP = Hosts_List[j][0]
-                    Host_Port = Hosts_List[j][1]
-                    Model_Status = Hosts_List[j][2]
-                    Model_Pid = Hosts_List[j][3]
-
-                    Model_Inst = [Host_IP, Host_Port, Model_Status, Model_Pid]
-                    self.Model_inst_info[Model_Id].append(Model_Inst)
+                self.Service_link_info[Service_id] = Service_Link
 
         elif(DS_Name=="Service_inst_info"):
             for i in range(len(DS_Obj)):
@@ -185,8 +190,10 @@ class Registry:
                     Host_Port = Hosts_List[j][1]
                     Service_Status = Hosts_List[j][2]
                     Service_Pid = Hosts_List[j][3]
+                    Service_Type = Hosts_List[j][4]
+                    Instance_No = Hosts_List[j][5]
 
-                    Service_Inst = [Host_IP, Host_Port, Service_Status, Service_Pid]
+                    Service_Inst = [Host_IP, Host_Port, Service_Status, Service_Pid, Service_Type, Instance_No]
                     self.Service_inst_info[Service_Id].append(Service_Inst)
 
         elif(DS_Name=="App_inst_info"):
@@ -218,6 +225,17 @@ class Registry:
                 self.Host_Creds[Host_IP]["Username"] = Username
                 self.Host_Creds[Host_IP]["Password"] = Password
 
+        elif(DS_Name=="Gateway_Creds"):
+            for i in range(len(DS_Obj)):
+                #Record if Dict
+                Host_IP = DS_Obj[i]["Gateway_IP"]
+                self.Host_Creds[Host_IP] = {}
+
+                Username = DS_Obj[i]["Username"]
+                Password = DS_Obj[i]["Password"]
+                self.Host_Creds[Host_IP]["Username"] = Username
+                self.Host_Creds[Host_IP]["Password"] = Password
+
         elif(DS_Name=="Platform_Module_Info"):
             for i in range(len(DS_Obj)):
                 #Record if Dict
@@ -235,7 +253,7 @@ class Registry:
 
     def Print_DS(self):
         print("\nStorage_info: ", self.Storage_info)
-        print("\nModel_inst_info: ", self.Model_inst_info)
+        print("\nService_link_info: ", self.Service_link_info)
         print("\nService_inst_info: ", self.Service_inst_info)
         print("\nApp_inst_info: ", self.App_inst_info)
         print("\nPlatform_Module_Info: ", self.Platform_Module_Info)
@@ -275,29 +293,43 @@ def callback(ch, method, properties, body):
 
 #TEMP queues Ideally, Common queue will be used which will listen from all modules
 def Recieve_from_DM():
-    RMQ.receive(callback, "", "RG_DM")
+    RMQ.receive(callback, "", "DM_RG")
 
 def Recieve_from_SM():
-    RMQ.receive(callback, "", "RG_SM")
+    RMQ.receive(callback, "", "SM_RG")
 
-def Recieve_from_MT():
-    RMQ.receive(callback, "", "RG_MT")
+def Recieve_from_MTHC():
+    RMQ.receive(callback, "", "MTHC_RG")
+
+def Recieve_from_MTGC():
+    RMQ.receive(callback, "", "MTGC_RG")
+
+def Recieve_from_MTSI():
+    RMQ.receive(callback, "", "MTSI_RG")
+
+def Recieve_from_MTPI():
+    RMQ.receive(callback, "", "MTPI_RG")
 
 def Recieve_from_RM():
-    RMQ.receive(callback, "", "RG_RM")
+    RMQ.receive(callback, "", "RM_RG")
 
-def Recieve_from_LB():
-    RMQ.receive(callback, "", "RG_LB")
+def Recieve_from_LBHC():
+    RMQ.receive(callback, "", "LBHC_RG")
+
+def Recieve_from_LBSI():
+    RMQ.receive(callback, "", "LBSI_RG")
 
 def Recieve_from_BS():
-    RMQ.receive(callback, "", "RG_BS")
+    RMQ.receive(callback, "", "BS_RG")
+
+def Recieve_from_HM():
+    RMQ.receive(callback, "", "HM_RG")
 
 def Backup():
     Timer = 15
     while 1:
         Registry_obj.Store_DS()
         time.sleep(Timer)
-
 
 Registry_obj = Registry()
 
@@ -331,6 +363,21 @@ if __name__ == '__main__':
     RMQ.create_ServiceQueues("RG", "LB")
     f.write("RG, LB queue created")
 
+    #REGISTRY <--> MONITOR Host Creds
+    RMQ.create_ServiceQueues("RG", "MTHC")
+    #REGISTRY <--> MONITOR Gateway Creds
+    RMQ.create_ServiceQueues("RG", "MTGC")
+    #REGISTRY <--> MONITOR Service Info
+    RMQ.create_ServiceQueues("RG", "MTSI")
+    #REGISTRY <--> MONITOR Platform Module Info
+    RMQ.create_ServiceQueues("RG", "MTPI")
+    #REGISTRY <--> RECOVERY MANAGER
+    RMQ.create_ServiceQueues("RG", "RM")
+    #REGISTRY <--> LOAD BALANCER Host Creds
+    RMQ.create_ServiceQueues("RG", "LBHC")
+    #REGISTRY <--> LOAD BALANCER Service Inst
+    RMQ.create_ServiceQueues("RG", "LBSI")
+
     #REGISTRY <--> BOOTSTRAPPER
     RMQ.create_ServiceQueues("RG", "BS")
     f.write("RG, BS queue created")
@@ -343,23 +390,32 @@ if __name__ == '__main__':
     t2 = threading.Thread(target=Recieve_from_DM)
     t2.start()
 
-    t3 = threading.Thread(target=Recieve_from_MT)
+    t3 = threading.Thread(target=Recieve_from_MTHC)
     t3.start()
+
+    t9 = threading.Thread(target=Recieve_from_MTGC)
+    t9.start()
+
+    t9 = threading.Thread(target=Recieve_from_MTSI)
+    t9.start()
+
+    t10 = threading.Thread(target=Recieve_from_MTPI)
+    t10.start()
 
     t4 = threading.Thread(target=Recieve_from_RM)
     t4.start()
 
-    t5 = threading.Thread(target=Recieve_from_LB)
+    t5 = threading.Thread(target=Recieve_from_LBHC)
     t5.start()
 
-    t6 = threading.Thread(target=Recieve_from_BS)
+    t6 = threading.Thread(target=Recieve_from_LBSI)
     t6.start()
 
-    t7 = threading.Thread(target=Backup)
+    t7 = threading.Thread(target=Recieve_from_BS)
     t7.start()
 
-    # i = 1
-    # while True :
-    #     f.write("In while ", i,"\n")
-    #     i += 1
-                    
+    t8 = threading.Thread(target=Backup)
+    t8.start()
+
+    t11 = threading.Thread(target=Recieve_from_HM)
+    t11.start()
