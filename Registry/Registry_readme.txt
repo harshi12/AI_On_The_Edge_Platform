@@ -1,5 +1,28 @@
 Types of JSON requests:
 
+1. Write in data structure Service_link_info with Value as Service_id with list of list [ ip , port with model, up or down]
+{
+	"Request_Type": "Write",
+	"DS_Name": "Service_link_info",
+	"Value": [{
+			"Service_id": "12",
+			"Link": "/2/3/Services/Distance_Alarm_Service"
+		},
+		{
+				"Service_id": "13",
+				"Link": "/2/3/Models/Sonar"
+			}
+	]
+
+}
+
+2. Read in data structure Service_link_info
+{
+	"Request_Type": "Read",
+	"DS_Name": "Service_link_info",
+  "Filter" : {"Service_Id" : ["12","13"]}
+}
+
 3. Write in data structure Service_inst_info with Value as Service_id with list of list [ ip , port with model, up or down]
 {
 	"Request_Type": "Write",
