@@ -20,7 +20,7 @@ class SonarSensor(Sensor):
     # sends simulated input to the Sensor Manager, in the prescribed rate
     # using sockets
     def simulated_input_send(self):
-        self.send_data(self.dataset[self.index][:-1].tolist())
+        self.send_data(self.dataset[self.index][:-1].tolist(), 5555)
         self.index = (self.index + 1) % self.length
 
 
