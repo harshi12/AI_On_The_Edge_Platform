@@ -299,14 +299,7 @@ Registry_obj = Registry()
 
 if __name__ == '__main__':
 
-    # global RMQ
-
-    IP = sys.argv[1]
-    port = sys.argv[2]
-    username = sys.argv[3]
-    password = sys.argv[4]
-
-    RMQ = RabbitMQ(IP, username, password, port)
+    RMQ = RabbitMQ()
 
     #REGISTRY <--> DEPLOYMENT MANAGER
     RMQ.create_ServiceQueues("RG", "DM")

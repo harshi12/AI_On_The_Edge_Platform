@@ -1,0 +1,40 @@
+<Application>
+    <Artefacts>
+        <Services>
+            <Service name = "Distance_Alarm_Service">
+                <DeploymentConfigFile>Distance_Alarm_Service_DeployConfig.xml</DeploymentConfigFile>
+                <ProductionConfigFile>Distance_Alarm_Service_ProdConfig.xml</ProductionConfigFile>
+            </Service>
+            <Service name = "Emergency_Notification_Service">
+                <DeploymentConfigFile>Emergency_Notification_Service_DeployConfig.xml</DeploymentConfigFile>
+                <ProductionConfigFile>Emergency_Notification_Service_ProdConfig.xml</ProductionConfigFile>
+            </Service>
+            <Service name = "Counter_Service">
+                <DeploymentConfigFile>Counter_Service_DeployConfig.xml</DeploymentConfigFile>
+                <ProductionConfigFile>Counter_Service_ProdConfig.xml</ProductionConfigFile>
+            </Service>
+            <Service name = "Helper_Service">
+                <DeploymentConfigFile>Helper_Service_DeployConfig.xml</DeploymentConfigFile>
+                <ProductionConfigFile>Helper_Service_ProdConfig.xml</ProductionConfigFile>
+            </Service>
+        </Services>
+        <Models>
+            <Model name = "Iris">
+                <DeploymentConfigFile>Iris_Model_DeployConfig.xml</DeploymentConfigFile>
+                <ProductionConfigFile>Iris_Model_ProdConfig.xml</ProductionConfigFile>
+            </Model>
+            <Model name = "Sonar">
+                <DeploymentConfigFile>Sonar_Model_DeployConfig.xml</DeploymentConfigFile>
+                <ProductionConfigFile>Sonar_Model_ProdConfig.xml</ProductionConfigFile>
+            </Model>
+        </Models>
+        <UI>
+            <folderPath>AppUI</folderPath>
+            <executableFileName>run.py</executableFileName>
+        </UI>
+    </Artefacts>
+    <SensorsConfig>App_Sensors_Config.xml</SensorsConfig>
+    <Dependencies>
+        <Dependancy name = "None">None</Dependancy>
+    </Dependencies>
+</Application>

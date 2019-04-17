@@ -1,0 +1,33 @@
+<Service name = "Sonar_Model">
+	<Dependencies>
+		<Depedency>None</Depedency>
+	</Dependencies>
+	<Sensors>
+		<Sensor>Sonar_Sensor</Sensor>
+	</Sensors>
+	<GatewayLocation>SubmarineHull</GatewayLocation>
+
+	<!-- Where the ouput of this service should be redirected -->
+	<OutputDestination>
+		<Destination type = "UI"></Destination>
+	</OutputDestination>
+
+	<FolderPath>Models/Sonar/</FolderPath>
+	
+	<ExecutableFileName>sonar_service.py</ExecutableFileName>
+
+	<!-- UI of Sonar is yet to be implemented! -->
+
+	<UI>
+		<FolderPath>Services/Helper_Service/UI</FolderPath>
+		<ExecutableFileName>run.py</ExecutableFileName>	
+	</UI>
+
+	<MinimumInstances>1</MinimumInstances>
+
+	<!-- Launch a new instance if there are 30 or more requests pending   -->
+	<UpperThreshold>50</UpperThreshold>
+
+	<!-- Kill an instance if there are less than 10 requests pending. Minimum number of instances should be maintained -->
+	<LowerThreshold>10</LowerThreshold>
+</Service>

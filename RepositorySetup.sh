@@ -1,11 +1,8 @@
 #!/bin/bash
 
-password=$3
-IP=$1
-username=$2
-network=$4
-echo ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^$network
-sshpass -p $password ssh -o StrictHostKeyChecking=no -t $username@$IP << EOF 
+password=$2
+username=$1
+network=$3
   
   echo $password | sudo -S apt-get -q update
   echo $password | sudo -S apt-get -q install nfs-kernel-server
@@ -15,9 +12,8 @@ sshpass -p $password ssh -o StrictHostKeyChecking=no -t $username@$IP << EOF
   echo $password | sudo -S chmod 777 /mnt/Repository
   echo $password | sudo -S echo /mnt/Repository $network/24\(rw,sync,no_subtree_check\) > /etc/exports
   echo $password | sudo -S exportfs -a
-  echo $password | sudo -S service nfs-kernel-server start & echo $! > /home/$username/Platform/repoPID.txt
+  echo $password | sudo -S service nfs-kernel-server start & echo $! > /mnt/Repository/repoPID.txt
   echo $password | sudo -S ufw allow from $network/24 to any port nfs
-EOF
 
 #service nfs-kernel-server stop -- to stop NFS server
 
