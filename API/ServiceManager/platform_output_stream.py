@@ -67,7 +67,11 @@ class PlatformOutputStream(IO_Stream):
             json_output_str = json.dumps(output)
             #print (f"[POS] receiving output --> {json_output_str}")
             self.RBMQ.send("", self.description + "_" + service_id, json_output_str)
-
+            
+        elif service_id == "earthquake_svc_1":
+            json_output_str = json.dumps(output)
+            print (f"[POS] receiving output --> {json_output_str}")
+            self.RBMQ.send("", self.description + "_" + service_id, json_output_str)
         else:
             print ("[POS] It shouldn't reach here, service_id: ", service_id)
 
