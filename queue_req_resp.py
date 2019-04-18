@@ -2,26 +2,20 @@
 
 import pika
 import json
-import sys
 
-
-from pathlib import Path
-home = str(Path.home())
-
-path = home+'/Platform/'
-
-sys.path.insert (0, path)
-
-RMQFile = path+"RMQCredentials.txt"
+RMQFile = "RMQCredentials.txt"
 
 class RabbitMQ:
 	def __init__(self):
-		with open(RMQFile, 'r') as f:
+		with open('RMQCredentials.txt', 'r') as f:
 			data = json.load(f)
 
 		self.server_IP = data["IP"]
 		self.server_Port = data["Port"]
-		self.credentials = pika.PlainCredentials(data["username"], data["password"])
+		self.credentials = pika.PlainCredentials(data["username"], data["password"])	
+		self.create_queue("", "AD_SM")
+		self.create_ServiceQueues("SM","Docker")
+		self.create_ServiceQueues("SM", "Scheduler")
 
 	def create_queue(self, exchange_name, queue_name):
 		channel, conn = self.create_connection()
@@ -47,7 +41,7 @@ class RabbitMQ:
 		conn.close()
 
 	def receive_nonblock(self, exchange_name, queue_name):
-		channel, conn = self.create_connection()
+		channel, conn = self.create_connection()	
 		self.create_queue(exchange_name, queue_name)
 		method_frame, header_frame, body = channel.basic_get(queue_name, True)
 
@@ -55,13 +49,23 @@ class RabbitMQ:
 			while body == None:
 				method_frame, header_frame, body = channel.basic_get(queue_name, True)
 
+		# body = channel.basic_get(queue_name, True) #callback, queue = queue_name, no_ack = True)
+		print("In queue:", type(body))
 		return body
 
 	def receive(self, callback, exchange_name, queue_name):
-		channel, conn = self.create_connection()
+		channel, conn = self.create_connection()	
 		self.create_queue(exchange_name, queue_name)
 
-		channel.basic_consume(callback, queue = queue_name, no_ack = True)
+		channel.basic_consume(on_message_callback = callback, queue = queue_name, auto_ack = True)
 
 		print(' [*] Waiting for messages. To exit press CTRL+C')
 		channel.start_consuming()
+		
+	def queue_length(self, exchange_name, queue_name):
+		channel, conn = self.create_connection()
+		# channel.exchange_declare(exchange='', exchange_type='direct')
+		queue = channel.queue_declare(queue = queue_name, durable = True)
+		# channel.queue_bind(exchange=exchange_name, queue=queue_name)
+		conn.close()
+		return queue.method.message_count
