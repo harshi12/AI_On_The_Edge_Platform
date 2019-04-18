@@ -29,7 +29,7 @@ def startservice():
     if request.method == "GET":
         service_name = request.args.get('sname')
         print(service_name)
-        resp=dc.db_service_id_get(service_name)
+        resp=dc.service_id_get(service_name)
         service_id = resp[service_name]
         request_MT = {"Request_Type": "Service_Submit","Service_ID" : service_id,"Instances" : 1}
         RBMQ.send("","FM_HM",request_MT)
