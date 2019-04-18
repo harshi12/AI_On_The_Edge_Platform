@@ -1,6 +1,10 @@
 import sys
-sys.path.insert (0, '../')
-sys.path.insert (0, '../../')
+
+from pathlib import Path
+home = str(Path.home())
+path = home+'/Platform/'
+
+sys.path.insert (0, path)
 
 import pandas as pd
 import json
@@ -43,7 +47,8 @@ class SonarService:
         headers = {"content-type" : "application/json"}
 
         # get IP of the tensorflow serving from Service Manager
-        serving_addrs = "10.2.133.230:9500"
+        #serving_addrs = "10.2.133.230:9500"
+        serving_addrs = "192.168.31.38:9500"
         json_response = requests.post('http://' + serving_addrs + "/v1/models/sonar_model:predict", data=req_str, headers=headers)
 
         # print (json.loads(json_response.text))
