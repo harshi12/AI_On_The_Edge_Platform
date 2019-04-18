@@ -1,3 +1,12 @@
+import sys
+
+from pathlib import Path
+home = str(Path.home())
+
+path = home+'/Platform/'
+
+sys.path.insert (0, path)
+
 from queue_req_resp import RabbitMQ
 import json
 import threading
@@ -8,7 +17,7 @@ RMQ = 0
 
 #get path of the directory where are the required files are stored.
 # path = sys.argv[1]
-path = '/home/harshita/Sem2/IAS/AI_On_The_Edge_Platform/Registry/'
+path = '/Users/pranjali/Downloads/AI_On_The_Edge_Platform/Registry/'
 class Registry:
 
     def __init__(self):
@@ -348,7 +357,7 @@ Registry_obj = Registry()
 
 # if __name__ == '__main__':
 
-file = '/home/harshita/registryLog.txt'
+file = '/Users/pranjali/Downloads/AI_On_The_Edge_Platform/Registry/registryLog.txt'
 
 f = open(file, 'w')
 
@@ -408,11 +417,11 @@ if __name__ == '__main__':
 
     Registry_obj.Restore_DS()
 
-    # t1 = threading.Thread(target=Recieve_from_SM)
-    # t1.start()
+    t1 = threading.Thread(target=Recieve_from_SM)
+    t1.start()
 
-    # t2 = threading.Thread(target=Recieve_from_DM)
-    # t2.start()
+    t2 = threading.Thread(target=Recieve_from_DM)
+    t2.start()
 
     t3 = threading.Thread(target=Recieve_from_MTHC)
     t3.start()
