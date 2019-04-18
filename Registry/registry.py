@@ -17,7 +17,7 @@ RMQ = 0
 
 #get path of the directory where are the required files are stored.
 # path = sys.argv[1]
-json_path = '/Registry/'
+json_path = path+'Registry/'
 class Registry:
 
     def __init__(self):
@@ -35,16 +35,16 @@ class Registry:
             self.Storage_info = json.load(json_file)
         with open(json_path+'Service_inst_info.json') as json_file:
             self.Service_inst_info = json.load(json_file)
-        with open(json_path+'Service_link_info.json') as json_file:
-            self.Service_link_info = json.load(json_file)
+        # with open(json_path+'Service_link_info.json') as json_file:
+        #     self.Service_link_info = json.load(json_file)
         with open(json_path+'App_inst_info.json') as json_file:
             self.App_inst_info = json.load(json_file)
         with open(json_path+'Host_Creds.json') as json_file:
             self.Host_Creds = json.load(json_file)
         with open(json_path+'Platform_Module_Info.json') as json_file:
             self.Platform_Module_Info = json.load(json_file)
-        with open(json_path+'Gateway_Creds.json') as json_file:
-            self.Gateway_Creds = json.load(json_file)
+        # with open(json_path+'Gateway_Creds.json') as json_file:
+        #     self.Gateway_Creds = json.load(json_file)
 
     def Store_DS(self):
 
