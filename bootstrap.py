@@ -1,20 +1,9 @@
 import xml.etree.ElementTree as ET
 import os
 import json
-# read XML file to look for all the IP:Port and which module will run where
 
-'''
-*****Platform Bootstrap******
-1. Start NFS Server
-2. Start Registry
-3. Start RabbitMQ Server
-4. Start Service Manager
-
-
-STEPS:
-1. mount NFS API folder on all the host machines
-2. install the dependency if any for each module
-'''
+# write hosts credentials to the registry
+# write pid of each module to the registry  -- ModulesInfo is the list to be send to registry
 
 class Bootstrap:
 	def __init__(self, PlatformConfig): 
@@ -26,14 +15,27 @@ class Bootstrap:
 		self.moduleData = {}
 		# create a dictionary to store username password of each host machine in the platform
 		self.platformHostCredentials = {}
-		self.NFSServerIP = "10.3.10.86"
-		self.RabbitMQIP = "10.3.10.86"
+		self.NFSServerIP = "192.168.42.210"
+		self.RabbitMQIP = "192.168.42.210"
 		self.RabbitMQPort = 5672
 		self.RMQCredentials = {}
 		self.NFSpid = 0
 		self.RMQInput = ""
 		self.NFSMounted = []
 		self.ModulesInfo = []
+		self.PIDFile = {"DeploymentManager":"DMPID.txt",
+						"ServiceManager" : "SMPID.txt",
+						"HostManager" : "HMPID.txt",
+						"LoadBalancer" : "LBPID.txt",
+						"Scheduler" : "schedulerPID.txt",
+						"Logger" : "loggerPID.txt",
+						"Monitor" : "monitorPID.txt",
+						"RecoveryManager" : "recoveryManagerPID.txt",
+						"PlatformUI" : "platformUIPID.txt",
+						"Registry" : "regsitryPID.txt",
+						"Repository" : "repoPID.txt",
+						"RabbitMQServer" : "RMQPID.txt"
+						}
 
 		
 	def parsePlatformConfig(self):
@@ -127,9 +129,12 @@ class Bootstrap:
 		path = self.createPath(username, password, IP)
 		path = self.mountNFS(moduleName)
 		folderPath = self.getFolderPath(path, setupFilePath)
-		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'"+folderPath+setupFileName+" "+folderPath+"\'"
+		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \' bash "+folderPath+setupFileName+" "+folderPath+"\'"
 		print(cmd)
-		os.system(cmd)		
+		os.system(cmd)
+
+		PIDFileName = self.PIDFile[moduleName]
+		cmd = "nohup python3 "+folderPath+setupFilePath+" 2>&1 & echo $! > "+folderPath+PIDFileName
 
 		self.storeModuleInfo(IP, Port, username, password, folderPath+pidFileName, moduleName)
 		print(moduleName,'started on IP', IP)
@@ -174,7 +179,7 @@ class Bootstrap:
 		temp = IP.split('.')
 		network = temp[0]+'.'+temp[1]+'.'+temp[2]+'.'+'0'
 
-		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'/mnt/Repository/"+setupFileName+" "+username+" "+password+" "+network+"\'"
+		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'bash /mnt/Repository/"+setupFileName+" "+username+" "+password+" "+network+"\'"
 		print(cmd)
 		os.system(cmd)
 
@@ -192,7 +197,7 @@ class Bootstrap:
 		print(cmd)
 		os.system(cmd)
 
-		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'/home/"+username+"/Platform/"+setupFileName+" "+username+" "+password+"\'"
+		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \'bash /home/"+username+"/Platform/"+setupFileName+" "+username+" "+password+"\'"
 		print(cmd)
 		os.system(cmd)
 
@@ -217,12 +222,15 @@ if __name__ == '__main__':
 	boot = Bootstrap('platformConfig.xml')
 	boot.parsePlatformConfig()
 
-	# boot.initNFS()
+	boot.initNFS()
 	boot.initRegistry()
 	# boot.initRabbitMQServer()
-	boot.initServiceManager()
-	boot.initDeploymentManager()
-	boot.initHostManager()
-	boot.initMonitor()
-	boot.initScheduler()
+	# boot.initServiceManager()
+	# boot.initDeploymentManager()
+	# boot.initHostManager()
+	# boot.initMonitor()
+	# boot.initScheduler()
 	print(boot.ModulesInfo)
+
+
+# nohup python3 $filename'scheduler.py' 2>&1 & echo $! > $filename'schedulerPID.txt'

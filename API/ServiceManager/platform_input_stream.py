@@ -8,9 +8,9 @@ import socket
 
 import Socket.utilities as sock_util
 #from RabbitMQ.message_queue import *
-from queue_req_resp import *
+from RabbitMQ.message_queue import *
 from ServiceManager.io_stream import *
-from Logger.logger_client import *
+# from Logger.logger_client import *
 
 
 class PlatformInputStream(IO_Stream):

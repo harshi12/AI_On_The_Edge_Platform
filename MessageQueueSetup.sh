@@ -9,7 +9,9 @@ echo $password | sudo -S apt-get -q update
 echo $password | sudo -S apt-get -q install rabbitmq-server
 echo $password | sudo -s chmod 777 /etc/default/rabbitmq-server
 echo $password | sudo -S echo ulimit -n 1024  > /etc/default/rabbitmq-server
-echo $password | sudo -S service rabbitmq-server start & echo $! > /home/$username/Platform/RMQPID.txt
+nohup echo $password | sudo -S service rabbitmq-server start 2>&1 & echo $! > /home/$username/Platform/RMQPID.txt
+
+# echo $password | sudo -S service rabbitmq-server start & echo $! > /home/$username/Platform/RMQPID.txt
 echo "RabbitMQ PID: $(cat /home/$username/RMQPID.txt)"
 echo $password | sudo -S rabbitmq-plugins enable rabbitmq_management
 echo $password | sudo -S rabbitmqctl add_user harshita 123

@@ -6,6 +6,9 @@ import time
 
 RMQ = 0
 
+#get path of the directory where are the required files are stored.
+# path = sys.argv[1] 
+path = '/home/harshita/Sem2/IAS/AI_On_The_Edge_Platform/Registry/'
 class Registry:
 
     def __init__(self):
@@ -19,32 +22,32 @@ class Registry:
 
     def Restore_DS(self):
 
-        with open('Storage_info.json') as json_file:
+        with open(path+'Storage_info.json') as json_file:
             self.Storage_info = json.load(json_file)
-        with open('Service_link_info.json') as json_file:
+        with open(path+'Model_inst_info.json') as json_file:
+            self.Model_inst_info = json.load(json_file)
+        with open(path+'Service_link_info.json') as json_file:
             self.Service_link_info = json.load(json_file)
-        with open('Service_inst_info.json') as json_file:
-            self.Service_inst_info = json.load(json_file)
-        with open('App_inst_info.json') as json_file:
+        with open(path+'App_inst_info.json') as json_file:
             self.App_inst_info = json.load(json_file)
-        with open('Host_Creds.json') as json_file:
+        with open(path+'Host_Creds.json') as json_file:
             self.Host_Creds = json.load(json_file)
-        with open('Platform_Module_Info.json') as json_file:
+        with open(path+'Platform_Module_Info.json') as json_file:
             self.Platform_Module_Info = json.load(json_file)
 
     def Store_DS(self):
 
-        with open('Storage_info.json', 'w') as json_file:
+        with open(path+'Storage_info.json', 'w') as json_file:
             json.dump(self.Storage_info, json_file)
-        with open('Service_link_info.json', 'w') as json_file:
-            json.dump(self.Service_link_info, json_file)
-        with open('Service_inst_info.json', 'w') as json_file:
+        with open(path+'Model_inst_info.json', 'w') as json_file:
+            json.dump(self.Model_inst_info, json_file)
+        with open(path+'Service_inst_info.json', 'w') as json_file:
             json.dump(self.Service_inst_info, json_file)
-        with open('App_inst_info.json', 'w') as json_file:
+        with open(path+'App_inst_info.json', 'w') as json_file:
             json.dump(self.App_inst_info, json_file)
-        with open('Host_Creds.json', 'w') as json_file:
+        with open(path+'Host_Creds.json', 'w') as json_file:
             json.dump(self.Host_Creds, json_file)
-        with open('Platform_Module_Info.json', 'w') as json_file:
+        with open(path+'Platform_Module_Info.json', 'w') as json_file:
             json.dump(self.Platform_Module_Info, json_file)
 
     def Read_DS(self, DS_Name, DS_Obj):
@@ -330,14 +333,36 @@ def Backup():
 
 Registry_obj = Registry()
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
+file = '/home/harshita/registryLog.txt'
+
+f = open(file, 'w')
+
+# while True:
+if __name__ == '__main__':
     RMQ = RabbitMQ()
 
     #REGISTRY <--> DEPLOYMENT MANAGER
     RMQ.create_ServiceQueues("RG", "DM")
+    f.write("RG, DM queue created")
+
     #REGISTRY <--> SERVICE MANAGER
     RMQ.create_ServiceQueues("RG", "SM")
+    f.write("RG, SM queue created")
+    
+    #REGISTRY <--> MONITOR
+    RMQ.create_ServiceQueues("RG", "MT")
+    f.write("RG, MT queue created")
+
+    #REGISTRY <--> RECOVERY MANAGER
+    RMQ.create_ServiceQueues("RG", "RM")
+    f.write("RG, RM queue created")
+
+    #REGISTRY <--> LOAD BALANCER
+    RMQ.create_ServiceQueues("RG", "LB")
+    f.write("RG, LB queue created")
+
     #REGISTRY <--> MONITOR Host Creds
     RMQ.create_ServiceQueues("RG", "MTHC")
     #REGISTRY <--> MONITOR Gateway Creds
@@ -352,8 +377,10 @@ if __name__ == '__main__':
     RMQ.create_ServiceQueues("RG", "LBHC")
     #REGISTRY <--> LOAD BALANCER Service Inst
     RMQ.create_ServiceQueues("RG", "LBSI")
+
     #REGISTRY <--> BOOTSTRAPPER
     RMQ.create_ServiceQueues("RG", "BS")
+    f.write("RG, BS queue created")
 
     Registry_obj.Restore_DS()
 
