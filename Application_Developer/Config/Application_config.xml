@@ -29,7 +29,7 @@
             </Model>
         </Models>
         <UI>
-            <folderPath>AppUI</folderPath>
+            <folderPath>AppLogic/UI</folderPath>
             <executableFileName>run.py</executableFileName>
         </UI>
     </Artefacts>

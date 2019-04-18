@@ -9,16 +9,12 @@ from threading import Thread
 from googleapiclient.discovery import build
 from oauth2client import client, tools, file
 from googleapiclient.http import MediaFileUpload
+from run import foo
 
 SCOPES = 'https://www.googleapis.com/auth/drive'
 RMQ = RabbitMQ()
 count = 0
-@app.route('/')
-def firstpage():
-	# TODO : Insert proper queuename in next line
-    t1 = Thread(target = receiveInput, args = ('', "temp")) #thread that will monitor HM_SM Queue	
-    t1.start()
-    return render_template('p.html',title='Counter Service UI')
+inputQueue = "PlatformOutputStream_" + str(foo)
 
 def receiveInput(exchange, key):
 	RMQ.receive(callback, exchange, key)
@@ -28,6 +24,13 @@ def callback(ch, method, properties, body):
 	if not isinstance(body, str):
 		body = body.decode()
 	count = int(body)
+
+t1 = Thread(target = receiveInput, args = ('', inputQueue))
+t1.start()
+
+@app.route('/')
+def firstpage():
+    return render_template('p.html',title='Counter Service UI')
 
 @app.route('/counter')
 def getCount():

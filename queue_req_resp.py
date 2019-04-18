@@ -13,9 +13,6 @@ class RabbitMQ:
 		self.server_IP = data["IP"]
 		self.server_Port = data["Port"]
 		self.credentials = pika.PlainCredentials(data["username"], data["password"])	
-		self.create_queue("", "AD_SM")
-		self.create_ServiceQueues("SM","Docker")
-		self.create_ServiceQueues("SM", "Scheduler")
 
 	def create_queue(self, exchange_name, queue_name):
 		channel, conn = self.create_connection()
@@ -54,6 +51,7 @@ class RabbitMQ:
 		return body
 
 	def receive(self, callback, exchange_name, queue_name):
+		print("Here", queue_name)
 		channel, conn = self.create_connection()	
 		self.create_queue(exchange_name, queue_name)
 

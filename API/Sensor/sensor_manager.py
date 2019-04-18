@@ -30,7 +30,6 @@ class SensorManager:
         while True:
             sensor_input = sock_util.recv_msg(sensor_sock)
             if sensor_input == None:
-                print ("Sensor stopped!!")
                 break
 
             if not isinstance(sensor_input, str):

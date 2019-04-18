@@ -12,10 +12,10 @@ from timer import *
 from sensor import *
 
 class EarthquakeSensor(Sensor):
-    def __init__(self, dest_IP = "127.0.0.1", dest_port = 4444, rate = 0.5):
+    def __init__(self, debug, dest_IP = "127.0.0.1", dest_port = 4444, rate = 1):
         name = "LOCATION_TIME_SENSOR"
         description = "This is an earthquake prediction sensor."
-        Sensor.__init__(self, name, description, "one-way", rate, dest_IP, dest_port)
+        Sensor.__init__(self, name, description, "one-way", rate, dest_IP, dest_port, debug)
 
         self.dataset = pd.read_csv("./earthquake.csv").values
         self.length = self.dataset.shape[0]
@@ -24,18 +24,18 @@ class EarthquakeSensor(Sensor):
     # sends simulated input to the Sensor Manager, in the prescribed rate,
     # using sockets
     def simulated_input_send(self):
-        self.send_data(self.dataset[self.index][:-1].tolist(), 5556)
+        self.send_data(self.dataset[self.index][:].tolist())
         self.index = (self.index + 1) % self.length
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--sensor_manager_addrs", default="127.0.0.1:4444")
+    parser.add_argument("--debug", default="no")
 
     (args, unknown) = parser.parse_known_args()
-
     sensor_manager_IP, sensor_manager_port = args.sensor_manager_addrs.split(':')
 
-    earthquake_detect_sensor = EarthquakeSensor(sensor_manager_IP, int(sensor_manager_port))
+    earthquake_detect_sensor = EarthquakeSensor(args.debug, sensor_manager_IP, int(sensor_manager_port))
     sensor_data_timer = RepeatedTimer(earthquake_detect_sensor.rate, earthquake_detect_sensor.simulated_input_send)
     sensor_data_timer.start()
