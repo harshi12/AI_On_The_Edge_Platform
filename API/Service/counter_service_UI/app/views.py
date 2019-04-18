@@ -1,8 +1,11 @@
 import sys
-sys.path.insert (0, '../../')
-sys.path.insert (0, '../../../')
-from RabbitMQ.message_queue import *
+from pathlib import Path
+home = str(Path.home())
+path = home+'/Platform/'
+sys.path.insert (0, path)
+from queue_req_resp import *
 from app import app
+from queue_req_resp import *
 import json
 from flask import Flask,render_template,request,redirect
 from threading import Thread
