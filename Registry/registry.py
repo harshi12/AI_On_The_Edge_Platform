@@ -7,7 +7,7 @@ import time
 RMQ = 0
 
 #get path of the directory where are the required files are stored.
-# path = sys.argv[1] 
+# path = sys.argv[1]
 path = '/home/harshita/Sem2/IAS/AI_On_The_Edge_Platform/Registry/'
 class Registry:
 
@@ -24,8 +24,8 @@ class Registry:
 
         with open(path+'Storage_info.json') as json_file:
             self.Storage_info = json.load(json_file)
-        with open(path+'Model_inst_info.json') as json_file:
-            self.Model_inst_info = json.load(json_file)
+        with open(path+'Service_inst_info.json') as json_file:
+            self.Service_inst_info = json.load(json_file)
         with open(path+'Service_link_info.json') as json_file:
             self.Service_link_info = json.load(json_file)
         with open(path+'App_inst_info.json') as json_file:
@@ -34,13 +34,15 @@ class Registry:
             self.Host_Creds = json.load(json_file)
         with open(path+'Platform_Module_Info.json') as json_file:
             self.Platform_Module_Info = json.load(json_file)
+        with open('Gateway_Creds.json') as json_file:
+            self.Gateway_Creds = json.load(json_file)
 
     def Store_DS(self):
 
         with open(path+'Storage_info.json', 'w') as json_file:
             json.dump(self.Storage_info, json_file)
-        with open(path+'Model_inst_info.json', 'w') as json_file:
-            json.dump(self.Model_inst_info, json_file)
+        with open(path+'Service_inst_info.json', 'w') as json_file:
+            json.dump(self.Service_inst_info, json_file)
         with open(path+'Service_inst_info.json', 'w') as json_file:
             json.dump(self.Service_inst_info, json_file)
         with open(path+'App_inst_info.json', 'w') as json_file:
@@ -49,6 +51,8 @@ class Registry:
             json.dump(self.Host_Creds, json_file)
         with open(path+'Platform_Module_Info.json', 'w') as json_file:
             json.dump(self.Platform_Module_Info, json_file)
+        with open('Gateway_Creds.json', 'w') as json_file:
+            json.dump(self.Gateway_Creds, json_file)
 
     def Read_DS(self, DS_Name, DS_Obj):
         Result = {}
@@ -74,7 +78,7 @@ class Registry:
                     Service_id = Filter[i]
                     for key in self.Service_link_info.keys():
                         if key==Service_id:
-                           Result[key] = self.Service_link_infoo[key]
+                           Result[key] = self.Service_link_info[key]
             else:
                 Result = self.Service_link_info
             return Result
@@ -263,7 +267,7 @@ class Registry:
 def callback(ch, method, properties, body):
 
     global port
-    print ("Receiving from Common queue")
+    #print ("Receiving from Common queue")
     #body = body.decode("utf-8")
     body = body.decode("utf-8").replace('\0', '')
 
@@ -278,7 +282,7 @@ def callback(ch, method, properties, body):
         DS_Obj = Receiving_Message["Filter"]
         Sending_Queue = Receiving_Message["Queue_Name"]
         DS_Value = Registry_obj.Read_DS(DS_Name, DS_Obj)
-        print("Read content: ", DS_Value)
+        #print("Read content: ", DS_Value)
         #create JSON and send on temp queue
         DS_Value_json = json.dumps(DS_Value)
         RMQ.send("", Sending_Queue, DS_Value_json)
@@ -287,8 +291,8 @@ def callback(ch, method, properties, body):
         DS_Obj = Receiving_Message["Value"]
         Registry_obj.Write_DS(DS_Name, DS_Obj)
 
-        print("\nUpdated Data Structures\n ")
-        Registry_obj.Print_DS()
+        #print("\nUpdated Data Structures\n ")
+        #Registry_obj.Print_DS()
 
 
 #TEMP queues Ideally, Common queue will be used which will listen from all modules
@@ -322,6 +326,15 @@ def Recieve_from_LBSI():
 def Recieve_from_BS():
     RMQ.receive(callback, "", "BS_RG")
 
+def Recieve_from_HMG():
+    RMQ.receive(callback, "", "HM_RGG")
+
+def Recieve_from_HMM():
+    RMQ.receive(callback, "", "HM_RGM")
+
+def Recieve_from_HMS():
+    RMQ.receive(callback, "", "HM_RGS")
+
 def Recieve_from_HM():
     RMQ.receive(callback, "", "HM_RG")
 
@@ -350,7 +363,7 @@ if __name__ == '__main__':
     #REGISTRY <--> SERVICE MANAGER
     RMQ.create_ServiceQueues("RG", "SM")
     f.write("RG, SM queue created")
-    
+
     #REGISTRY <--> MONITOR
     RMQ.create_ServiceQueues("RG", "MT")
     f.write("RG, MT queue created")
@@ -380,42 +393,62 @@ if __name__ == '__main__':
 
     #REGISTRY <--> BOOTSTRAPPER
     RMQ.create_ServiceQueues("RG", "BS")
+    #REGISTRY <--> Host Manager
+    RMQ.create_ServiceQueues("RGM", "HM")
+    #REGISTRY <--> Host Manager Gateway link
+    RMQ.create_ServiceQueues("RGG", "HM")
+    #REGISTRY <--> Host Manager Service inst
+    RMQ.create_ServiceQueues("RGS", "HM")
+
+    #REGISTRY <--> Host Manager Service inst
+    RMQ.create_ServiceQueues("RG", "HM")
+
     f.write("RG, BS queue created")
+
 
     Registry_obj.Restore_DS()
 
-    t1 = threading.Thread(target=Recieve_from_SM)
-    t1.start()
+    # t1 = threading.Thread(target=Recieve_from_SM)
+    # t1.start()
 
-    t2 = threading.Thread(target=Recieve_from_DM)
-    t2.start()
+    # t2 = threading.Thread(target=Recieve_from_DM)
+    # t2.start()
 
     t3 = threading.Thread(target=Recieve_from_MTHC)
     t3.start()
 
-    t9 = threading.Thread(target=Recieve_from_MTGC)
-    t9.start()
-
-    t9 = threading.Thread(target=Recieve_from_MTSI)
-    t9.start()
-
-    t10 = threading.Thread(target=Recieve_from_MTPI)
-    t10.start()
-
-    t4 = threading.Thread(target=Recieve_from_RM)
+    t4 = threading.Thread(target=Recieve_from_MTGC)
     t4.start()
 
-    t5 = threading.Thread(target=Recieve_from_LBHC)
+    t5 = threading.Thread(target=Recieve_from_MTSI)
     t5.start()
 
-    t6 = threading.Thread(target=Recieve_from_LBSI)
+    t6 = threading.Thread(target=Recieve_from_MTPI)
     t6.start()
 
-    t7 = threading.Thread(target=Recieve_from_BS)
+    # t4 = threading.Thread(target=Recieve_from_RM)
+    # t4.start()
+
+    t7 = threading.Thread(target=Recieve_from_LBHC)
     t7.start()
 
-    t8 = threading.Thread(target=Backup)
+    t8 = threading.Thread(target=Recieve_from_LBSI)
     t8.start()
 
-    t11 = threading.Thread(target=Recieve_from_HM)
+    # t7 = threading.Thread(target=Recieve_from_BS)
+    # t7.start()
+
+    t9 = threading.Thread(target=Backup)
+    t9.start()
+
+    t10 = threading.Thread(target=Recieve_from_HMG)
+    t10.start()
+
+    t11 = threading.Thread(target=Recieve_from_HMM)
     t11.start()
+
+    t12 = threading.Thread(target=Recieve_from_HMS)
+    t12.start()
+
+    t13 = threading.Thread(target=Recieve_from_HM)
+    t13.start()
