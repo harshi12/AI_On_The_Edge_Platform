@@ -10,6 +10,9 @@ import xml.etree.ElementTree as ET
 from lxml import etree
 from io import StringIO
 import xmlschema
+from app import db
+from app.models import Service
+from sqlalchemy import create_engine 
 
 class Deployment_Manager():
 
@@ -112,6 +115,45 @@ class Deployment_Manager():
         else:
             self.Services_Informtion_To_Return = XML_Data
 
+        Models_dict = self.Models_Information_To_Return
+        Services_dict = self.Services_Informtion_To_Return
+
+
+        if Info_To_Fetch == "Models":
+            for model in Models_dict:
+                model_name = model
+                model_deploy_config_loc = Models_dict[model_name]['DeploymentConfigFile']
+                model_prod_config_loc = Models_dict[model_name]['ProductionConfigFile']
+                serv_obj = Service(service_name = model_name , service_type ="model" , app_id = App_Id , deploy_config_loc = model_deploy_config_loc , prod_config_loc = model_prod_config_loc ,service_ui_server="NULL")
+                db.session.add(serv_obj)
+        else:
+            for service in Services_dict:
+                service_name = service
+                service_deploy_config_loc = Services_dict[service_name]['DeploymentConfigFile']
+                service_prod_config_loc = Services_dict[service_name]['ProductionConfigFile']
+                serv_obj = Service(service_name = service_name , service_type ="exe" , app_id = App_Id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc,service_ui_server="NULL" )
+                db.session.add(serv_obj)
+
+        db.session.commit()
+        print("Saved in DB")
+
+        services_dict={}
+        #service_name : service_id
+        if Info_To_Fetch == "Models":
+            for model in  Models_dict:
+                model_name=model
+                service=Service.query.filter(Service.service_name==model_name).first()
+                service_id = service.service_id
+                services_dict[model_name]=service_id
+        else:
+            for service in  Services_dict:
+                service_name=service
+                serv=Service.query.filter(Service.service_name==service_name).first()
+                service_id = serv.service_id
+                services_dict[service_name]=service_id
+
+        # print(services_dict)
+
         Details_of_info_to_fetch = {}
 
         for key in XML_Data.keys():
@@ -127,7 +169,8 @@ class Deployment_Manager():
         Final_info_to_fetch = []
 
         for key in Details_of_info_to_fetch.keys():
-            Info = {Info_To_Fetch[:-1]+"_Link":None, "Criticality":None , "No_Instances": None}
+            Info = {"Service_ID":None, Info_To_Fetch[:-1]+"_Link":None, "Criticality":None , "No_Instances": None}
+            Info["Service_ID"] = str(services_dict[str(key)])
             Info[Info_To_Fetch[:-1]+"_Link"] = "/" + str(App_Dev_Id) + "/" + str(App_Id) + "/"+Info_To_Fetch+"/" + str(key)
             Info["Criticality"] = Details_of_info_to_fetch[key]["Criticality"]
             Info["No_Instances"] = Details_of_info_to_fetch[key]["MinimumInstances"]
@@ -181,8 +224,8 @@ class Deployment_Manager():
         Models = self.Get_Models_Or_Services_Information(App_Dev_Id, App_Id, Current_Working_Direcory+"/"+str(App_Id),"Models")
         Services = self.Get_Models_Or_Services_Information(App_Dev_Id, App_Id, Current_Working_Direcory+"/"+str(App_Id),"Services")
 
-        # print (Models)
-        # print (Services)
+        print (Models)
+        print (Services)
         # print (Model_Link)
         # print (App_Link)
         # print (Service_Link)
@@ -225,8 +268,44 @@ class Deployment_Manager():
         obj_HM = RabbitMQ()
         obj_HM.send("", "DM_HM", Host_Manager_Message)
 
-        return self.Models_Information_To_Return, self.Services_Informtion_To_Return
+        # return self.Models_Information_To_Return, self.Services_Informtion_To_Return
+        # Models_dict = self.Models_Information_To_Return
+        # Services_dict = self.Services_Informtion_To_Return
+        # for model in Models_dict:
+        #     model_name = model
+        #     model_deploy_config_loc = Models_dict[model_name]['DeploymentConfigFile']
+        #     model_prod_config_loc = Models_dict[model_name]['ProductionConfigFile']
+        #     serv_obj = Service(service_name = model_name , service_type ="model" , app_id = App_Id , deploy_config_loc = model_deploy_config_loc , prod_config_loc = model_prod_config_loc )
+        #     db.session.add(serv_obj)
+
+        # for service in Services_dict:
+        #     service_name = service
+        #     service_deploy_config_loc = Services_dict[service_name]['DeploymentConfigFile']
+        #     service_prod_config_loc = Services_dict[service_name]['ProductionConfigFile']
+        #     serv_obj = Service(service_name = service_name , service_type ="exe" , app_id = App_Id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc )
+        #     db.session.add(serv_obj)
+
+        # db.session.commit()
+        # print("Saved in DB")
+
+        # services_dict={}
+        # #service_name : service_id
+        # for model in  Models_dict:
+        #     model_name=model
+        #     service=Service.query.filter(Service.service_name==model_name).first()
+        #     service_id = service.service_id
+        #     services_dict[model_name]=service_id
+        # for service in  Services_dict:
+        #     service_name=service
+        #     serv=Service.query.filter(Service.service_name==service_name).first()
+        #     service_id = serv.service_id
+        #     services_dict[service_name]=service_id
+
+        # print(services_dict)
+
+
+
 
 # Sample Function Call
-# DM_Obj = Deployment_Manager("192.168.31.29", "S2j1ar1in63", "/nfs_server")
+# DM_Obj = Deployment_Manager("10.2.129.68", "S2j1ar1in63", "/nfs_server")
 # Models_Info_To_Return, Services_Info_To_Return = DM_Obj.Deploy_App(1,3,"./Application_Developer.zip")
