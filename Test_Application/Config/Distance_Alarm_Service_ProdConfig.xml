@@ -1,0 +1,34 @@
+<Service name = "Distance_Alarm_Service">
+	<Dependencies>
+		<Depedency>None</Depedency>
+	</Dependencies>
+	<Sensors>
+		<Sensor>Distance_Sensor</Sensor>
+	</Sensors>
+	<GatewayLocation>SubmarineHull</GatewayLocation>
+	
+	<!-- Where the ouput of this service should be redirected -->
+	<OutputDestination>
+		<Destination type = "Sensor">
+			<Name>Distance_Sensor</Name>
+			<GatewayLocation>SubmarineHull</GatewayLocation>
+		</Destination>
+	</OutputDestination>
+
+	<FolderPath>Services/Distance_Alarm_Service/</FolderPath>
+	
+	<ExecutableFileName>distance_alarm_service.py</ExecutableFileName>
+
+	<UI>
+		<FolderPath></FolderPath>
+		<ExecutableFileName></ExecutableFileName>
+	</UI>
+
+	<MinimumInstances>1</MinimumInstances>
+
+	<!-- Launch a new instance if there are 30 or more requests pending   -->
+	<UpperThreshold>50</UpperThreshold>
+
+	<!-- Kill an instance if there are less than 10 requests pending. Minimum number of instances should be maintained -->
+	<LowerThreshold>5</LowerThreshold>
+</Service>

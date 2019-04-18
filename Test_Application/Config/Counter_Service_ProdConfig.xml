@@ -1,7 +1,7 @@
 <Service name = "Counter_Service">
 	<Dependencies>
 		<Depedency>Sonar_Model</Depedency>
-	</Dependencies> 
+	</Dependencies>
 	<Sensors>
 		<Sensor>Distance_Sensor</Sensor>
 	</Sensors>

@@ -129,6 +129,7 @@ class Bootstrap:
 		path = self.createPath(username, password, IP)
 		path = self.mountNFS(moduleName)
 		folderPath = self.getFolderPath(path, setupFilePath)
+		
 		cmd = "sshpass -p "+password+" ssh -o StrictHostKeyChecking=no -t "+username+"@"+IP+" \' bash "+folderPath+setupFileName+" "+folderPath+"\'"
 		print(cmd)
 		os.system(cmd)
@@ -224,12 +225,12 @@ if __name__ == '__main__':
 
 	boot.initNFS()
 	boot.initRegistry()
-	# boot.initRabbitMQServer()
-	# boot.initServiceManager()
-	# boot.initDeploymentManager()
-	# boot.initHostManager()
-	# boot.initMonitor()
-	# boot.initScheduler()
+	boot.initRabbitMQServer()
+	boot.initServiceManager()
+	boot.initDeploymentManager()
+	boot.initHostManager()
+	boot.initMonitor()
+	boot.initScheduler()
 	print(boot.ModulesInfo)
 
 

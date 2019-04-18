@@ -1,30 +1,32 @@
-<Service name = "Counter_Service">
+<Service name = "Iris_Model">
 	<Dependencies>
-		<Depedency>Sonar_Model</Depedency>
-	</Dependencies> 
+		<Depedency>None</Depedency>
+	</Dependencies>
 	<Sensors>
-		<Sensor>Distance_Sensor</Sensor>
+		<Sensor>Flower_Analysis_Sensor</Sensor>
 	</Sensors>
 	<GatewayLocation>SubmarineHull</GatewayLocation>
 
 	<!-- Where the ouput of this service should be redirected -->
 	<OutputDestination>
-		<Destination type = "UI"></Destination>
+		<Destination type = "Service">
+			<Name>Helper_Service</Name>
+		</Destination>
 	</OutputDestination>
 
-	<FolderPath>Services/Counter_Service/</FolderPath>
+	<FolderPath>Models/Iris/</FolderPath>
 	
-	<ExecutableFileName>counter_service.py</ExecutableFileName>
+	<ExecutableFileName>flower_analysis_service.py</ExecutableFileName>
 
 	<UI>
-		<FolderPath>Services/Counter_Service/UI</FolderPath>
-		<ExecutableFileName>run.py</ExecutableFileName>
+		<FolderPath>None</FolderPath>
+		<ExecutableFileName>None</ExecutableFileName>
 	</UI>
 
 	<MinimumInstances>2</MinimumInstances>
 
 	<!-- Launch a new instance if there are 30 or more requests pending   -->
-	<UpperThreshold>30</UpperThreshold>
+	<UpperThreshold>50</UpperThreshold>
 
 	<!-- Kill an instance if there are less than 10 requests pending. Minimum number of instances should be maintained -->
 	<LowerThreshold>10</LowerThreshold>

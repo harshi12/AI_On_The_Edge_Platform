@@ -1,0 +1,36 @@
+<Service name = "Emergency_Notification_Service">
+	<Dependencies>
+		<Depedency>mailbox.py</Depedency>
+	</Dependencies>
+
+	<Sensors>
+		<Sensor>Distance_Sensor</Sensor>
+	</Sensors>
+	
+	<GatewayLocation>SubmarineHull</GatewayLocation>
+	
+	<!-- Where the ouput of this service should be redirected -->
+	<OutputDestination>
+		<Destination type = "Email">
+			<Name>recepient.txt</Name>
+		</Destination>
+	</OutputDestination>
+	
+	<FolderPath>Services/Emergency_Notification_Service/</FolderPath>
+	
+	<ExecutableFileName>emergency_notification_service.py</ExecutableFileName>
+
+	<UI>
+		<FolderPath></FolderPath>
+		<ExecutableFileName></ExecutableFileName>
+	</UI>
+	
+
+	<MinimumInstances>1</MinimumInstances>
+
+	<!-- Launch a new instance if there are 30 or more requests pending   -->
+	<UpperThreshold>50</UpperThreshold>
+
+	<!-- Kill an instance if there are less than 10 requests pending. Minimum number of instances should be maintained -->
+	<LowerThreshold>5</LowerThreshold>
+</Service>
