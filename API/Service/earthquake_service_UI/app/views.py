@@ -29,7 +29,7 @@ def callback(ch, method, properties, body):
     data = body
     print(data)
 
-t1 = Thread(target = receiveInput, args = ('', "quake_queue"))
+t1 = Thread(target = receiveInput, args = ('', "temp1"))
 t1.start()
 
 @app.route('/')
