@@ -15,6 +15,10 @@ from oauth2client import client, tools, file
 from googleapiclient.http import MediaFileUpload
 from httplib2 import Http
 from threading import Thread
+from run import foo
+
+inputQueue = "PlatformOutputStream_" + str(foo)
+print(inputQueue)
 
 SCOPES = 'https://www.googleapis.com/auth/drive'
 RMQ = RabbitMQ()
@@ -27,10 +31,12 @@ def callback(ch, method, properties, body):
     global data
     if not isinstance(body, str):
             body = body.decode()
+    body = json.loads(body)
+    body = body["content"]
     data = body
     print(data)
 
-t1 = Thread(target = receiveInput, args = ('', "temp1"))
+t1 = Thread(target = receiveInput, args = ('', inputQueue))
 t1.start()
 
 @app.route('/')

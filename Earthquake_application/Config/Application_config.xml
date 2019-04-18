@@ -1,0 +1,24 @@
+<Application>
+    <Artefacts>
+        <Services>
+            <Service name = "Eathquake_Service">
+                <DeploymentConfigFile>Eathquake_Service_DeployConfig.xml</DeploymentConfigFile>
+                <ProductionConfigFile>Eathquake_Service_ProdConfig.xml</ProductionConfigFile>
+            </Service>
+        </Services>
+        <Models>
+            <Model name = "Earthquake">
+                <DeploymentConfigFile>Earthquake_DeployConfig.xml</DeploymentConfigFile>
+                <ProductionConfigFile>Earthquake_ProdConfig.xml</ProductionConfigFile>
+            </Model>
+        </Models>
+        <UI>
+            <folderPath>AppLogic/UI</folderPath>
+            <executableFileName>run.py</executableFileName>
+        </UI>
+    </Artefacts>
+    <SensorsConfig>App_Sensors_Config.xml</SensorsConfig>
+    <Dependencies>
+        <Dependancy name = "None">None</Dependancy>
+    </Dependencies>
+</Application>
