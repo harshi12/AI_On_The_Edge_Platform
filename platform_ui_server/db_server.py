@@ -18,7 +18,7 @@ def response_send(module, response):
     res["response"] = response
     json_resp = json.dumps(res)
 
-    print (f"Sent Response: {json_resp}")
+    print ("Sent Response: {json_resp}")
     RBMQ.send("", "DB_"+module, json_resp)
 
 def db_server_requests_cb(ch, method, properties, body):

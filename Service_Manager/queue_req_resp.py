@@ -61,3 +61,11 @@ class RabbitMQ:
 
 		print(' [*] Waiting for messages. To exit press CTRL+C')
 		channel.start_consuming()
+		
+	def queue_length(self, exchange_name, queue_name):
+		channel, conn = self.create_connection()
+		# channel.exchange_declare(exchange='', exchange_type='direct')
+		queue = channel.queue_declare(queue = queue_name, durable = True)
+		# channel.queue_bind(exchange=exchange_name, queue=queue_name)
+		conn.close()
+		return queue.method.message_count
