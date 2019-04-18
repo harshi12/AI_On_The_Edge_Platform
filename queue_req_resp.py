@@ -3,11 +3,21 @@
 import pika
 import json
 
-RMQFile = "RMQCredentials.txt"
+import sys
+
+
+from pathlib import Path
+home = str(Path.home())
+
+path = home+'/Platform/'
+
+sys.path.insert (0, path)
+
+RMQFile = path+"RMQCredentials.txt"
 
 class RabbitMQ:
 	def __init__(self):
-		with open('RMQCredentials.txt', 'r') as f:
+		with open(RMQFile, 'r') as f:
 			data = json.load(f)
 
 		self.server_IP = data["IP"]
