@@ -357,9 +357,6 @@ Registry_obj = Registry()
 
 # if __name__ == '__main__':
 
-file = json_path+'Registry/registryLog.txt'
-
-f = open(file, 'w')
 
 # while True:
 if __name__ == '__main__':
@@ -367,23 +364,18 @@ if __name__ == '__main__':
 
     #REGISTRY <--> DEPLOYMENT MANAGER
     RMQ.create_ServiceQueues("RG", "DM")
-    f.write("RG, DM queue created")
 
     #REGISTRY <--> SERVICE MANAGER
     RMQ.create_ServiceQueues("RG", "SM")
-    f.write("RG, SM queue created")
 
     #REGISTRY <--> MONITOR
     RMQ.create_ServiceQueues("RG", "MT")
-    f.write("RG, MT queue created")
 
     #REGISTRY <--> RECOVERY MANAGER
     RMQ.create_ServiceQueues("RG", "RM")
-    f.write("RG, RM queue created")
 
     #REGISTRY <--> LOAD BALANCER
     RMQ.create_ServiceQueues("RG", "LB")
-    f.write("RG, LB queue created")
 
     #REGISTRY <--> MONITOR Host Creds
     RMQ.create_ServiceQueues("RG", "MTHC")
@@ -412,7 +404,6 @@ if __name__ == '__main__':
     #REGISTRY <--> Host Manager Service inst
     RMQ.create_ServiceQueues("RG", "HM")
 
-    f.write("RG, BS queue created")
 
 
     Registry_obj.Restore_DS()
