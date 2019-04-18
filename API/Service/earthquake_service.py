@@ -1,10 +1,15 @@
 import sys
-sys.path.insert (0, '../')
+from pathlib import Path
+home = str(Path.home())
+path = home+'/Platform/'
+sys.path.insert (0, path)
+from queue_req_resp import *
 
 import numpy as np
 import json
 import argparse
 import pickle
+
 
 from ServiceManager.platform_input_stream import *
 from ServiceManager.platform_output_stream import *
