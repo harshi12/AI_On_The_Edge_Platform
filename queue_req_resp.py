@@ -22,7 +22,7 @@ class RabbitMQ:
 
         self.server_IP = data["IP"]
         self.server_Port = data["Port"]
-        self.credentials = pika.PlainCredentials(data["username"], data["password"])    
+        self.credentials = pika.PlainCredentials(data["username"], data["password"])
         self.create_queue("", "AD_SM")
         self.create_ServiceQueues("SM","Docker")
         self.create_ServiceQueues("SM", "Scheduler")
@@ -51,7 +51,7 @@ class RabbitMQ:
         conn.close()
 
     def receive_nonblock(self, exchange_name, queue_name):
-        channel, conn = self.create_connection()    
+        channel, conn = self.create_connection()
         self.create_queue(exchange_name, queue_name)
         method_frame, header_frame, body = channel.basic_get(queue_name, True)
 
@@ -64,18 +64,18 @@ class RabbitMQ:
         return body
 
     def receive(self, callback, exchange_name, queue_name):
-        channel, conn = self.create_connection()    
+        channel, conn = self.create_connection()
         self.create_queue(exchange_name, queue_name)
 
         try:
             channel.basic_consume(on_message_callback = callback, queue = queue_name, auto_ack = True)
         except:
             channel.basic_consume(callback, queue = queue_name, no_ack = True)
-            
+
 
         print(' [*] Waiting for messages. To exit press CTRL+C')
         channel.start_consuming()
-        
+
     def queue_length(self, exchange_name, queue_name):
         channel, conn = self.create_connection()
         # channel.exchange_declare(exchange='', exchange_type='direct')
