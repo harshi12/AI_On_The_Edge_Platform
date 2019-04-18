@@ -15,7 +15,7 @@ class FlowerAnalysisSensor(Sensor):
     def __init__(self, debug, dest_IP = "127.0.0.1", dest_port = 4444, rate = 0.5):
         name = "FLOWER_ANALYSIS_SENSOR"
         description = "This is an iris-flower classification sensor."
-        Sensor.__init__(self, name, description, "one-way", rate, dest_IP, dest_port)
+        Sensor.__init__(self, name, description, "one-way", rate, dest_IP, dest_port, debug)
 
         self.dataset = pd.read_csv("./Iris.csv").values
         self.length = self.dataset.shape[0]

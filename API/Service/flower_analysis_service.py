@@ -45,7 +45,7 @@ class FlowerAnalysisService:
         headers = {"content-type" : "application/json"}
 
         # get IP of the tensorflow serving from Service Manager
-        serving_addrs = "192.168.31.124:9500"
+        serving_addrs = "10.2.135.82:9500"
         json_response = requests.post('http://' + serving_addrs + "/v1/models/iris:predict", data=req_str, headers=headers)
         json_response = json.loads(str(json_response.text))
         inference = json_response["predictions"][0]

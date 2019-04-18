@@ -26,9 +26,11 @@ class PlatformOutputStream(IO_Stream):
 
         # TODO: read config of output["service_id"] to find out where the output should go
 
+        service_id = output["service_id"]
+
         # OUTPUT of DISTANCE_ALARM_SERVICE
         # Destination: DISTANCE_SENSOR
-        if output["service_id"] == "dist_svc_1":
+        if service_id == "dist_svc_1":
             output["sensor_name"] = "DISTANCE_SENSOR"
             # it has to send the result back to the sensor
             # get list of gateways where this sensor is running
@@ -46,10 +48,21 @@ class PlatformOutputStream(IO_Stream):
 
         # OUTPUT of NAVAL_MINE_DETECTION_SERVICE
         # Destination: UI
-        elif output["service_id"] == "sonar_svc_1":
+        # Action: Trigger CounterService if Mine detected
+        elif service_id == "sonar_svc_1":
             json_output_str = json.dumps(output)
             print (f"[POS] receiving output --> {json_output_str}")
-            self.RBMQ.send("", self.description + "_" + output["service_id"], json_output_str)
+            self.RBMQ.send("", self.description + "_" + service_id, json_output_str)
+
+        # OUTPUT of FLOWER_ANALYSIS_SERVICE
+        # Destination: UI
+        elif service_id == "flower_svc_1":
+            json_output_str = json.dumps(output)
+            print (f"[POS] receiving output --> {json_output_str}")
+            self.RBMQ.send("", self.description + "_" + service_id, json_output_str)
+
+        else:
+            print ("[POS] It shouldn't reach here, service_id: ", service_id)
 
 
     # function to listen to output data from the services
