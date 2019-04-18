@@ -23,8 +23,8 @@ from werkzeug.utils import secure_filename
 
 BATCH_COUNT = 10
 
-APP_UPLOAD_FOLDER = '/home/bhavidhingra/google-drive-iiith/Semester_#2/CSE563_Internals_of_Application_Servers/Hackathon/self_after_3/platform_ui_server1/Downloads/Applications/'
-# APP_UPLOAD_FOLDER = '/home/sukku/Downloads/IAS/Applications/'
+#APP_UPLOAD_FOLDER = '/home/bhavidhingra/google-drive-iiith/Semester_#2/CSE563_Internals_of_Application_Servers/Hackathon/self_after_3/platform_ui_server1/Downloads/Applications/'
+APP_UPLOAD_FOLDER = '/home/sukku/Downloads/IAS/Applications/'
 
 GW_UPLOAD_FOLDER = '/home/bhavidhingra/google-drive-iiith/Semester_#2/CSE563_Internals_of_Application_Servers/Hackathon/self_after_3/platform_ui_server1/Downloads/Gateways/'
 
@@ -356,17 +356,19 @@ def upload_app():
             filename = secure_filename(appfile.filename)
             appfile.save(os.path.join(app.config['APP_UPLOAD_FOLDER'], filename))
             #return redirect(url_for('uploaded_file', filename=filename))
-            try:
-                deploy_file(filename)
-                return render_template('uploaded.html')
-            except:
-                flash('Application already exists.Use another Name', 'danger')
-                return render_template('add_app.html',title="IAS 1")
-            # deploy_file(filename)
+            # try:
+            #     deploy_file(filename)
+            #     return render_template('uploaded.html')
+            # except:
+            #     flash('Problem in Application.Use another Name', 'danger')
+            #     return render_template('add_app.html',title="IAS 1")
+            deploy_file(filename)
             return render_template('uploaded.html')
         else:
             flash('Upload .zip file')
             return render_template('add_app.html',title="IAS 1")
+    return render_template('add_app.html',title="IAS 1")
+    
 
 def deploy_file(filename):
     # Deployment
@@ -382,26 +384,27 @@ def deploy_file(filename):
 
     App_path = APP_UPLOAD_FOLDER+filename
 
-    DM_Obj = Deployment_Manager("192.168.31.29", "iforgot", "/nfs_mount")
+    DM_Obj = Deployment_Manager("10.2.129.68", "iforgot", "/nfs_mount")
     #Model_Link , App_Link , Config_Link = DM_Obj.Deploy_App(AD_id,app_id,App_path)
 
-    Models_dict , Services_dict = DM_Obj.Deploy_App(AD_id,app_id,App_path)
+    # Models_dict , Services_dict = DM_Obj.Deploy_App(AD_id,app_id,App_path)
+    DM_Obj.Deploy_App(AD_id,app_id,App_path)
 
-    for model in Models_dict:
-        model_name = model
-        model_deploy_config_loc = Models_dict[model_name]['DeploymentConfigFile']
-        model_prod_config_loc = Models_dict[model_name]['ProductionConfigFile']
-        serv_obj = Service(service_name = model_name , service_type ="model" , app_id = app_id , deploy_config_loc = model_deploy_config_loc , prod_config_loc = model_prod_config_loc )
-        db.session.add(serv_obj)
+    # for model in Models_dict:
+    #     model_name = model
+    #     model_deploy_config_loc = Models_dict[model_name]['DeploymentConfigFile']
+    #     model_prod_config_loc = Models_dict[model_name]['ProductionConfigFile']
+    #     serv_obj = Service(service_name = model_name , service_type ="model" , app_id = app_id , deploy_config_loc = model_deploy_config_loc , prod_config_loc = model_prod_config_loc )
+    #     db.session.add(serv_obj)
 
-    for service in Services_dict:
-        service_name = service
-        service_deploy_config_loc = Services_dict[service_name]['DeploymentConfigFile']
-        service_prod_config_loc = Services_dict[service_name]['ProductionConfigFile']
-        serv_obj = Service(service_name = service_name , service_type ="exe" , app_id = app_id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc )
-        db.session.add(serv_obj)
+    # for service in Services_dict:
+    #     service_name = service
+    #     service_deploy_config_loc = Services_dict[service_name]['DeploymentConfigFile']
+    #     service_prod_config_loc = Services_dict[service_name]['ProductionConfigFile']
+    #     serv_obj = Service(service_name = service_name , service_type ="exe" , app_id = app_id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc )
+    #     db.session.add(serv_obj)
 
-    db.session.commit()
+    # db.session.commit()
     print("File uploaded")
 
 #Register Gateway
