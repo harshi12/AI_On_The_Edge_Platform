@@ -126,7 +126,7 @@ class Registry:
                     Host_IP = Filter[i]
                     for key in self.Host_Creds.keys():
                         if key==Host_IP:
-                            Result[key] = self.Host_Creds[key]
+                            Result[Host_IP] = self.Host_Creds[Host_IP]
             else:
                 Result = self.Host_Creds
             return Result
@@ -347,6 +347,12 @@ def Recieve_from_HMS():
 def Recieve_from_HM():
     RMQ.receive(callback, "", "HM_RG")
 
+def Recieve_from_FMSI():
+    RMQ.receive(callback, "", "FMSI_RG")
+
+def Recieve_from_SCHED():
+    RMQ.receive(callback, "", "SCHED_RG")
+
 def Backup():
     Timer = 15
     while 1:
@@ -404,6 +410,13 @@ if __name__ == '__main__':
     #REGISTRY <--> Host Manager Service inst
     RMQ.create_ServiceQueues("RG", "HM")
 
+    #REGISTRY <--> Flask Server service info
+    RMQ.create_ServiceQueues("RG", "FMSI")
+
+    #REGISTRY <--> Scheduler
+    RMQ.create_ServiceQueues("RG", "SCHED")
+
+    f.write("RG, BS queue created")
 
 
     Registry_obj.Restore_DS()
@@ -452,3 +465,9 @@ if __name__ == '__main__':
 
     t13 = threading.Thread(target=Recieve_from_HM)
     t13.start()
+
+    t14 = threading.Thread(target=Recieve_from_FMSI)
+    t14.start()
+
+    t15 = threading.Thread(target=Recieve_from_SCHED)
+    t15.start()
