@@ -37,4 +37,9 @@
     <Dependencies>
         <Dependancy name = "None">None</Dependancy>
     </Dependencies>
+    <Sensors filename="SensorConfig.xml">
+        <Sensor>Flower_Analysis_Sensor</Sensor>
+        <Sensor>Distance_Sensor</Sensor>
+        <Sensor>Sonar_Sensor</Sensor>
+    </Sensors>
 </Application>

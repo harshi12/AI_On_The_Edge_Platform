@@ -1,0 +1,33 @@
+<Service name = "Earthquake_Model">
+	<Dependencies>
+		<Depedency>None</Depedency>
+	</Dependencies>
+	<Sensors>
+		<Sensor>Earthquake_Sensor</Sensor>
+	</Sensors>
+	<GatewayLocation>None</GatewayLocation>
+
+	<!-- Where the ouput of this service should be redirected -->
+	<OutputDestination>
+		<Destination type = "UI"></Destination>
+	</OutputDestination>
+
+	<FolderPath>Models/Earthquake/</FolderPath>
+	
+	<ExecutableFileName>earthquake_Model_service.py</ExecutableFileName>
+
+	<!-- UI of Sonar is yet to be implemented! -->
+
+	<UI>
+		<FolderPath>UI</FolderPath>
+		<ExecutableFileName>run.py</ExecutableFileName>	
+	</UI>
+
+	<MinimumInstances>1</MinimumInstances>
+
+	<!-- Launch a new instance if there are 30 or more requests pending   -->
+	<UpperThreshold>50</UpperThreshold>
+
+	<!-- Kill an instance if there are less than 10 requests pending. Minimum number of instances should be maintained -->
+	<LowerThreshold>10</LowerThreshold>
+</Service>

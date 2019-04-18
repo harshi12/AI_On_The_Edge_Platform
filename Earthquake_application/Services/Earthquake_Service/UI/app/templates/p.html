@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      setInterval(function earthquake_status()
+      {   
+        $.getJSON('/earthquake_status',
+          function(receivedData)
+          {
+            status = receivedData["status"];
+            console.log(status);
+            $("#count_div").html(status);
+          }
+        );
+      }, 1000);
+    </script>
+  </head>
+  <body style="background-image: url('static/img/bg .jpeg')"> 
+    <h1 style = "text-align:center;float:center; color: blue">EARTHQUAKE SERVICE</h1>
+    <div id = "count_div" style = "text-align:center;float:center; font-size: 40px; padding-top: 10%;"></div>
+  </body>
+</html>

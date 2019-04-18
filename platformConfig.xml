@@ -3,55 +3,55 @@
 <platform>
 	<platformModules>
 		<module name = "DeploymentManager">
-			<IP>192.168.42.210</IP>
+			<IP>192.168.31.150</IP>
 			<Port>9500</Port>
 			<folderName>Deployment_Manager</folderName>
 			<executableFile>Deployment_Manager.py</executableFile>
 		</module>
 		<module name = "ServiceManager">
-			<IP>192.168.42.210</IP>
+			<IP>192.168.31.150</IP>
 			<Port>9501</Port>
 			<folderName>Service_Manager</folderName>
 			<executableFile>newServiceManager.py</executableFile>
 		</module>
 		<module name = "HostManager">
-			<IP>192.168.42.210</IP>
+			<IP>192.168.31.150</IP>
 			<Port>9502</Port>
 			<folderName>Host_Manager</folderName>
 			<executableFile>Host_Manager.py</executableFile>
 		</module>
 		<module name = "LoadBalancer">
-			<IP>192.168.42.210</IP>
+			<IP>192.168.31.150</IP>
 			<Port>9503</Port>
 			<folderName></folderName>
 			<executableFile></executableFile>
 		</module>
 		<module name = "Scheduler">
-			<IP>192.168.42.210</IP>
+			<IP>192.168.31.150</IP>
 			<Port>9504</Port>
 			<folderName>scheduler</folderName>
 			<executableFile>scheduler.py</executableFile>
 		</module>
 		<module name = "Logger">
-			<IP>192.168.42.210</IP>
+			<IP>192.168.31.150</IP>
 			<Port>9505</Port>
 			<folderName></folderName>
 			<executableFile></executableFile>
 		</module>
 		<module name = "Monitor">
-			<IP>192.168.42.210</IP>
+			<IP>192.168.31.150</IP>
 			<Port>9506</Port>
 			<folderName>Monitor</folderName>
 			<executableFile>monitor.py</executableFile>
 		</module>
 		<module name = "RecoveryManager">
-			<IP>192.168.42.210</IP>
+			<IP>192.168.31.150</IP>
 			<Port>9507</Port>
 			<folderName></folderName>
 			<executableFile></executableFile>
 		</module>
 		<module name = "Database">
-			<IP>192.168.42.210</IP>
+			<IP>192.168.31.150</IP>
 			<RecoveryIP></RecoveryIP>
 			<Port>9508</Port>
 			<folderName></folderName>
@@ -79,7 +79,7 @@
 			<executableFile>RepositorySetup.sh</executableFile>
 		</module>
 		<module name = "RabbitMQServer">
-			<IP>192.168.42.210</IP>
+			<IP>192.168.31.124</IP>
 			<RecoveryIP></RecoveryIP>
 			<Port>5672</Port>
 			<folderName>.</folderName>
@@ -107,7 +107,7 @@
 			<username>akanksha</username>
 			<password>Akanksha21!</password>
 		</Host>
-		<Host IP = "192.168.31.124">
+		<Host IP = "	192.168.31.124">
 			<username>kaushik</username>
 			<password>rama1729</password>
 		</Host>
@@ -118,6 +118,10 @@
 		<Host IP = "192.168.31.34">
 			<username>kratika</username>
 			<password>Qwerty987**</password>
+		</Host>
+		<Host IP = "192.168.31.11">
+			<username>pranjali</username>
+			<password>Accio@934</password>
 		</Host>
 	</Hosts>
 </platform>

@@ -1,0 +1,35 @@
+<Service name = "Counter_Service">
+	<SetUpEnvironment>
+		<Install>pip3 install flask</Install>
+	</SetUpEnvironment>
+	
+	<Criticality>No</Criticality>
+	
+	<Exclusive>No</Exclusive>
+	
+	<MinimumInstances>2</MinimumInstances>
+	
+	<FolderPath>Services/Counter_Service/</FolderPath>
+	
+	<ExecutableFileName>counter_service.py</ExecutableFileName>
+
+	<Dependencies>
+		<Depedency>Sonar_Model</Depedency>
+	</Dependencies>
+
+	<UI>
+		<FolderPath>Services/Counter_Service/UI</FolderPath>
+		<ExecutableFileName>run.py</ExecutableFileName>
+	</UI>
+
+	<Scheduling>
+		<!-- TriggerInterval is in seconds -->
+		<TriggerInterval>30</TriggerInterval>
+		<!-- If StartTime is None then launch service immediately -->
+		<StartTime>None</StartTime>
+		<!-- Disabling Mechanism specified by EndTime -->
+		<EndTime>None</EndTime>
+		<UpTime>None</UpTime>
+	</Scheduling>
+
+</Service>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: white;
+      }
+      * {
+        box-sizing: border-box;
+      }
+
+      .button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+      .button5 {
+        background-color: white;
+        color: black;
+        border: 2px solid #555555;
+      }
+      #graph-div {
+          height: 70%;
+          width: 70%;
+          background-color: white;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+          var myBarChart;
+          var ctx = $("#myChart");
+          $('a#graph').bind('click', function() {
+            $.getJSON('/load_graph',
+                function(receivedData) {
+                  if(myBarChart != undefined)
+                  {
+                    myBarChart.destroy();
+                  }
+                  temp = receivedData["list"];
+                  var opt = {
+                    responsive: true,
+                    scales: {
+                      xAxes: [{
+                        ticks: {
+                            min: 2
+                        }
+                      }],
+                      yAxes: [{
+                        stacked: true
+                      }]
+                    }
+                  };
+                  var data = {
+                    labels: ["Iris Setosa", "Iris Versicolor", "Iris Virginica"],
+                    datasets: [
+                      {
+                        label: "Frequency Distribution",
+                        data: temp,
+                        borderWidth: 1
+                      }
+                    ]
+                  };
+                  myBarChart = new Chart(ctx, {
+                    type: 'horizontalBar',
+                    data: data,
+                    options: opt
+                  });
+                });
+            });
+        });
+    </script>
+  </head>
+  <body> 
+        <h1 style="text-align:left;float:left;">IRIS Graph</h1>
+        <a href = "#" id = graph class = "button button5"  style="text-align:right;float:right;">Display Result</a>
+      <div id = "graph-div" align = "center">
+          <canvas id="myChart"></canvas>
+      </div>
+  </body>
+</html>

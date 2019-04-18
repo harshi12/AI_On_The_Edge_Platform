@@ -1,10 +1,12 @@
 import sys
-sys.path.insert (0, '../../../../../')
-sys.path.insert (0, '../../../../')
+from pathlib import Path
+home = str(Path.home())
+path = home+'/Platform/'
+sys.path.insert (0, path)
+from queue_req_resp import *
 
 from app import app
 import pika
-from API.RabbitMQ.message_queue import *
 import json
 import pandas as pd
 from flask import Flask,render_template,request,redirect
@@ -16,7 +18,7 @@ from httplib2 import Http
 from threading import Thread
 from run import foo
 import socket
-# import API.Socket.utilities as sock_util
+import Socket.utilities as sock_util
 
 inputQueue = "PlatformOutputStream_" + str(foo)
 SCOPES = 'https://www.googleapis.com/auth/drive'

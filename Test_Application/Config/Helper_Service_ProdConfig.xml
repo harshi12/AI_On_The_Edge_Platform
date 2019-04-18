@@ -1,0 +1,33 @@
+<Service name = "Helper_Service">
+	<Dependencies>
+		<Depedency>Iris_Model</Depedency>
+	</Dependencies>
+
+	<Sensors>
+		<Sensor>None</Sensor>
+	</Sensors>
+	
+	<GatewayLocation>None</GatewayLocation>
+	
+	<!-- Where the ouput of this service should be redirected -->
+	<OutputDestination>
+		<Destination type = "UI"></Destination>
+	</OutputDestination>
+
+	<FolderPath>Services/Helper_Service/</FolderPath>
+	
+	<ExecutableFileName>None</ExecutableFileName>
+
+	<UI>
+		<FolderPath>Services/Helper_Service/UI</FolderPath>
+		<ExecutableFileName>run.py</ExecutableFileName>
+	</UI>
+
+	<MinimumInstances>1</MinimumInstances>
+
+	<!-- Launch a new instance if there are 30 or more requests pending   -->
+	<UpperThreshold>50</UpperThreshold>
+
+	<!-- Kill an instance if there are less than 10 requests pending. Minimum number of instances should be maintained -->
+	<LowerThreshold>5</LowerThreshold>
+</Service>

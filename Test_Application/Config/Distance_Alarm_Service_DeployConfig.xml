@@ -1,0 +1,35 @@
+<Service name = "Distance_Alarm_Service">
+	<SetUpEnvironment>
+		<Install>None</Install>
+	</SetUpEnvironment>
+
+	<Criticality>No</Criticality>
+	
+	<Exclusive>Yes</Exclusive>
+	
+	<MinimumInstances>1</MinimumInstances>
+	
+	<FolderPath>Services/Distance_Alarm_Service/</FolderPath>
+	
+	<ExecutableFileName>distance_alarm_service.py</ExecutableFileName>
+	
+	<Dependencies>
+		<Depedency>None</Depedency>
+	</Dependencies>
+	
+	<UI>
+		<FolderPath></FolderPath>
+		<ExecutableFileName></ExecutableFileName>
+	</UI>
+	
+	<Scheduling>
+		<!-- TriggerInterval is in seconds -->
+		<TriggerInterval>None</TriggerInterval>
+		<!-- If StartTime is None then launch service immediately -->
+		<StartTime>None</StartTime>
+		<!-- Disabling Mechanism specified by EndTime -->
+		<EndTime>None</EndTime>
+		<UpTime>None</UpTime>
+	</Scheduling>
+
+</Service>

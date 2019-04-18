@@ -13,6 +13,10 @@
 	
 	<ExecutableFileName>counter_service.py</ExecutableFileName>
 
+	<Dependencies>
+		<Depedency>Sonar_Model</Depedency>
+	</Dependencies>
+
 	<UI>
 		<FolderPath>Services/Counter_Service/UI</FolderPath>
 		<ExecutableFileName>run.py</ExecutableFileName>

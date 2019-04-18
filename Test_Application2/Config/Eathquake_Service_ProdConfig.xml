@@ -1,0 +1,31 @@
+<Service name = "Eathquake_Service">
+	<Dependencies>
+		<Depedency>Earthquake_Model</Depedency>
+	</Dependencies>
+	<Sensors>
+		<Sensor>Eathquake_Sensor</Sensor>
+	</Sensors>
+	<GatewayLocation>None</GatewayLocation>
+
+	<!-- Where the ouput of this service should be redirected -->
+	<OutputDestination>
+		<Destination type = "UI"></Destination>
+	</OutputDestination>
+
+	<FolderPath>Services/Eathquake_Service/</FolderPath>
+	
+	<ExecutableFileName>eathquake_service.py</ExecutableFileName>
+
+	<UI>
+		<FolderPath>Services/Eathquake_Service/UI</FolderPath>
+		<ExecutableFileName>run.py</ExecutableFileName>
+	</UI>
+
+	<MinimumInstances>1</MinimumInstances>
+
+	<!-- Launch a new instance if there are 30 or more requests pending   -->
+	<UpperThreshold>30</UpperThreshold>
+
+	<!-- Kill an instance if there are less than 10 requests pending. Minimum number of instances should be maintained -->
+	<LowerThreshold>10</LowerThreshold>
+</Service>

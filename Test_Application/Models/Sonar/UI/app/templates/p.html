@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      setInterval(function sonar_status()
+      {   
+        $.getJSON('/sonar_status',
+          function(receivedData)
+          {
+            color = receivedData["status"];
+            console.log(color);
+            if(color == "red")
+            {
+              $("#count_div").html("Mine Detected");
+              document.getElementById("count_div").style.backgroundColor = color;
+            }
+            else
+            {
+              $("#count_div").html("Rock Detected");
+              document.getElementById("count_div").style.backgroundColor = color;
+            }
+          }
+        );
+      }, 500);
+    </script>
+  </head>
+  <body style="background-image: url('static/img/bg .jpeg')"> 
+    <h1 style = "text-align:center;float:center; color: blue">SONAR SERVICE</h1>
+    <div id = "count_div" style = "text-align:center;float:center; font-size: 40px; padding-top: 10%;"></div>
+  </body>
+</html>
