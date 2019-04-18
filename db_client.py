@@ -17,9 +17,9 @@ class DATABASE_CLIENT:
         req["location"] = location
         json_req = json.dumps(req)
         RBMQ.send("", DB_REQUEST_QUEUE, json_req)
-        print (f"Sent Request: {json_req}")
+        # print (f"Sent Request: {json_req}")
         resp = RBMQ.receive_nonblock("", "DB_"+module)
-        print (f"Received Response: {resp}")
+        # print (f"Received Response: {resp}")
         return resp
     
     def service_id_get(module, service_name):
@@ -28,9 +28,9 @@ class DATABASE_CLIENT:
         req["opcode"] = "SERVICE_ID_GET"
         json_req = json.dumps(req)
         RBMQ.send("", DB_REQUEST_QUEUE, json_req)
-        print (f"Sent Request: {json_req}")
+        # print (f"Sent Request: {json_req}")
         resp = RBMQ.receive_nonblock("", "DB_"+module)
-        print (f"Received Response: {resp}")
+        # print (f"Received Response: {resp}")
         return resp
 
 
