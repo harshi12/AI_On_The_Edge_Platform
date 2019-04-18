@@ -29,6 +29,7 @@ class Service(db.Model):
     app_id = db.Column(db.Integer, db.ForeignKey(Application.app_id), nullable=False)
     deploy_config_loc = db.Column(db.String(150), unique=False, nullable=True)
     prod_config_loc = db.Column(db.String(150), unique=False, nullable=True)
+    service_ui_server = db.Column(db.String(100), unique=False, nullable=True)
 
     def __repr__(self):
         return "Services('{self.service_id}','{self.service_name}')"

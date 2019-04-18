@@ -1,3 +1,11 @@
+import sys
+from pathlib import Path
+home = str(Path.home())
+
+path = home+'/Platform/'
+
+sys.path.insert (0, path)
+
 import os
 import json
 from queue_req_resp import RabbitMQ

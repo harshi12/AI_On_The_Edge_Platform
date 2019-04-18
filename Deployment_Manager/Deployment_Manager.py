@@ -1,5 +1,9 @@
 import sys
-sys.path.insert (0, '../')
+from pathlib import Path
+home = str(Path.home())
+path = home+'/Platform/'
+sys.path.insert (0, path)
+
 import zipfile
 import os
 from queue_req_resp import RabbitMQ
@@ -13,6 +17,7 @@ import xmlschema
 from app import db
 from app.models import Service
 from sqlalchemy import create_engine 
+import shutil
 
 class Deployment_Manager():
 
@@ -124,14 +129,14 @@ class Deployment_Manager():
                 model_name = model
                 model_deploy_config_loc = Models_dict[model_name]['DeploymentConfigFile']
                 model_prod_config_loc = Models_dict[model_name]['ProductionConfigFile']
-                serv_obj = Service(service_name = model_name , service_type ="model" , app_id = App_Id , deploy_config_loc = model_deploy_config_loc , prod_config_loc = model_prod_config_loc )
+                serv_obj = Service(service_name = model_name , service_type ="model" , app_id = App_Id , deploy_config_loc = model_deploy_config_loc , prod_config_loc = model_prod_config_loc ,service_ui_server="NULL")
                 db.session.add(serv_obj)
         else:
             for service in Services_dict:
                 service_name = service
                 service_deploy_config_loc = Services_dict[service_name]['DeploymentConfigFile']
                 service_prod_config_loc = Services_dict[service_name]['ProductionConfigFile']
-                serv_obj = Service(service_name = service_name , service_type ="exe" , app_id = App_Id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc )
+                serv_obj = Service(service_name = service_name , service_type ="exe" , app_id = App_Id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc ,service_ui_server="NULL")
                 db.session.add(serv_obj)
 
         db.session.commit()
@@ -268,40 +273,9 @@ class Deployment_Manager():
         obj_HM = RabbitMQ()
         obj_HM.send("", "DM_HM", Host_Manager_Message)
 
-        # return self.Models_Information_To_Return, self.Services_Informtion_To_Return
-        # Models_dict = self.Models_Information_To_Return
-        # Services_dict = self.Services_Informtion_To_Return
-        # for model in Models_dict:
-        #     model_name = model
-        #     model_deploy_config_loc = Models_dict[model_name]['DeploymentConfigFile']
-        #     model_prod_config_loc = Models_dict[model_name]['ProductionConfigFile']
-        #     serv_obj = Service(service_name = model_name , service_type ="model" , app_id = App_Id , deploy_config_loc = model_deploy_config_loc , prod_config_loc = model_prod_config_loc )
-        #     db.session.add(serv_obj)
-
-        # for service in Services_dict:
-        #     service_name = service
-        #     service_deploy_config_loc = Services_dict[service_name]['DeploymentConfigFile']
-        #     service_prod_config_loc = Services_dict[service_name]['ProductionConfigFile']
-        #     serv_obj = Service(service_name = service_name , service_type ="exe" , app_id = App_Id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc )
-        #     db.session.add(serv_obj)
-
-        # db.session.commit()
-        # print("Saved in DB")
-
-        # services_dict={}
-        # #service_name : service_id
-        # for model in  Models_dict:
-        #     model_name=model
-        #     service=Service.query.filter(Service.service_name==model_name).first()
-        #     service_id = service.service_id
-        #     services_dict[model_name]=service_id
-        # for service in  Services_dict:
-        #     service_name=service
-        #     serv=Service.query.filter(Service.service_name==service_name).first()
-        #     service_id = serv.service_id
-        #     services_dict[service_name]=service_id
-
-        # print(services_dict)
+        # Deleting temporary folders created
+        shutil.rmtree(Current_Working_Direcory+"/"+str(App_Id))
+        shutil.rmtree(Current_Working_Direcory+"/nfs_server")
 
 
 

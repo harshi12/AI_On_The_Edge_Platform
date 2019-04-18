@@ -2,17 +2,26 @@
 
 import pika
 import json
+import sys
 
-RMQFile = "RMQCredentials.txt"
+
+from pathlib import Path
+home = str(Path.home())
+
+path = home+'/Platform/'
+
+sys.path.insert (0, path)
+
+RMQFile = path+"RMQCredentials.txt"
 
 class RabbitMQ:
 	def __init__(self):
-		with open('RMQCredentials.txt', 'r') as f:
+		with open(RMQFile, 'r') as f:
 			data = json.load(f)
 
 		self.server_IP = data["IP"]
 		self.server_Port = data["Port"]
-		self.credentials = pika.PlainCredentials(data["username"], data["password"])	
+		self.credentials = pika.PlainCredentials(data["username"], data["password"])
 
 	def create_queue(self, exchange_name, queue_name):
 		channel, conn = self.create_connection()
@@ -38,7 +47,7 @@ class RabbitMQ:
 		conn.close()
 
 	def receive_nonblock(self, exchange_name, queue_name):
-		channel, conn = self.create_connection()	
+		channel, conn = self.create_connection()
 		self.create_queue(exchange_name, queue_name)
 		method_frame, header_frame, body = channel.basic_get(queue_name, True)
 
@@ -46,13 +55,10 @@ class RabbitMQ:
 			while body == None:
 				method_frame, header_frame, body = channel.basic_get(queue_name, True)
 
-		# body = channel.basic_get(queue_name, True) #callback, queue = queue_name, no_ack = True)
-		print("In queue:", type(body))
 		return body
 
 	def receive(self, callback, exchange_name, queue_name):
-		print("Here", queue_name)
-		channel, conn = self.create_connection()	
+		channel, conn = self.create_connection()
 		self.create_queue(exchange_name, queue_name)
 
 		channel.basic_consume(callback, queue = queue_name, no_ack = True)

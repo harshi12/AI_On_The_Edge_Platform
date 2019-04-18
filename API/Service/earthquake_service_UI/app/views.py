@@ -1,10 +1,11 @@
 import sys
-sys.path.insert (0, '../../')
-sys.path.insert (0, '../../../')
-
+from pathlib import Path
+home = str(Path.home())
+path = home+'/Platform/'
+sys.path.insert (0, path)
+from queue_req_resp import *
 from app import app
 import pika
-from RabbitMQ.message_queue import *
 import json
 import pandas as pd
 from flask import Flask,render_template,request,redirect
@@ -29,7 +30,7 @@ def callback(ch, method, properties, body):
     data = body
     print(data)
 
-t1 = Thread(target = receiveInput, args = ('', "quake_queue"))
+t1 = Thread(target = receiveInput, args = ('', "temp1"))
 t1.start()
 
 @app.route('/')
