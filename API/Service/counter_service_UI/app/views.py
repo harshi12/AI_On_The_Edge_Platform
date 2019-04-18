@@ -25,7 +25,7 @@ def callback(ch, method, properties, body):
 		body = body.decode()
 	count = int(body)
 
-t1 = Thread(target = receiveInput, args = ('', inputQueue))
+t1 = Thread(target = receiveInput, args = ('', "temp"))
 t1.start()
 
 @app.route('/')
