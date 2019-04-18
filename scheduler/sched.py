@@ -14,10 +14,10 @@ class PlatformScheduler:
         self.MODULES_REQ_QUEUE = "modules_scheduler"
         self.RBMQ = RabbitMQ()
 
-    def schedule_services(self, service_ids):
+    def schedule_service(self, service_id):
         req = {}
-        req["opcode"] = "SCHEDULE_SERVICES"
-        req["service_ids"] = service_ids
+        req["opcode"] = "SCHEDULE_SERVICE"
+        req["service_id"] = service_id
         json_req = json.dumps(req)
         self.RBMQ.send("", self.MODULES_REQ_QUEUE, json_req)
 
