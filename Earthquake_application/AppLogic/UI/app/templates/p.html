@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+a,
+a label {
+    cursor: pointer;
+}
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: black;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Add padding to containers */
+.container {
+  padding: 16px;
+  background-color: white;
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Overwrite default styles of hr */
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}
+
+/* Set a style for the submit button */
+.registerbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+
+.registerbtn:hover {
+  opacity: 1;
+}
+
+/* Add a blue text color to links */
+a {
+  color: dodgerblue;
+}
+
+/* Set a grey background color and center the text of the "sign in" section */
+.signin {
+  background-color: #f1f1f1;
+  text-align: center;
+}
+
+ul
+{ 
+margin: 0 20px 20px 0;
+white-space:nowrap; 
+} 
+
+.li
+{ 
+margin: 0 20px 20px 0; 
+} 
+
+.inactiveLink {
+   pointer-events: none;
+   cursor: default;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+function handleChange(checkbox, id)
+{
+  if(id.toString() == "5")
+  {
+    if(document.getElementById("5").checked == false)
+
+    document.getElementById("5").checked = false;
+  }
+  else if(id.toString() == "6")
+  {
+    document.getElementById("6").checked = false;
+  }
+  else
+  {
+    service_name = null;
+    switch(id)
+    {
+        case 1 :service_name = "Sonar";
+                break;
+        case 2: service_name = "Iris";
+                break;
+        case 3: service_name = "Helper_Service";
+                break;
+        case 4: service_name = "Distance_Alarm_Service";
+                break;
+        case 5: service_name = "Counter_Service";
+                break;
+        case 6: service_name = "Emergency_Notification_Service";
+                break;
+    }
+    //Start
+    if(checkbox.checked == true)
+    {
+      $.getJSON('/startservice',{'sname':service_name},
+        function(receivedData)
+        {
+          console.log(receivedData);
+        }
+      );
+    }
+    //Stop
+    if(checkbox.checked == false)
+    {
+      $.getJSON('/stopservice', {'sname':service_name},
+        function(receivedData)
+        {
+          console.log(receivedData);
+        }
+      );
+    }
+  }
+}
+
+function redirect_link()
+{
+  $.getJSON('/redirect_link',
+    function(receivedData)
+    {
+      console.log(receivedData);
+    }
+  );
+}
+</script>
+</head>
+<body>
+  <form action="/action_page.php">
+  <div class="container">
+    <h1>Services Portal</h1>
+    <hr>
+    <div class="table" name="list_of_services">
+    <table>
+      <ul>
+        <li>
+            <h4><a href = "{{ url_for('reroute') }}" target="_blank">Earthquake Model</a></h4>
+            <label class="switch" name = "earthquake">
+                <input type="checkbox" id = "1" onchange = 'handleChange(this, 1);'>
+                <span class="slider round"></span>
+            </label>
+        </li>
+      </ul>
+    </table>
+    </div>
+  </div>
+</form>
+</body>
+</html>
