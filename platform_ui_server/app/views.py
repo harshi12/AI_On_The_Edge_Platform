@@ -21,70 +21,34 @@ from queue_req_resp import RabbitMQ
 
 from werkzeug.utils import secure_filename
 
+from threading import Thread
+
+RMQ=RabbitMQ()
+
+def ReceivefromSM(self, exchange, key):
+    print("Listening......")
+    RMQ.receive(self.processInput, exchange, key)
+
+def processInput( ch, method, properties, body):
+    data = json.loads(body)
+    app_link = data['App_Link']
+    ip = data['IP']
+    port = data['Port']
+    ui_server=ip+":"+port
+
+t=Thread(target=ReceivefromSM,args = ('', "SM_Flask"))
+
+
 BATCH_COUNT = 10
 
-APP_UPLOAD_FOLDER = '/home/bhavidhingra/google-drive-iiith/Semester_#2/CSE563_Internals_of_Application_Servers/Hackathon/self_after_3/platform_ui_server1/Downloads/Applications/'
-# APP_UPLOAD_FOLDER = '/home/sukku/Downloads/IAS/Applications/'
+#APP_UPLOAD_FOLDER = '/home/bhavidhingra/google-drive-iiith/Semester_#2/CSE563_Internals_of_Application_Servers/Hackathon/self_after_3/platform_ui_server1/Downloads/Applications/'
+APP_UPLOAD_FOLDER = '/home/sukku/Downloads/IAS/Applications/'
 
 GW_UPLOAD_FOLDER = '/home/bhavidhingra/google-drive-iiith/Semester_#2/CSE563_Internals_of_Application_Servers/Hackathon/self_after_3/platform_ui_server1/Downloads/Gateways/'
 
 #app = Flask(__name__)
 app.config['APP_UPLOAD_FOLDER'] = APP_UPLOAD_FOLDER
 app.config['GW_UPLOAD_FOLDER'] = GW_UPLOAD_FOLDER
-
-class RabbitMQ:
-    def __init__(self):
-    	self.server_IP = "192.168.43.135"
-    	self.server_Port = 5672
-    	self.credentials = pika.PlainCredentials("harshita","123")
-    	self.create_queue("", "AD_SM")
-    	self.create_ServiceQueues("SM","Docker")
-    	self.create_ServiceQueues("SM", "Scheduler")
-
-    def create_queue(self, exchange_name, queue_name):
-    	channel, conn = self.create_connection()
-    	# channel.exchange_declare(exchange='', exchange_type='direct')
-    	channel.queue_declare(queue = queue_name, durable = True)
-    	# channel.queue_bind(exchange=exchange_name, queue=queue_name)
-    	conn.close()
-
-    def create_ServiceQueues(self,Module1, Module2):
-    	self.create_queue("", str(Module1+"_"+Module2))
-    	self.create_queue("", str(Module2+"_"+Module1))
-
-    def create_connection(self):
-    	connection = pika.BlockingConnection(pika.ConnectionParameters(self.server_IP, self.server_Port, '/', self.credentials))
-    	channel = connection.channel()
-    	return channel, connection
-
-    def send(self,exchange_name, queue_name, message):
-    	channel, conn = self.create_connection()
-    	self.create_queue(exchange_name, queue_name)
-    	channel.basic_publish(exchange='', routing_key=queue_name, body=message)
-    	# print(" [x] Sent",message)
-    	conn.close()
-
-    messages=[]
-
-    def callback(ch, method, properties, body):
-        print(" [x] Received %r" % body)
-        #process(body)
-        messages.append(body)
-
-    def receive(self, callback, exchange_name, queue_name):
-        channel, conn = self.create_connection()
-        self.create_queue(exchange_name, queue_name)
-        channel.basic_consume(callback, queue = queue_name, no_ack = True)
-        print(' [*] Waiting for messages. To exit press CTRL+C')
-        channel.start_consuming()
-
-    def receive_nonblock(self, exchange_name, queue_name):
-        channel, conn = self.create_connection()
-        self.create_queue(exchange_name, queue_name)
-        method_frame, header_frame, body = channel.basic_get(queue_name, True)
-        # body = channel.basic_get(queue_name, True) #callback, queue = queue_name, no_ack = True)
-        # print("In queue:", type(body))
-        return body
 
 # print(os.getcwd())
 # # os.
@@ -356,17 +320,19 @@ def upload_app():
             filename = secure_filename(appfile.filename)
             appfile.save(os.path.join(app.config['APP_UPLOAD_FOLDER'], filename))
             #return redirect(url_for('uploaded_file', filename=filename))
-            try:
-                deploy_file(filename)
-                return render_template('uploaded.html')
-            except:
-                flash('Application already exists.Use another Name', 'danger')
-                return render_template('add_app.html',title="IAS 1")
-            # deploy_file(filename)
+            # try:
+            #     deploy_file(filename)
+            #     return render_template('uploaded.html')
+            # except:
+            #     flash('Problem in Application.Use another Name', 'danger')
+            #     return render_template('add_app.html',title="IAS 1")
+            deploy_file(filename)
             return render_template('uploaded.html')
         else:
             flash('Upload .zip file')
             return render_template('add_app.html',title="IAS 1")
+    return render_template('add_app.html',title="IAS 1")
+    
 
 def deploy_file(filename):
     # Deployment
@@ -382,26 +348,27 @@ def deploy_file(filename):
 
     App_path = APP_UPLOAD_FOLDER+filename
 
-    DM_Obj = Deployment_Manager("192.168.31.29", "iforgot", "/nfs_mount")
+    DM_Obj = Deployment_Manager("10.2.129.68", "iforgot", "/nfs_mount")
     #Model_Link , App_Link , Config_Link = DM_Obj.Deploy_App(AD_id,app_id,App_path)
 
-    Models_dict , Services_dict = DM_Obj.Deploy_App(AD_id,app_id,App_path)
+    # Models_dict , Services_dict = DM_Obj.Deploy_App(AD_id,app_id,App_path)
+    DM_Obj.Deploy_App(AD_id,app_id,App_path)
 
-    for model in Models_dict:
-        model_name = model
-        model_deploy_config_loc = Models_dict[model_name]['DeploymentConfigFile']
-        model_prod_config_loc = Models_dict[model_name]['ProductionConfigFile']
-        serv_obj = Service(service_name = model_name , service_type ="model" , app_id = app_id , deploy_config_loc = model_deploy_config_loc , prod_config_loc = model_prod_config_loc )
-        db.session.add(serv_obj)
+    # for model in Models_dict:
+    #     model_name = model
+    #     model_deploy_config_loc = Models_dict[model_name]['DeploymentConfigFile']
+    #     model_prod_config_loc = Models_dict[model_name]['ProductionConfigFile']
+    #     serv_obj = Service(service_name = model_name , service_type ="model" , app_id = app_id , deploy_config_loc = model_deploy_config_loc , prod_config_loc = model_prod_config_loc )
+    #     db.session.add(serv_obj)
 
-    for service in Services_dict:
-        service_name = service
-        service_deploy_config_loc = Services_dict[service_name]['DeploymentConfigFile']
-        service_prod_config_loc = Services_dict[service_name]['ProductionConfigFile']
-        serv_obj = Service(service_name = service_name , service_type ="exe" , app_id = app_id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc )
-        db.session.add(serv_obj)
+    # for service in Services_dict:
+    #     service_name = service
+    #     service_deploy_config_loc = Services_dict[service_name]['DeploymentConfigFile']
+    #     service_prod_config_loc = Services_dict[service_name]['ProductionConfigFile']
+    #     serv_obj = Service(service_name = service_name , service_type ="exe" , app_id = app_id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc )
+    #     db.session.add(serv_obj)
 
-    db.session.commit()
+    # db.session.commit()
     print("File uploaded")
 
 #Register Gateway
