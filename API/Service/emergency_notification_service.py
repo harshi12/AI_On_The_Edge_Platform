@@ -1,5 +1,10 @@
 import sys
-sys.path.insert (0, '../')
+
+from pathlib import Path
+home = str(Path.home())
+path = home+'/Platform/'
+
+sys.path.insert (0, path)
 
 import argparse
 import json
@@ -24,7 +29,7 @@ class EmergencyNotificationService:
         # DISTANCE_SENSOR data is received
         distance = int(data["content"])
     
-        print (f"EmergNotifService received distance: {distance}")
+        #print (f"EmergNotifService received distance: {distance}")
         if distance < self.emergency_distance_threshold:
             print ("Sending emails..")
 
@@ -44,8 +49,9 @@ if __name__ == "__main__":
     parser.add_argument("--run_on_gateway", default="no")
     parser.add_argument("--limit", default="200")
     parser.add_argument("--sender_email", default="rajatverma00009@gmail.com")
-    parser.add_argument("--sender_password", default="")
-    parser.add_argument("--receiver_email_list", default='')
+    #parser.add_argument("--sender_email", default="bhavi.dhingra@gmail.com")
+    parser.add_argument("--sender_password", default="rj.gmail@910")
+    parser.add_argument("--receiver_email_list", default='ravi.jakhania@students.iiit.ac.in')
 
 
     (args, unknown) = parser.parse_known_args()

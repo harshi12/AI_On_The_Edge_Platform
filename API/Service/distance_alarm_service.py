@@ -1,5 +1,10 @@
 import sys
-sys.path.insert (0, '../')
+
+from pathlib import Path
+home = str(Path.home())
+path = home+'/Platform/'
+
+sys.path.insert (0, path)
 
 import argparse
 import json
@@ -50,6 +55,7 @@ if __name__ == "__main__":
     distance_alarm_service = DistanceAlarmService(args.service_id, emergency_end, critical_end, args.run_on_gateway)
 
     sensor_name = "DISTANCE_SENSOR"
+
 
     if args.run_on_gateway == "no":
         input_stream = PlatformInputStream()

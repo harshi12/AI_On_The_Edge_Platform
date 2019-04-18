@@ -155,54 +155,41 @@ input:checked + .slider:before {
 
 function handleChange(checkbox, id)
 {
-  if(id.toString() == "5")
+  service_name = null;
+  switch(id)
   {
-    if(document.getElementById("5").checked == false)
-
-    document.getElementById("5").checked = false;
+      case 1 :service_name = "Sonar";
+              break;
+      case 2: service_name = "Iris";
+              break;
+      case 3: service_name = "Helper_Service";
+              break;
+      case 4: service_name = "Distance_Alarm_Service";
+              break;
+      case 5: service_name = "Counter_Service";
+              break;
+      case 6: service_name = "Emergency_Notification_Service";
+              break;
   }
-  else if(id.toString() == "6")
+  //Start
+  if(checkbox.checked == true)
   {
-    document.getElementById("6").checked = false;
+    $.getJSON('/startservice',{'sname':service_name},
+      function(receivedData)
+      {
+        console.log(receivedData);
+      }
+    );
   }
-  else
+  //Stop
+  if(checkbox.checked == false)
   {
-    service_name = null;
-    switch(id)
-    {
-        case 1 :service_name = "Sonar";
-                break;
-        case 2: service_name = "Iris";
-                break;
-        case 3: service_name = "Helper_Service";
-                break;
-        case 4: service_name = "Distance_Alarm_Service";
-                break;
-        case 5: service_name = "Counter_Service";
-                break;
-        case 6: service_name = "Emergency_Notification_Service";
-                break;
-    }
-    //Start
-    if(checkbox.checked == true)
-    {
-      $.getJSON('/startservice',{'sname':service_name},
-        function(receivedData)
-        {
-          console.log(receivedData);
-        }
-      );
-    }
-    //Stop
-    if(checkbox.checked == false)
-    {
-      $.getJSON('/stopservice', {'sname':service_name},
-        function(receivedData)
-        {
-          console.log(receivedData);
-        }
-      );
-    }
+    $.getJSON('/stopservice', {'sname':service_name},
+      function(receivedData)
+      {
+        console.log(receivedData);
+      }
+    );
   }
 }
 
@@ -254,14 +241,14 @@ function redirect_link()
             </label>
         </li>
         <li>
-            <h4><a href = "{{ url_for('reroute') }}" target="_blank">Counter Service</a></h4> 
+            <h4>Counter Service</h4> 
             <label class="switch" name = "naval">
                 <input type="checkbox" id = "5" onchange = 'handleChange(this, 5);' checked="checked">
                 <span class="slider round"></span>
             </label>
         </li>
         <li>
-            <h4><a href = "{{ url_for('reroute') }}" target="_blank">Emergency Notification Service</a></h4> 
+            <h4>Emergency Notification Service</h4> 
             <label class="switch" name = "naval">
                 <input type="checkbox" id = "6" onchange = 'handleChange(this, 6);' checked="checked">
                 <span class="slider round"></span>
