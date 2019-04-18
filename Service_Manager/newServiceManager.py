@@ -112,12 +112,62 @@ class ServiceManager():
 					ind = rootlink.rfind('/')
 					rootLink = rootLink[:ind]
 
-				deployConfig = rootLink+'/Config/'+serviceName+'DeployConfig.xml'
-				prodConfig = rootLink+'/Config/'+serviceName+'ProdConfig.xml'
+				modelName = link[link.rfind('/')+1 : ]
+
+				deployConfig = rootLink+'/Config/'+modelName+'_Model_DeployConfig.xml'
+				prodConfig = rootLink+'/Config/'+modelName+'_Model_ProdConfig.xml'
 
 				# Parsing Deployment Config
 				tree = ET.parse(deployConfig)		
 				deployRoot = tree.getroot()
+
+				folderName = ""
+				fileName = ""
+
+				# get the folder name and file name of UI of Model
+				for node in root.iter('UI'):
+					for elements in node:
+						if elements.tag == 'FolderPath':
+							folderName = elements.text
+						else:
+							fileName = elements.text
+
+				if fileName != "" and folderName != "":
+					port = 0
+
+					if IP not in hostOccupiedPorts:
+						port = portBegin
+						hostOccupiedPorts[IP] = []
+					else:
+						port = hostOccupiedPorts[IP] + 1
+
+					UILink = link+'/UI'
+
+					#install flask module on the given host IP
+					commandStr = "pip3 install flask; pip3 install flask_bcrypt; pip3 install pika; pip3 install xmlschema"
+					osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
+					print(osCommand)
+					os.system(osCommand)
+					print("Dependencies successfully installed on the host machine with IP:", IP)
+
+					# Assumed: the name of executable will be run.py
+					# navigate to the link and launch run.py
+
+					commandStr = "python3 "+UILink+"/run.py  --port "+str(port)+" --service_id "+str(ServiceID)
+					osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
+					print(osCommand)
+					pro = subprocess.Popen(osCommand, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+					print("UI for application ", link," started on IP:Port", IP,":",port)
+					
+					hostOccupiedPorts[IP].append(port)
+
+					notifyFlask = {"Request_Type" : "Register_Service_UI"}
+					notifyFlask['Service_ID'] = modelID
+					notifyFlask["IP"] = IP
+					notifyFlask["Port"] = port
+
+					msg = json.dumps(notifyFlask)
+					RMQ.send("","SM_Flask", msg)
 
 
 				# for a model start tensorflow serving and launch its .py file
@@ -137,7 +187,6 @@ class ServiceManager():
 				else:
 					port = hostOccupiedPorts[IP] + 1
 
-				modelName = link[link.rfind('/')+1 : ]
 
 				# start tensorflow model serving
 				commandStr = "tensorflow_model_server --rest_api_port=" + str(port) + " --model_name=" + modelName + " --model_base_path=/home/" +username+modelLink[2:]  
