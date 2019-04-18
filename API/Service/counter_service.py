@@ -1,8 +1,9 @@
 import sys
-sys.path.insert (0, '../../')
-sys.path.insert (0, '../../../')
-import os.path
-from RabbitMQ.message_queue import *
+from pathlib import Path
+home = str(Path.home())
+path = home+'/Platform/'
+sys.path.insert (0, path)
+from queue_req_resp import *
 import time
 class Counter:
     '''
