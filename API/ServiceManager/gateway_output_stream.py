@@ -1,14 +1,20 @@
 import sys
-sys.path.insert (0, '../')
-sys.path.insert (0, '../../')
+
+
+from pathlib import Path
+home = str(Path.home())
+
+path = home+'/Platform/'
+
+sys.path.insert (0, path)
 
 import threading
 import socket
 
 import Socket.utilities as sock_util
-
+import json
 #from RabbitMQ.message_queue import *
-from queue_req_resp import *
+# from queue_req_resp import *
 from ServiceManager.io_stream import *
 
 class GatewayOutputStream(IO_Stream):
@@ -16,7 +22,7 @@ class GatewayOutputStream(IO_Stream):
         description = "GatewayOutputStream"
         IO_Stream.__init__(self, description)
 
-        self.RBMQ = RabbitMQ()
+        # self.RBMQ = RabbitMQ()
         self.SERVICE_OUTPUT_QUEUE = "Service_" + self.description
         self.gateway_sockets = {}
 
@@ -30,12 +36,16 @@ class GatewayOutputStream(IO_Stream):
         # Destination: UI
         print (output)
         if output["service_id"] == "flower_svc_1":
+            print ("sendind output to UI", output)
             json_output_str = json.dumps(output)
             print (f"[POS] receiving output --> {json_output_str}")
-            send_to_UI_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            send_to_UI_socket.connect(("127.0.0.1",57486)) # Need to pass actual IP
-            sock_util.send_msg(send_to_UI_socket, json_output_str)
-            # self.RBMQ.send("", self.description + "_" + service_id, json_output_str)
+            try:
+                send_to_UI_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                send_to_UI_socket.connect(("192.168.43.173",5004)) # Need to pass actual IP
+                print ("send message")
+                sock_util.send_msg(send_to_UI_socket, json_output_str)
+            except:
+                print ("UI Closed")
             
         
 

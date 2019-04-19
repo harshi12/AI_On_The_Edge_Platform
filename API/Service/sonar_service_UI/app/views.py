@@ -1,23 +1,21 @@
 import sys
+
 from pathlib import Path
 home = str(Path.home())
 path = home+'/Platform/'
 sys.path.insert (0, path)
+
 from queue_req_resp import *
+
 from app import app
 import pika
 import json
 import pandas as pd
 from flask import Flask,render_template,request,redirect
 import numpy as np
-from googleapiclient.discovery import build
-from oauth2client import client, tools, file
-from googleapiclient.http import MediaFileUpload
-from httplib2 import Http
 from threading import Thread
 from run import foo
 
-SCOPES = 'https://www.googleapis.com/auth/drive'
 RMQ = RabbitMQ()
 data = ""
 signal = ""
