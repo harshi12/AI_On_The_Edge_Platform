@@ -234,14 +234,14 @@ function redirect_link()
             </label>
         </li>
         <li>
-            <h4><a href = "{{ url_for('reroute') }}" target="_blank">Distance Alarm Service</a></h4> 
+            <h4>Distance Alarm Service</h4> 
             <label class="switch" name = "naval">
                 <input type="checkbox" id = "4" onchange = 'handleChange(this, 4);'>
                 <span class="slider round"></span>
             </label>
         </li>
         <li>
-            <h4>Counter Service</h4> 
+            <h4><a href = "{{ url_for('reroute') }}" target="_blank">Counter Service</a></h4> 
             <label class="switch" name = "naval">
                 <input type="checkbox" id = "5" onchange = 'handleChange(this, 5);' checked="checked">
                 <span class="slider round"></span>
