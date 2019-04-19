@@ -323,6 +323,7 @@ class ServiceManager():
 				IP = service[0]
 				link = service[1]
 				link = link[1:]
+				print("Link:", link)
 				serviceID = service[2] # unique id of the service
 
 				if serviceID not in servicePID:
@@ -349,8 +350,9 @@ class ServiceManager():
 					ind = rootLink.rfind('/')
 					rootLink = rootLink[:ind]
 
-				deployConfig = home+rootLink+'/Config/'+serviceName+'_DeployConfig.xml'
-				prodConfig = home+rootLink+'/Config/'+serviceName+'_ProdConfig.xml'
+				print("Rootlink:", rootLink)
+				deployConfig = '/home/'+username+rootLink+'/Config/'+serviceName+'_DeployConfig.xml'
+				prodConfig = '/home/'+username+rootLink+'/Config/'+serviceName+'_ProdConfig.xml'
 				
 				# home = '/home/'+username
 
