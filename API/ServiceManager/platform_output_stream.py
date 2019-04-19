@@ -1,15 +1,18 @@
 import sys
-sys.path.insert (0, '../')
-sys.path.insert (0, '../../')
+
+from pathlib import Path
+home = str(Path.home())
+path = home+'/Platform/'
+
+sys.path.insert (0, path)
 
 import threading
 import socket
 
 import Socket.utilities as sock_util
-
-#from RabbitMQ.message_queue import *
 from queue_req_resp import *
 from ServiceManager.io_stream import *
+
 
 class PlatformOutputStream(IO_Stream):
     def __init__(self):
@@ -43,7 +46,7 @@ class PlatformOutputStream(IO_Stream):
                     gateway_sock.connect((gw_IP, int(gw_port)))
 
                 json_output_str = json.dumps(output)
-                print (f"{self.description} sending output --> {json_output_str}")
+                #print (f"{self.description} sending output --> {json_output_str}")
                 sock_util.send_msg(self.gateway_sockets[gw], json_output_str)
 
         # OUTPUT of NAVAL_MINE_DETECTION_SERVICE
@@ -51,16 +54,24 @@ class PlatformOutputStream(IO_Stream):
         # Action: Trigger CounterService if Mine detected
         elif service_id == "sonar_svc_1":
             json_output_str = json.dumps(output)
-            print (f"[POS] receiving output --> {json_output_str}")
+            #print (f"[POS] receiving output --> {json_output_str}")
             self.RBMQ.send("", self.description + "_" + service_id, json_output_str)
+
+            if output["content"] == "Mine":
+                # Fetch service_id of COUNTER_SERVICE
+                self.RBMQ.send("", self.description + "_counter_svc_1", "Mine")
 
         # OUTPUT of FLOWER_ANALYSIS_SERVICE
         # Destination: UI
         elif service_id == "flower_svc_1":
             json_output_str = json.dumps(output)
+            #print (f"[POS] receiving output --> {json_output_str}")
+            self.RBMQ.send("", self.description + "_" + service_id, json_output_str)
+            
+        elif service_id == "earthquake_svc_1":
+            json_output_str = json.dumps(output)
             print (f"[POS] receiving output --> {json_output_str}")
             self.RBMQ.send("", self.description + "_" + service_id, json_output_str)
-
         else:
             print ("[POS] It shouldn't reach here, service_id: ", service_id)
 

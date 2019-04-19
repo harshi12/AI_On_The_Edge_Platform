@@ -1,14 +1,21 @@
 import sys
-sys.path.insert (0, '../')
-sys.path.insert (0, '../../')
+
+
+from pathlib import Path
+home = str(Path.home())
+
+path = home+'/Platform/'
+
+sys.path.insert (0, path)
 
 import threading
 import argparse
 import socket
+import json
 
 import Socket.utilities as sock_util
 #from RabbitMQ.message_queue import *
-from queue_req_resp import *
+# from queue_req_resp import *
 from ServiceManager.io_stream import *
 from Logger.logger_client import *
 
