@@ -13,33 +13,32 @@ DB_REQUEST_QUEUE = "modules_DB"
 
 RBMQ = RabbitMQ()
 
-def response_send(module, response):
+def response_send(response,sname):
     res = {}
+    sname
     res["response"] = response
     json_resp = json.dumps(res)
 
     print ("Sent Response: {json_resp}")
-    RBMQ.send("", "DB_"+module, json_resp)
+    RBMQ.send("", "DB_"+sname, json_resp)
 
 def db_server_requests_cb(ch, method, properties, body):
     req = json.loads(body)
     resp = {}
-    if req["opcode"] == "GATEWAYS_AT_LOC_GET":
+    if req["opcode"] == "SERVICE_ID_GET":
         print (f"Received Request: {req}")
-        responses = Gateway.query.filter(Gateway.gw_location=='IIIT').all()
+        responses = Service.query.filter(Service.service_name==req["service_name"]).all()
         for response in responses:
-            id = response.gw_id
-            ip = response.gw_IP
-            port = response.gw_port
-            addr  = ip+":"+port
-            resp[id]=addr
+            sid = response.service_id
+            resp["service_name"]=sid
         # gw_id = response.gw_id
         # print(gw_id)
-        response_send(req["module"], resp)
+        response_send(resp,req["service_name"])
+
 
 def handle_db_client_requests(exchange, queue_name):
     print ("DB Server receiving requests!!")
     while True:
         print("Queue Name: ", queue_name)
 
-        RBMQ.receive(db_server_requests_cb, exchange, queue_name)
+        RBMQ.receive(db_server_requests_cb, exchange,"modules_DB")

@@ -70,6 +70,8 @@ if __name__ == "__main__":
     parser.add_argument("--service_id", default="-1")
     parser.add_argument("--run_on_gateway", default="no")
     parser.add_argument("--is_first_instance", default="no")
+    parser.add_argument("--serving_addrs", default="127.0.0.1:9500")
+    parser.add_argument("--model", default="")
 
     (args, unknown) = parser.parse_known_args()
 
