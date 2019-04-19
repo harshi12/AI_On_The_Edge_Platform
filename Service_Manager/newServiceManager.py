@@ -163,9 +163,9 @@ class ServiceManager():
 						port = portBegin
 						hostOccupiedPorts[IP] = []
 					else:
-						port = hostOccupiedPorts[IP] + 1
+						port = hostOccupiedPorts[IP][-1] + 1
 
-					UILink = home+link+'/UI'
+					UILink = '/home/'+username+link+'/UI'
 
 					#install flask module on the given host IP
 					commandStr = "pip3 install flask; pip3 install flask_bcrypt; pip3 install pika; pip3 install xmlschema; pip3 install googleapiclient"
@@ -209,7 +209,7 @@ class ServiceManager():
 					port = portBegin
 					hostOccupiedPorts[IP] = []
 				else:
-					port = hostOccupiedPorts[IP] + 1
+					port = hostOccupiedPorts[IP][-1] + 1
 
 
 				# start tensorflow model serving
@@ -222,12 +222,12 @@ class ServiceManager():
 				servicePID[serviceID].append(pro)
 				pid = pro.pid
 
-				self.Registry.Write_Service_Inst_Info(serviceID, [IP, port, "Up", pid, 'model', serviceInst], "SM_RG")
+				self.Registry.Write_Service_Inst_Info(serviceID, [[IP, port, "Up", pid, 'model', serviceInst]], "SM_RG")
 
 				hostOccupiedPorts[IP].append(port)
 
 				# launch the model's repective py file
-				commandStr = modelLink+'/ python3 '+modelName+".py  --serving_addrs "+IP+":"+port+" --model /home/"+username+modelLink[2:]+" --service_id "+modelID
+				commandStr = modelLink+'/ python3 '+modelName+".py  --serving_addrs "+IP+":"+str(port)+" --model /home/"+username+modelLink[2:]+" --service_id "+modelID
 				if inst == 1:
 					commandStr += " --is_first_instance yes"
 				osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
@@ -238,7 +238,7 @@ class ServiceManager():
 
 				pid = pro.pid
 
-				self.Registry.Write_Service_Inst_Info(serviceID, [IP, "", "Up", pid, 'exe', serviceInst], "SM_RG")
+				self.Registry.Write_Service_Inst_Info(serviceID, [[IP, "", "Up", pid, 'exe', serviceInst]], "SM_RG")
 
 				schedulerObj = PlatformScheduler()
 				schedulerObj.schedule_service(modelID)
@@ -260,14 +260,14 @@ class ServiceManager():
 			for app in App_links:
 				IP = app[0]
 				link = app[1]
-				link = home+link[1:]
+				link = link[1:]
 				port = 0
 
 				if IP not in hostOccupiedPorts:
 					port = portBegin
 					hostOccupiedPorts[IP] = []
 				else:
-					port = hostOccupiedPorts[IP] + 1
+					port = hostOccupiedPorts[IP][-1] + 1
 
 				username, password = self.getUsernamePassword(IP)
 				if username == None and password == None:
@@ -289,7 +289,7 @@ class ServiceManager():
 				osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
 				print(osCommand)
 				pro = subprocess.Popen(osCommand, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
-				print("UI for application ", link," started on IP:Port", IP,":",port)
+				print("UI for application /home/",username, link," started on IP:Port", IP,":",port)
 				
 				hostOccupiedPorts[IP].append(port)
 
@@ -359,58 +359,60 @@ class ServiceManager():
 				root = tree.getroot()
 
 				for dependency in root.iter('Dependencies'):
-					dependencyName = dependency.text
-					temp = dependencyName.split("_")
-					if temp[-1] == 'model':
-						# the service is dependent on an AI Model
-						modelName = dependencyName[:dependencyName.rfind('_')]
-						modelLink = rootLink+'/Models/'+modelName
+					for d in dependency:
+						dependencyName = d.text
+						print("dependency name: ", dependencyName)
+						temp = dependencyName.split("_")
+						if temp[-1] == 'Model':
+							# the service is dependent on an AI Model
+							modelName = dependencyName[:dependencyName.rfind('_')]
+							modelLink = rootLink+'/Models/'+modelName
 
-						print("Model Dependency of",modelName)
-						
-						# install tensorflow-model-server
-						commandStr = "echo "+password+" sudo -S apt-get install tensorflow-model-server"
-						osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
-						print(osCommand)
-						os.system(osCommand)
-						print("tensorflow-model-server successfully installed on the host machine with IP:", IP)
+							print("Model Dependency of",modelName)
+
+							# install tensorflow-model-server
+							commandStr = "echo "+password+" sudo -S apt-get install tensorflow-model-server"
+							osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
+							print(osCommand)
+							os.system(osCommand)
+							print("tensorflow-model-server successfully installed on the host machine with IP:", IP)
 
 
-						port = 0
+							port = 0
 
-						if IP not in hostOccupiedPorts:
-							port = portBegin
-							hostOccupiedPorts[IP] = []
-						else:
-							port = hostOccupiedPorts[IP] + 1
+							if IP not in hostOccupiedPorts:
+								port = portBegin
+								hostOccupiedPorts[IP] = []
+							else:
+								port = hostOccupiedPorts[IP][-1] + 1
 
-						# start tensorflow model serving
-						commandStr = "tensorflow_model_server --rest_api_port=" + str(port) + " --model_name=" + modelName + " --model_base_path=/home/" +username+modelLink  
-						osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
-						print(osCommand)
-						pro = subprocess.Popen(osCommand, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
-						print("tensorflow-model-server for service ", serviceName," started on IP:Port", IP,":",port)
+							# start tensorflow model serving
+							commandStr = "tensorflow_model_server --rest_api_port=" + str(port) + " --model_name=" + modelName + " --model_base_path=\"/home/" +username+modelLink+"\"" 
+							osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
+							print(osCommand)
+							pro = subprocess.Popen(osCommand, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+							print("tensorflow-model-server for service ", serviceName," started on IP:Port", IP,":",port)
 
-						servicePID[serviceID].append(pro)
-						pid = pro.pid
+							servicePID[serviceID].append(pro)
+							pid = pro.pid
 
-						self.Registry.Write_Service_Inst_Info(serviceID, [IP, port, "Up", pid, 'model', serviceInst], "SM_RG")
+							self.Registry.Write_Service_Inst_Info(serviceID, [[IP, port, "Up", pid, 'model', serviceInst]], "SM_RG")
 
-						hostOccupiedPorts[IP].append(port)
+							hostOccupiedPorts[IP].append(port)
 
-						# launch the model's repective py file
-						commandStr = '/home/'+username+modelLink+'/ python3 '+modelName+".py  --serving_addrs "+IP+":"+port+" --model /home/"+username+modelLink+" --service_id "+modelID
-						if serviceInst == 1:
-							commandStr += " --is_first_instance yes"
-						osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
-						print(osCommand)
-						pro = subprocess.Popen(osCommand, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
-						print("Respective service file for the model started!")
-						servicePID[serviceID].append(pro)
+							# launch the model's repective py file
+							commandStr = '/home/'+username+modelLink+'/ python3 '+modelName+".py  --serving_addrs "+IP+":"+str(port)+" --model /home/"+username+modelLink+" --service_id "+serviceID
+							if serviceInst == 1:
+								commandStr += " --is_first_instance yes"
+							osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
+							print(osCommand)
+							pro = subprocess.Popen(osCommand, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+							print("Respective service file for the model started!")
+							servicePID[serviceID].append(pro)
 
-						pid = pro.pid
+							pid = pro.pid
 
-						self.Registry.Write_Service_Inst_Info(serviceID, [IP, "", "Up", pid, 'exe', serviceInst], "SM_RG")
+							self.Registry.Write_Service_Inst_Info(serviceID, [[IP, "", "Up", pid, 'exe', serviceInst]], "SM_RG")
 
 
 				for file in root.iter('ExecutableFileName'):
@@ -422,7 +424,7 @@ class ServiceManager():
 							port = portBegin
 							hostOccupiedPorts[IP] = []
 						else:
-							port = hostOccupiedPorts[IP] + 1
+							port = hostOccupiedPorts[IP][-1] + 1
 
 						UILink = '/home/'+username+link+'/UI'
 
@@ -498,5 +500,21 @@ Example Request:
 		["192.168.43.135", "~/1/1/Models/Sonar", "456"]
 	]
 }
+
+{
+"Request_Type" : "Kill",
+"IP" : "some ip",
+"PID" : 54512,
+"Service_ID" : 452,
+"Instance_ID" : 8
+}
+
+{
+	"Request_Type": "Start_Service",
+	"Service_Link": [
+		["192.168.43.135", "~/1/1/Services/Counter_Service", "456"]
+	]
+}
+
 
 '''
