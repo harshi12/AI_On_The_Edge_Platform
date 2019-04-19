@@ -18,9 +18,11 @@ from ServiceManager.platform_output_stream import *
 
 
 class FlowerAnalysisService:
-    def __init__(self, service_id, run_on_gateway):
+    def __init__(self, service_id, run_on_gateway, serving_addrs, model):
         self.service_id = service_id
         self.run_on_gateway = run_on_gateway
+        self.serving_addrs = serving_addrs
+        self.model = model
 
     def input_data_cb(self, ch, method, properties, input_data):
         if not isinstance(input_data, str):
@@ -50,7 +52,7 @@ class FlowerAnalysisService:
         headers = {"content-type" : "application/json"}
 
         # get IP of the tensorflow serving from Service Manager
-        serving_addrs = "192.168.31.124:9501"
+        serving_addrs = "192.168.43.30:9500"
         json_response = requests.post('http://' + serving_addrs + "/v1/models/iris:predict", data=req_str, headers=headers)
         json_response = json.loads(str(json_response.text))
         inference = json_response["predictions"][0]
@@ -77,10 +79,12 @@ if __name__ == "__main__":
     parser.add_argument("--service_id", default="-1")
     parser.add_argument("--run_on_gateway", default="no")
     parser.add_argument("--is_first_instance", default="no")
+    parser.add_argument("--serving_addrs", default="127.0.0.1:9500")
+    parser.add_argument("--model", default="")
 
     (args, unknown) = parser.parse_known_args()
 
-    flower_analysis_service = FlowerAnalysisService(args.service_id, args.run_on_gateway)
+    flower_analysis_service = FlowerAnalysisService(args.service_id, args.run_on_gateway, args.serving_addrs, args.model)
 
     sensor_name = "FLOWER_ANALYSIS_SENSOR"
 
