@@ -1,9 +1,18 @@
 import numpy as np
 import sys
-sys.path.insert (0, '../../')
-sys.path.insert (0, '../../../')
-from RabbitMQ.message_queue import *
+
+import sys
+
+from pathlib import Path
+home = str(Path.home())
+
+path = home+'/Platform/'
+
+sys.path.insert (0, path)
+
+from queue_req_resp import *
 import time
+
 RMQ = RabbitMQ()
 
 l = ["Iris-Setosa", "Iris-Virginica", "Iris-Versicolor"]

@@ -1,10 +1,14 @@
 import sys
-sys.path.insert (0, '../')
+from pathlib import Path
+home = str(Path.home())
+path = home+'/Platform/'
+sys.path.insert (0, path)
+
 import zipfile
 import os
 from queue_req_resp import RabbitMQ
 import json
-from nfs_client import NFS
+# from nfs_client import NFS
 import time
 import xml.etree.ElementTree as ET
 from lxml import etree
@@ -13,14 +17,17 @@ import xmlschema
 from app import db
 from app.models import Service
 from sqlalchemy import create_engine 
+import shutil
+from distutils.dir_util import copy_tree
 
 class Deployment_Manager():
 
-    def __init__(self, NFS_Server , Local_Password, Local_mount_relative_path):
-       self.NFS_Obj = NFS(NFS_Server, Local_Password)
-       self.local_nfs_dir = os.getcwd() + Local_mount_relative_path
+    def __init__(self, Local_Password, Local_mount_relative_path):
+    #    self.NFS_Obj = NFS(NFS_Server, Local_Password)
+    #    self.local_nfs_dir = os.getcwd() + Local_mount_relative_path
        self.Models_Information_To_Return = None
        self.Services_Informtion_To_Return = None
+       self.mount_path = Local_mount_relative_path
 
     def Validate_XML(self,XML_Path,Schema_Path):
         my_schema = xmlschema.XMLSchema(Schema_Path)
@@ -131,7 +138,7 @@ class Deployment_Manager():
                 service_name = service
                 service_deploy_config_loc = Services_dict[service_name]['DeploymentConfigFile']
                 service_prod_config_loc = Services_dict[service_name]['ProductionConfigFile']
-                serv_obj = Service(service_name = service_name , service_type ="exe" , app_id = App_Id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc,service_ui_server="NULL" )
+                serv_obj = Service(service_name = service_name , service_type ="exe" , app_id = App_Id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc ,service_ui_server="NULL")
                 db.session.add(serv_obj)
 
         db.session.commit()
@@ -182,6 +189,7 @@ class Deployment_Manager():
     def Deploy_App(self, App_Dev_Id, App_Id, Package_Absolute_Path):
 
         # ---------- Unzip Package ------------- #
+        print("Application ID-",App_Id)
         Current_Working_Direcory = os.getcwd()
 
         zip_ref = zipfile.ZipFile(Package_Absolute_Path, 'r')
@@ -202,18 +210,26 @@ class Deployment_Manager():
 
         # --------- Store in NFS -------------- #
 
-        print ("Connecting to NFS")
-        self.NFS_Obj.mount("", self.local_nfs_dir)
+        # print ("Connecting to NFS")
+        # self.NFS_Obj.mount("", self.local_nfs_dir)
 
-        List_Of_Directories = self.NFS_Obj.listdir(self.local_nfs_dir)
+        List_Of_Directories = os.listdir(self.mount_path)
+        print (List_Of_Directories)
+        print (self.mount_path)
         if str(App_Dev_Id) not in List_Of_Directories:
-            self.NFS_Obj.mkdir(self.local_nfs_dir+"/"+str(App_Dev_Id))
+            os.mkdir(self.mount_path+"/"+str(App_Dev_Id))
 
-        self.NFS_Obj.copy(Current_Working_Direcory+"/"+str(App_Id), self.local_nfs_dir+"/"+str(App_Dev_Id)+"/")
-        print ("DisConnecting to NFS")
+        List_Of_App_Directories = os.listdir(self.mount_path+"/"+str(App_Dev_Id))
+        print (List_Of_App_Directories)
+        if str(App_Id) not in List_Of_App_Directories:
+            os.mkdir(self.mount_path+"/"+str(App_Dev_Id)+"/"+str(App_Id))
+
+        copy_tree(Current_Working_Direcory+"/"+str(App_Id), self.mount_path+"/"+str(App_Dev_Id)+"/"+str(App_Id))
+        # self.NFS_Obj.copy(Current_Working_Direcory+"/"+str(App_Id), self.mount_path+"/"+str(App_Dev_Id)+"/")
+        # print ("DisConnecting to NFS")
         time.sleep(1)
 
-        self.NFS_Obj.unmount(self.local_nfs_dir)
+        # self.NFS_Obj.unmount(self.local_nfs_dir)
 
         # -------------- Artefacts staorage links ------------------- #
 
@@ -268,40 +284,9 @@ class Deployment_Manager():
         obj_HM = RabbitMQ()
         obj_HM.send("", "DM_HM", Host_Manager_Message)
 
-        # return self.Models_Information_To_Return, self.Services_Informtion_To_Return
-        # Models_dict = self.Models_Information_To_Return
-        # Services_dict = self.Services_Informtion_To_Return
-        # for model in Models_dict:
-        #     model_name = model
-        #     model_deploy_config_loc = Models_dict[model_name]['DeploymentConfigFile']
-        #     model_prod_config_loc = Models_dict[model_name]['ProductionConfigFile']
-        #     serv_obj = Service(service_name = model_name , service_type ="model" , app_id = App_Id , deploy_config_loc = model_deploy_config_loc , prod_config_loc = model_prod_config_loc )
-        #     db.session.add(serv_obj)
-
-        # for service in Services_dict:
-        #     service_name = service
-        #     service_deploy_config_loc = Services_dict[service_name]['DeploymentConfigFile']
-        #     service_prod_config_loc = Services_dict[service_name]['ProductionConfigFile']
-        #     serv_obj = Service(service_name = service_name , service_type ="exe" , app_id = App_Id , deploy_config_loc = service_deploy_config_loc , prod_config_loc = service_prod_config_loc )
-        #     db.session.add(serv_obj)
-
-        # db.session.commit()
-        # print("Saved in DB")
-
-        # services_dict={}
-        # #service_name : service_id
-        # for model in  Models_dict:
-        #     model_name=model
-        #     service=Service.query.filter(Service.service_name==model_name).first()
-        #     service_id = service.service_id
-        #     services_dict[model_name]=service_id
-        # for service in  Services_dict:
-        #     service_name=service
-        #     serv=Service.query.filter(Service.service_name==service_name).first()
-        #     service_id = serv.service_id
-        #     services_dict[service_name]=service_id
-
-        # print(services_dict)
+        # Deleting temporary folders created
+        shutil.rmtree(Current_Working_Direcory+"/"+str(App_Id))
+        # shutil.rmtree(Current_Working_Direcory+"/nfs_server")
 
 
 
@@ -309,3 +294,6 @@ class Deployment_Manager():
 # Sample Function Call
 # DM_Obj = Deployment_Manager("10.2.129.68", "S2j1ar1in63", "/nfs_server")
 # Models_Info_To_Return, Services_Info_To_Return = DM_Obj.Deploy_App(1,3,"./Application_Developer.zip")
+
+# DM_Obj = Deployment_Manager("iforgot", "/home/sukku/Platform")
+# DM_Obj.Deploy_App(1,3,"./Application_Developer.zip")

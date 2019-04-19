@@ -155,32 +155,10 @@ input:checked + .slider:before {
 
 function handleChange(checkbox, id)
 {
-  if(id.toString() == "5")
-  {
-    if(document.getElementById("5").checked == false)
-
-    document.getElementById("5").checked = false;
-  }
-  else if(id.toString() == "6")
-  {
-    document.getElementById("6").checked = false;
-  }
-  else
-  {
     service_name = null;
     switch(id)
     {
-        case 1 :service_name = "Sonar";
-                break;
-        case 2: service_name = "Iris";
-                break;
-        case 3: service_name = "Helper_Service";
-                break;
-        case 4: service_name = "Distance_Alarm_Service";
-                break;
-        case 5: service_name = "Counter_Service";
-                break;
-        case 6: service_name = "Emergency_Notification_Service";
+        case 1 :service_name = "Earthquake_Service";
                 break;
     }
     //Start
@@ -203,7 +181,6 @@ function handleChange(checkbox, id)
         }
       );
     }
-  }
 }
 
 function redirect_link()

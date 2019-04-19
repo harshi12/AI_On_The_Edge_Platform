@@ -1,3 +1,10 @@
+import sys
+from pathlib import Path
+home = str(Path.home())
+
+path = home+'/Platform/'
+sys.path.insert (0, path)
+
 from app import app
 
 #shared queue for communication between gateways and service manager and other such scenarios
@@ -18,6 +25,7 @@ import os
 from app.Deployment_Manager import Deployment_Manager
 from db_server import *
 from queue_req_resp import RabbitMQ
+from app.Registry_API import Registry_API
 
 from werkzeug.utils import secure_filename
 
@@ -25,18 +33,47 @@ from threading import Thread
 
 RMQ=RabbitMQ()
 
-def ReceivefromSM(self, exchange, key):
+def ReceivefromSM(exchange, key):
     print("Listening......")
-    RMQ.receive(self.processInput, exchange, key)
+    RMQ.receive(processInput, exchange, key)
 
 def processInput( ch, method, properties, body):
     data = json.loads(body)
-    app_link = data['App_Link']
-    ip = data['IP']
-    port = data['Port']
-    ui_server=ip+":"+port
+    request_type = data["Request_Type"]
+    if( request_type == "Register_Service_UI"):
+        serv_id = data["Service_ID"]
+        ip = data["IP"]
+        port = data["Port"]
+        ui_server=str(ip)+":"+str(port)
+        #Add to DB
+        service=Service.query.filter(service_id = serv_id).first()
+        service.service_ui_server=ui_server
+        db.session.add(service)
+        db.commit()
+    elif( request_type == "Register_Application_UI"):
+        app_link = data['App_Link']
+        ##Fetch app_id from registry
+        # rapi = Registry_API()
+        # storage_info = rapi.Read_Storage_info('',[],,,)
+        # for i in storage_info:
+        #     if(storage_info[i]["App_Link"] == app_link):
+        #         app=i
+        #         break
+        app_id = 1
+        link_list = app_link.split('/')
+        app_id=link_list[2]
+        print("UI-",app_id)
+        ip = data['IP']
+        port = data['Port']
+        ui_server=str(ip)+":"+str(port)
+        #Add to DB
+        app=Application.query.filter_by(app_id = app_id).first()
+        app.app_ui_server = ui_server
+        db.session.add(app)
+        db.commit()
 
 t=Thread(target=ReceivefromSM,args = ('', "SM_Flask"))
+t.start()
 
 
 BATCH_COUNT = 10
@@ -347,8 +384,10 @@ def deploy_file(filename):
     app_id = app.app_id
 
     App_path = APP_UPLOAD_FOLDER+filename
+    print("path-",App_path)
+    print("filename-",filename)
 
-    DM_Obj = Deployment_Manager("10.2.129.68", "iforgot", "/nfs_mount")
+    DM_Obj = Deployment_Manager("iforgot", "/home/sukku/Platform")
     #Model_Link , App_Link , Config_Link = DM_Obj.Deploy_App(AD_id,app_id,App_path)
 
     # Models_dict , Services_dict = DM_Obj.Deploy_App(AD_id,app_id,App_path)
