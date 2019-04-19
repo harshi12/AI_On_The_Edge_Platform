@@ -5,6 +5,8 @@ path = home+'/Platform/'
 sys.path.insert (0, path)
 from queue_req_resp import *
 import time
+import os
+
 class Counter:
     '''
         A simple counter service
@@ -17,23 +19,21 @@ class Counter:
     
     def nextCount(self):
         newValue = 1
-		while(True):
-			try:
-				if(os.path.isfile(self.filepath)):
-					f = open(self.filepath, 'r')
-					lines = f.readlines()
-					if(len(lines) != 0):
-						oldValue = int(lines[0])
-						newValue = oldValue + 1
-					f.close()
+        try:
+            if(os.path.isfile(self.filepath)):
+                f = open(self.filepath, 'r')
+                lines = f.readlines()
+                if(len(lines) != 0):
+                    oldValue = int(lines[0])
+                    newValue = oldValue + 1
+                f.close()
 
-				f = open(self.filepath, 'w+')
-				f.write(str(newValue))
-				f.close()            
-				self.RMQ.send('', "temp", str(newValue))
-			except:
-				print(sys.exc_info()[0],"occured.")
-			time.sleep(30)
+            f = open(self.filepath, 'w+')
+            f.write(str(newValue))
+            f.close()            
+            self.RMQ.send('', "temp", str(newValue))
+        except:
+            print(sys.exc_info()[0],"occured.")
 
 if __name__ == "__main__":
     RMQ = RabbitMQ()
