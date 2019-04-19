@@ -33,20 +33,20 @@ from threading import Thread
 
 RMQ=RabbitMQ()
 
-def ReceivefromSM(self, exchange, key):
+def ReceivefromSM(exchange, key):
     print("Listening......")
-    RMQ.receive(self.processInput, exchange, key)
+    RMQ.receive(processInput, exchange, key)
 
 def processInput( ch, method, properties, body):
     data = json.loads(body)
     request_type = data["Request_Type"]
     if( request_type == "Register_Service_UI"):
-        service_id = data["Service_ID"]
+        serv_id = data["Service_ID"]
         ip = data["IP"]
         port = data["Port"]
-        ui_server=ip+":"+port
+        ui_server=str(ip)+":"+str(port)
         #Add to DB
-        service=Service.query.filter(service_id = service_id).first()
+        service=Service.query.filter(service_id = serv_id).first()
         service.service_ui_server=ui_server
         db.session.add(service)
         db.commit()
@@ -65,9 +65,9 @@ def processInput( ch, method, properties, body):
         print("UI-",app_id)
         ip = data['IP']
         port = data['Port']
-        ui_server=ip+":"+port
+        ui_server=str(ip)+":"+str(port)
         #Add to DB
-        app=Application.query.filter(app_id = app_id).first()
+        app=Application.query.filter_by(app_id = app_id).first()
         app.app_ui_server = ui_server
         db.session.add(app)
         db.commit()
