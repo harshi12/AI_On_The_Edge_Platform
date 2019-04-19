@@ -17,23 +17,23 @@ class Counter:
     
     def nextCount(self):
         newValue = 1
-		while(True):
-			try:
-				if(os.path.isfile(self.filepath)):
-					f = open(self.filepath, 'r')
-					lines = f.readlines()
-					if(len(lines) != 0):
-						oldValue = int(lines[0])
-						newValue = oldValue + 1
-					f.close()
+        while(True):
+            try:
+                if(os.path.isfile(self.filepath)):
+                    f = open(self.filepath, 'r')
+                    lines = f.readlines()
+                    if(len(lines) != 0):
+                        oldValue = int(lines[0])
+                        newValue = oldValue + 1
+                    f.close()
 
-				f = open(self.filepath, 'w+')
-				f.write(str(newValue))
-				f.close()            
-				self.RMQ.send('', "temp", str(newValue))
-			except:
-				print(sys.exc_info()[0],"occured.")
-			time.sleep(30)
+                f = open(self.filepath, 'w+')
+                f.write(str(newValue))
+                f.close()            
+                self.RMQ.send('', "temp", str(newValue))
+            except:
+                print(sys.exc_info()[0],"occured.")
+            time.sleep(30)
 
 if __name__ == "__main__":
     RMQ = RabbitMQ()
