@@ -16,8 +16,9 @@ import time
 RMQ = 0
 
 #get path of the directory where are the required files are stored.
-# path = sys.argv[1]
+#path = sys.argv[1]
 json_path = path+'Registry/'
+#json_path = ""
 class Registry:
 
     def __init__(self):
@@ -72,9 +73,7 @@ class Registry:
             if len(Filter)>0:
                 for i in range(len(Filter)):
                     App_id = Filter[i]
-                    for key in self.Storage_info.keys():
-                        if key==App_id:
-                            Result[key] = self.Storage_info[key]
+                    Result[App_id] = self.Storage_info[App_id]
             else:
                 Result = self.Storage_info
             return Result
@@ -85,9 +84,7 @@ class Registry:
             if len(Filter)>0:
                 for i in range(len(Filter)):
                     Service_id = Filter[i]
-                    for key in self.Service_link_info.keys():
-                        if key==Service_id:
-                           Result[key] = self.Service_link_info[key]
+                    Result[Service_id] = self.Service_link_info[Service_id]
             else:
                 Result = self.Service_link_info
             return Result
@@ -98,9 +95,7 @@ class Registry:
             if len(Filter)>0:
                 for i in range(len(Filter)):
                     Service_id = Filter[i]
-                    for key in self.Service_inst_info.keys():
-                        if key==Service_id:
-                            Result[key] = self.Service_inst_info[key]
+                    Result[Service_id] = self.Service_inst_info[Service_id]
             else:
                 Result = self.Service_inst_info
             return Result
@@ -111,9 +106,7 @@ class Registry:
             if len(Filter)>0:
                 for i in range(len(Filter)):
                     App_id = Filter[i]
-                    for key in self.App_inst_info.keys():
-                        if key==App_id:
-                            Result[key] = self.App_inst_info[key]
+                    Result[App_id] = self.App_inst_info[App_id]
             else:
                 Result = self.App_inst_info
             return Result
@@ -124,9 +117,7 @@ class Registry:
             if len(Filter)>0:
                 for i in range(len(Filter)):
                     Host_IP = Filter[i]
-                    for key in self.Host_Creds.keys():
-                        if key==Host_IP:
-                            Result[Host_IP] = self.Host_Creds[Host_IP]
+                    Result[Host_IP] = self.Host_Creds[Host_IP]
             else:
                 Result = self.Host_Creds
             return Result
@@ -137,9 +128,7 @@ class Registry:
             if len(Filter)>0:
                 for i in range(len(Filter)):
                     Host_IP = Filter[i]
-                    for key in self.Gateway_Creds.keys():
-                        if key==Host_IP:
-                            Result[key] = self.Gateway_Creds[key]
+                    Result[Host_IP] = self.Gateway_Creds[Host_IP]
             else:
                 Result = self.Gateway_Creds
             return Result
@@ -150,9 +139,7 @@ class Registry:
             if len(Filter)>0:
                 for i in range(len(Filter)):
                     Module_id = Filter[i]
-                    for key in self.Platform_Module_Info.keys():
-                        if key==Module_id:
-                            Result[key] = self.Platform_Module_Info[key]
+                    Result[Module_id] = self.Platform_Module_Info[Module_id]
             else:
                 Result = self.Platform_Module_Info
             return Result
@@ -195,7 +182,8 @@ class Registry:
                 Record = DS_Obj[i]
                 Service_Id = Record["Service_id"]
 
-                self.Service_inst_info[Service_Id] = []
+                if Service_Id not in self.Service_inst_info:
+                    self.Service_inst_info[Service_Id] = []
 
                 for j in range(len(DS_Obj[i]["Hosts"])):
                     Hosts_List = DS_Obj[i]["Hosts"]
@@ -215,7 +203,8 @@ class Registry:
                  Record = DS_Obj[i]
                  App_Id = Record["App_id"]
 
-                 self.App_inst_info[App_Id] = []
+                 if App_Id not in self.App_inst_info:
+                     self.App_inst_info[App_Id] = []
 
                  for j in range(len(DS_Obj[i]["Hosts"])):
                      Hosts_List = DS_Obj[i]["Hosts"]
@@ -416,7 +405,7 @@ if __name__ == '__main__':
     #REGISTRY <--> Scheduler
     RMQ.create_ServiceQueues("RG", "SCHED")
 
-    f.write("RG, BS queue created")
+
 
 
     Registry_obj.Restore_DS()

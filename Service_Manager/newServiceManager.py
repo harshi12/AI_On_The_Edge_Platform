@@ -1,3 +1,13 @@
+import sys
+
+
+from pathlib import Path
+home = str(Path.home())
+
+path = home+'/Platform/'
+
+sys.path.insert (0, path)
+
 from queue_req_resp import RabbitMQ
 import xml.etree.ElementTree as ET
 from threading import Thread
@@ -7,6 +17,8 @@ import os
 import subprocess
 import signal
 from Registry_API import *
+from sched import *
+
 
 ################# DM Data Structures #################################
 portBegin = 8501
@@ -86,8 +98,8 @@ class ServiceManager():
 				{
 					"Request_Type": "Start_Model",
 					"Model_Link": [
-						["192.168.31.12", "~/1/2/Models/Sonar", "456"],
-						["192.168.31.13", "~/1/2/Models/Iris", "756"]
+						["192.168.31.12", "~/Platform/1/2/Models/Sonar", "456"],
+						["192.168.31.13", "~/Platform/1/2/Models/Iris", "756"]
 					]
 				}
 			'''
@@ -97,8 +109,18 @@ class ServiceManager():
 				IP = model[0]
 				# link is the path where the model files are mounted
 				link = model[1]
+				link = link[1:]
 				modelID = model[2] # unique id of the model
 				inst = 0
+
+				username, password = self.getUsernamePassword(IP)
+				if username == None and password == None:
+					return
+
+
+				# username = "harshita"
+				# password = "@14799741hA"
+
 				if modelID not in serviceInstanceCount:
 					serviceInstanceCount[modelID] = 1
 					inst = 1
@@ -109,17 +131,19 @@ class ServiceManager():
 				rootLink = link #get the mount path of the service
 				serviceName = link[link.rfind('/')+1:]
 				for i in range(2):
-					ind = rootlink.rfind('/')
+					ind = rootLink.rfind('/')
 					rootLink = rootLink[:ind]
 
 				modelName = link[link.rfind('/')+1 : ]
 
-				deployConfig = rootLink+'/Config/'+modelName+'_Model_DeployConfig.xml'
-				prodConfig = rootLink+'/Config/'+modelName+'_Model_ProdConfig.xml'
+				deployConfig = home+rootLink+'/Config/'+modelName+'_Model_DeployConfig.xml'
+				prodConfig = home+rootLink+'/Config/'+modelName+'_Model_ProdConfig.xml'
+
+				# home = '/home/'+username
 
 				# Parsing Deployment Config
 				tree = ET.parse(deployConfig)		
-				deployRoot = tree.getroot()
+				root = tree.getroot()
 
 				folderName = ""
 				fileName = ""
@@ -141,10 +165,10 @@ class ServiceManager():
 					else:
 						port = hostOccupiedPorts[IP] + 1
 
-					UILink = link+'/UI'
+					UILink = home+link+'/UI'
 
 					#install flask module on the given host IP
-					commandStr = "pip3 install flask; pip3 install flask_bcrypt; pip3 install pika; pip3 install xmlschema"
+					commandStr = "pip3 install flask; pip3 install flask_bcrypt; pip3 install pika; pip3 install xmlschema; pip3 install googleapiclient"
 					osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
 					print(osCommand)
 					os.system(osCommand)
@@ -153,7 +177,7 @@ class ServiceManager():
 					# Assumed: the name of executable will be run.py
 					# navigate to the link and launch run.py
 
-					commandStr = "python3 "+UILink+"/run.py  --port "+str(port)+" --service_id "+str(ServiceID)
+					commandStr = "python3 "+UILink+"/run.py  --port "+str(port)+" --service_id "+str(modelID)
 					osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
 					print(osCommand)
 					pro = subprocess.Popen(osCommand, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
@@ -189,7 +213,7 @@ class ServiceManager():
 
 
 				# start tensorflow model serving
-				commandStr = "tensorflow_model_server --rest_api_port=" + str(port) + " --model_name=" + modelName + " --model_base_path=/home/" +username+modelLink[2:]  
+				commandStr = "tensorflow_model_server --rest_api_port=" + str(port) + " --model_name=" + modelName + " --model_base_path=/home/" +username+modelLink 
 				osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
 				print(osCommand)
 				pro = subprocess.Popen(osCommand, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
@@ -216,6 +240,8 @@ class ServiceManager():
 
 				self.Registry.Write_Service_Inst_Info(serviceID, [IP, "", "Up", pid, 'exe', serviceInst], "SM_RG")
 
+				schedulerObj = PlatformScheduler()
+				schedulerObj.schedule_service(modelID)
 
 
 		elif requestType == "Start_App":
@@ -223,7 +249,7 @@ class ServiceManager():
 				{
 					"Request_Type": "Start_App",
 					"App_Link": [
-						["192.168.31.12", "/home/harshita/appDev/addID"]
+						["192.168.31.12", "~/Platform/appDev/addID"]
 					]
 				}
 
@@ -234,6 +260,7 @@ class ServiceManager():
 			for app in App_links:
 				IP = app[0]
 				link = app[1]
+				link = home+link[1:]
 				port = 0
 
 				if IP not in hostOccupiedPorts:
@@ -246,9 +273,10 @@ class ServiceManager():
 				if username == None and password == None:
 					return
 				
+				# home = '/home/'+username
 
 				#install flask module on the given host IP
-				commandStr = "pip3 install flask; pip3 install flask_bcrypt; pip3 install pika; pip3 install xmlschema"
+				commandStr = "pip3 install flask; pip3 install flask_bcrypt; pip3 install pika; pip3 install xmlschema; pip3 install googleapiclient"
 				osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
 				print(osCommand)
 				os.system(osCommand)
@@ -257,7 +285,7 @@ class ServiceManager():
 				# Assumed: the name of executable will be run.py
 				# navigate to the link and launch run.py
 
-				commandStr = "python3 "+link+"/run.py "+str(port)
+				commandStr = "python3 /home/"+username+link+"/run.py "+str(port)
 				osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
 				print(osCommand)
 				pro = subprocess.Popen(osCommand, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
@@ -279,8 +307,8 @@ class ServiceManager():
 				{
 					"Request_Type": "Start_Service",
 					"Service_Link": [
-						["192.168.31.12", "~/1/2/Services/Distance_Alarm_Service", "123"],
-						["192.168.31.13", "~/1/2/Services/Helper_Service", "143"]
+						["192.168.31.12", "~/Platform/1/2/Services/Distance_Alarm_Service", "123"],
+						["192.168.31.13", "~/Platform/1/2/Services/Helper_Service", "143"]
 					]
 				}
 	
@@ -294,6 +322,7 @@ class ServiceManager():
 			for service in Service_Links:
 				IP = service[0]
 				link = service[1]
+				link = link[1:]
 				serviceID = service[2] # unique id of the service
 
 				if serviceID not in servicePID:
@@ -301,7 +330,6 @@ class ServiceManager():
 
 				if serviceID not in serviceInstanceCount:
 					serviceInstanceCount[serviceID] = 1
-					commandStr += " --is_first_instance yes"
 				else:
 					serviceInstanceCount[serviceID] += 1
 
@@ -311,20 +339,26 @@ class ServiceManager():
 				if username == None and password == None:
 					return
 
+
+				# username = "harshita"
+				# password = "@14799741hA"
+
 				rootLink = link #get the mount path of the service
 				serviceName = link[link.rfind('/')+1:]
 				for i in range(2):
-					ind = rootlink.rfind('/')
+					ind = rootLink.rfind('/')
 					rootLink = rootLink[:ind]
 
-				deployConfig = rootLink+'/Config/'+serviceName+'DeployConfig.xml'
-				prodConfig = rootLink+'/Config/'+serviceName+'ProdConfig.xml'
+				deployConfig = home+rootLink+'/Config/'+serviceName+'_DeployConfig.xml'
+				prodConfig = home+rootLink+'/Config/'+serviceName+'_ProdConfig.xml'
+				
+				# home = '/home/'+username
 
 				# Parsing Deployment Config
 				tree = ET.parse(deployConfig)		
-				deployRoot = tree.getroot()
+				root = tree.getroot()
 
-				for dependency in root.iter('Dependency'):
+				for dependency in root.iter('Dependencies'):
 					dependencyName = dependency.text
 					temp = dependencyName.split("_")
 					if temp[-1] == 'model':
@@ -332,7 +366,8 @@ class ServiceManager():
 						modelName = dependencyName[:dependencyName.rfind('_')]
 						modelLink = rootLink+'/Models/'+modelName
 
-
+						print("Model Dependency of",modelName)
+						
 						# install tensorflow-model-server
 						commandStr = "echo "+password+" sudo -S apt-get install tensorflow-model-server"
 						osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
@@ -350,7 +385,7 @@ class ServiceManager():
 							port = hostOccupiedPorts[IP] + 1
 
 						# start tensorflow model serving
-						commandStr = "tensorflow_model_server --rest_api_port=" + str(port) + " --model_name=" + modelName + " --model_base_path=/home/" +username+modelLink[2:]  
+						commandStr = "tensorflow_model_server --rest_api_port=" + str(port) + " --model_name=" + modelName + " --model_base_path=/home/" +username+modelLink  
 						osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
 						print(osCommand)
 						pro = subprocess.Popen(osCommand, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
@@ -364,7 +399,7 @@ class ServiceManager():
 						hostOccupiedPorts[IP].append(port)
 
 						# launch the model's repective py file
-						commandStr = modelLink+'/ python3 '+modelName+".py  --serving_addrs "+IP+":"+port+" --model /home/"+username+modelLink[2:]+" --service_id "+modelID
+						commandStr = '/home/'+username+modelLink+'/ python3 '+modelName+".py  --serving_addrs "+IP+":"+port+" --model /home/"+username+modelLink+" --service_id "+modelID
 						if serviceInst == 1:
 							commandStr += " --is_first_instance yes"
 						osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
@@ -389,7 +424,7 @@ class ServiceManager():
 						else:
 							port = hostOccupiedPorts[IP] + 1
 
-						UILink = link+'/UI'
+						UILink = '/home/'+username+link+'/UI'
 
 						#install flask module on the given host IP
 						commandStr = "pip3 install flask; pip3 install flask_bcrypt; pip3 install pika; pip3 install xmlschema"
@@ -401,11 +436,11 @@ class ServiceManager():
 						# Assumed: the name of executable will be run.py
 						# navigate to the link and launch run.py
 
-						commandStr = "python3 "+UILink+"/run.py  --port "+str(port)+" --service_id "+str(ServiceID)
+						commandStr = "python3 "+UILink+"/run.py  --port "+str(port)+" --service_id "+str(serviceID)
 						osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
 						print(osCommand)
 						pro = subprocess.Popen(osCommand, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
-						print("UI for application ", link," started on IP:Port", IP,":",port)
+						print("UI for application ", UILink," started on IP:Port", IP,":",port)
 						
 						hostOccupiedPorts[IP].append(port)
 
@@ -418,19 +453,25 @@ class ServiceManager():
 						RMQ.send("","SM_Flask", msg)
 
 
-					else:
+					elif file.text != None:
 						# run normal .py services
-						commandStr = "python3 "+link+"/"+file.text+ " --service_id "+serviceID
+						print("File Name: ", file.text)
+						commandStr = "python3 /home/"+username+link+"/"+file.text+ " --service_id "+str(serviceID)
 						
+						if serviceInst == 1:
+							commandStr += " --is_first_instance yes"
 
 						osCommand = "sshpass -p \'" + password + "\' ssh -o StrictHostKeyChecking=no -t " + username + "@" + IP +" \'" +commandStr +"\'"
 						print(osCommand)
 						pro = subprocess.Popen(osCommand, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
-						print("UI for application ", link," started on IP:Port", IP,":",port)
+						print("Service /home/",username ,link," started on IP", IP)
 
 						pid = pro.pid
 
-						self.Registry.Write_Service_Inst_Info(serviceID, [IP, "", "Up", pid, 'exe', serviceInst], "SM_RG")
+						self.Registry.Write_Service_Inst_Info(serviceID, [[IP, "", "Up", pid, 'exe', serviceInst]], "SM_RG")
+
+				schedulerObj = PlatformScheduler()
+				schedulerObj.schedule_service(serviceID)
 
 		elif requestType == "Kill":
 			serviceID = data["Service_ID"]
@@ -450,5 +491,12 @@ Example Request:
             ]
 }
 
+
+{
+	"Request_Type": "Start_Model",
+	"Model_Link": [
+		["192.168.43.135", "~/1/1/Models/Sonar", "456"]
+	]
+}
 
 '''
