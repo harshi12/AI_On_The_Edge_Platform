@@ -8,7 +8,7 @@ import time
 from queue_req_resp import RabbitMQ
 from threading import Thread
 from app import db
-from app.models import Gateway
+from app.models import Gateway,Service
 DB_REQUEST_QUEUE = "modules_DB"
 
 RBMQ = RabbitMQ()
@@ -26,7 +26,7 @@ def db_server_requests_cb(ch, method, properties, body):
     req = json.loads(body)
     resp = {}
     if req["opcode"] == "SERVICE_ID_GET":
-        print (f"Received Request: {req}")
+        print ("Received Request: {req}")
         responses = Service.query.filter(Service.service_name==req["service_name"]).all()
         for response in responses:
             sid = response.service_id
@@ -34,6 +34,15 @@ def db_server_requests_cb(ch, method, properties, body):
         # gw_id = response.gw_id
         # print(gw_id)
         response_send(resp,req["service_name"])
+    elif req["opcode"] == "SERVICE_NAME_GET":
+        print ("Received Request: {req}")
+        responses = Service.query.filter(Service.service_id==req["service_id"]).all()
+        for response in responses:
+            sname = response.service_name
+            resp["service_id"]=sname
+        # gw_id = response.gw_id
+        # print(gw_id)
+        response_send(resp,req["service_id"])
 
 
 def handle_db_client_requests(exchange, queue_name):
