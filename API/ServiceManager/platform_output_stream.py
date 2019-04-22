@@ -12,7 +12,7 @@ import socket
 import Socket.utilities as sock_util
 from queue_req_resp import *
 from ServiceManager.io_stream import *
-
+from db_client import *
 
 class PlatformOutputStream(IO_Stream):
     def __init__(self):
@@ -31,9 +31,22 @@ class PlatformOutputStream(IO_Stream):
 
         service_id = output["service_id"]
 
+        db = DATABASE_CLIENT()
+        db_response = db.service_name_get(service_id)
+        if not isinstance(db_response, str):
+            db_response = db_response.decode()
+
+        service_name = None
+        if service_id != "flower_svc_1" and service_id != "sonar_svc_1" and service_id != "earthquake_svc_1":
+            db_response = json.loads(db_response)
+            print ("[POS] Receiving ", db_response)
+            db_response = db_response["response"]
+            service_name = db_response["service_id"]
+
         # OUTPUT of DISTANCE_ALARM_SERVICE
         # Destination: DISTANCE_SENSOR
-        if service_id == "dist_svc_1":
+        #if service_id == "dist_svc_1":
+        if service_name == "Distance_Alarm_Service":
             output["sensor_name"] = "DISTANCE_SENSOR"
             # it has to send the result back to the sensor
             # get list of gateways where this sensor is running
@@ -53,6 +66,7 @@ class PlatformOutputStream(IO_Stream):
         # Destination: UI
         # Action: Trigger CounterService if Mine detected
         elif service_id == "sonar_svc_1":
+        #elif service_name == "Sonar":
             json_output_str = json.dumps(output)
             #print (f"[POS] receiving output --> {json_output_str}")
             self.RBMQ.send("", self.description + "_" + service_id, json_output_str)
@@ -64,11 +78,13 @@ class PlatformOutputStream(IO_Stream):
         # OUTPUT of FLOWER_ANALYSIS_SERVICE
         # Destination: UI
         elif service_id == "flower_svc_1":
+        #elif service_name == "Iris":
             json_output_str = json.dumps(output)
             #print (f"[POS] receiving output --> {json_output_str}")
             self.RBMQ.send("", self.description + "_" + service_id, json_output_str)
             
         elif service_id == "earthquake_svc_1":
+        #elif service_id == "Earthquake_Service":
             json_output_str = json.dumps(output)
             print (f"[POS] receiving output --> {json_output_str}")
             self.RBMQ.send("", self.description + "_" + service_id, json_output_str)

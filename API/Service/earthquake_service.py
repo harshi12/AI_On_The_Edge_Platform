@@ -50,7 +50,7 @@ class EarthquakeService:
 
         if self.run_on_gateway == "no":
             output_stream = PlatformOutputStream()
-            output_stream.service_output_send(self.service_id, substance)
+            output_stream.service_output_send(self.service_id, res)
         # print (res)
             
        
