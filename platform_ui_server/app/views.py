@@ -38,18 +38,20 @@ def ReceivefromSM(exchange, key):
     RMQ.receive(processInput, exchange, key)
 
 def processInput( ch, method, properties, body):
+    print("Received req from SM")
     data = json.loads(body)
     request_type = data["Request_Type"]
     if( request_type == "Register_Service_UI"):
         serv_id = data["Service_ID"]
+        print("UI-service",serv_id)
         ip = data["IP"]
         port = data["Port"]
         ui_server=str(ip)+":"+str(port)
         #Add to DB
-        service=Service.query.filter(service_id = serv_id).first()
+        service=Service.query.filter(Service.service_id == serv_id).first()
         service.service_ui_server=ui_server
         db.session.add(service)
-        db.commit()
+        db.session.commit()
     elif( request_type == "Register_Application_UI"):
         app_link = data['App_Link']
         ##Fetch app_id from registry
@@ -62,15 +64,15 @@ def processInput( ch, method, properties, body):
         app_id = 1
         link_list = app_link.split('/')
         app_id=link_list[2]
-        print("UI-",app_id)
+        print("UI-app",app_id)
         ip = data['IP']
         port = data['Port']
         ui_server=str(ip)+":"+str(port)
         #Add to DB
-        app=Application.query.filter_by(app_id = app_id).first()
+        app=Application.query.filter(Application.app_id == app_id).first()
         app.app_ui_server = ui_server
         db.session.add(app)
-        db.commit()
+        db.session.commit()
 
 t=Thread(target=ReceivefromSM,args = ('', "SM_Flask"))
 t.start()
@@ -335,7 +337,8 @@ def redirect_app():
     app_ui_server = app.app_ui_server
     # app_id=145
     # app_ui_server = "192.168.31.34:5001"
-    url= "http://" + app_ui_server + "/" +str(app_id)
+    # url= "http://" + app_ui_server + "/" +str(app_id)
+    url= "http://" + app_ui_server
     return redirect(url,code=302)
 
 #Add App
